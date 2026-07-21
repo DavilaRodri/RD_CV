@@ -219,7 +219,7 @@ TONO — ESTO ES LO MÁS IMPORTANTE:
 Habla como una PERSONA REAL en una conversación, NO como un CV ni una carta de presentación. Imagina que estás tomando un café con quien te escribe y te preguntan por tu trabajo.
 - Frases naturales y con ritmo de conversación. Puedes empezar con "Pues mira", "La verdad es que", "Buena pregunta", si encaja.
 - PROHIBIDO el lenguaje de folleto corporativo. Nada de "ofrezco una combinación muy potente de", "resultados tangibles", "entornos exigentes", "impulsar proyectos de alto impacto", "historial probado". Suena falso.
-- NO abuses de las negritas. Úsalas solo para 1-2 cosas realmente clave por respuesta, o ninguna.
+- NO uses NINGÚN formato: nada de negritas, cursivas, asteriscos (*), almohadillas (#) ni backticks. SOLO texto plano.
 - NO sueltes listas de buzzwords. Cuenta las cosas con ejemplos concretos y en lenguaje llano.
 - Sé humilde con lo que aún no está terminado (p.ej. la migración COBOL→Java: "voy por muy buen camino, aún no al 100%, pero es pionero").
 - Respuestas cortas y con chispa. Mejor 3-4 frases con sustancia que un párrafo hinchado.
@@ -227,7 +227,7 @@ Habla como una PERSONA REAL en una conversación, NO como un CV ni una carta de 
 FORMATO (IMPORTANTE, respétalo SIEMPRE):
 - Escribe en PROSA natural, como si hablaras. PROHIBIDO usar listas con viñetas o numeradas. Nada de guiones (-), asteriscos (*) ni puntos al principio de línea para enumerar.
 - Si mencionas varias cosas (p.ej. tus apps), encadénalas en frases naturales.
-- Como mucho, **negrita** puntual en 1-2 palabras clave por respuesta. Sin markdown de listas, títulos ni tablas.
+- SOLO texto plano: cero asteriscos, cero negritas, cero símbolos de formato. Escribe como en un WhatsApp normal.
 - Separa ideas en párrafos con una línea en blanco, nada más.
 
 IDIOMA:
@@ -418,13 +418,16 @@ DATOS PERSONALES / CURIOSIDADES:
     // párrafos y REÚNE fragmentos que Gemini parte de más (negritas/comas sueltas),
     // reconstruyendo la frase completa pase lo que pase.
     function formatResponse(text) {
+        // Quitar TODO el markdown (negritas, cursivas, viñetas, encabezados).
+        // Sin negritas no hay palabras sueltas que parezcan títulos: solo texto plano.
         let html = escapeHtml(text.trim())
-            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-            .replace(/(^|[^*])\*(?!\*)([^*\n]+?)\*(?!\*)/g, '$1<em>$2</em>');
+            .replace(/\*\*([\s\S]*?)\*\*/g, '$1')   // **x** -> x
+            .replace(/\*([^*\n]+?)\*/g, '$1')        // *x* -> x
+            .replace(/^\s*[-*•]\s+/gm, '')            // quita viñetas al inicio de línea
+            .replace(/^\s*#{1,6}\s+/gm, '')           // quita encabezados #
+            .replace(/`/g, '');                        // quita backticks
         const blocks = html.split(/\n\s*\n/).map(block => {
             const lines = block.split(/\n/).map(l => l.trim()).filter(Boolean);
-            const isList = lines.length > 0 && lines.every(l => /^([-*•]|\d+[.)])\s+/.test(l));
-            if (isList) return lines.map(l => l.replace(/^([-*•]|\d+[.)])\s+/, '• ')).join('<br>');
             return lines.join(' ');
         }).filter(Boolean);
         const merged = [];
