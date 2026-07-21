@@ -142,21 +142,39 @@ function formatResponse(text) {
         // Cursiva: solo *texto* real, sin tragarse los asteriscos de las listas
         .replace(/(^|[^*])\*(?!\*)([^*\n]+?)\*(?!\*)/g, '$1<em>$2</em>');
 
-    // Separar en párrafos por líneas en blanco
-    const paragraphs = html.split(/\n\s*\n/).map(block => {
+    // Separar en bloques por líneas en blanco
+    const blocks = html.split(/\n\s*\n/).map(block => {
         const lines = block.split(/\n/).map(l => l.trim()).filter(Boolean);
         // Si todas las líneas son ítems de lista, convertir el marcador a viñeta •
         const isList = lines.length > 0 && lines.every(l => /^([-*•]|\d+[.)])\s+/.test(l));
         if (isList) {
             return lines.map(l => l.replace(/^([-*•]|\d+[.)])\s+/, '• ')).join('<br>');
         }
-        // Texto normal: unir saltos sueltos (evita romper negritas / dejar puntos colgando)
+        // Texto normal: unir saltos sueltos dentro del bloque
         return lines.join(' ');
-    });
+    }).filter(Boolean);
 
-    return paragraphs
+    // Reunir fragmentos que Gemini parte de más (negritas o comas en su propia línea).
+    // Un bloque se pega al anterior si empieza en minúscula/puntuación o si el
+    // anterior no cierra frase. Reconstruye la frase pase lo que pase.
+    const merged = [];
+    for (const b of blocks) {
+        if (merged.length === 0) { merged.push(b); continue; }
+        const prev = merged[merged.length - 1];
+        const prevTxt = prev.replace(/<[^>]+>/g, '').trim();
+        const curTxt = b.replace(/<[^>]+>/g, '').trim();
+        const prevClosesSentence = /[.!?…]["')\]]?$/.test(prevTxt);
+        const curIsContinuation = /^[\p{Ll},;:.)!?…»"']/u.test(curTxt);
+        if (!prevClosesSentence || curIsContinuation) {
+            merged[merged.length - 1] = prev + ' ' + b;
+        } else {
+            merged.push(b);
+        }
+    }
+
+    return merged
         .join('<br><br>')
-        .replace(/\s+([.,;:!?])/g, '$1'); // quitar espacio antes de puntuación
+        .replace(/\s+([.,;:!?…])/g, '$1'); // quitar espacio antes de puntuación
 }
 
 // Inicialización
