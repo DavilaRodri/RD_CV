@@ -65,6 +65,13 @@ function scrollToBottom() {
     }, 100);
 }
 
+// Lanzar una pregunta sugerida (chips del welcome)
+function askSuggestion(text) {
+    const input = document.getElementById('pregunta');
+    input.value = text;
+    enviarPregunta();
+}
+
 // Función para enviar la pregunta
 async function enviarPregunta() {
     const preguntaInput = document.getElementById('pregunta');
@@ -119,12 +126,32 @@ async function enviarPregunta() {
     scrollToBottom();
 }
 
-// Formatear respuesta (convertir saltos de línea, etc.)
+// Escapar HTML para evitar inyección al usar innerHTML
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+// Formatear respuesta:
+// 1) escapa HTML, 2) aplica markdown básico, 3) agrupa en párrafos para que
+// los saltos de línea sueltos de Gemini no rompan negritas ni dejen puntos colgando.
 function formatResponse(text) {
-    return text
-        .replace(/\n/g, '<br>')
+    let html = escapeHtml(text.trim())
         .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
         .replace(/\*(.*?)\*/g, '<em>$1</em>');
+
+    // Separar en párrafos por líneas en blanco
+    const paragraphs = html.split(/\n\s*\n/).map(block => {
+        const lines = block.split(/\n/).map(l => l.trim()).filter(Boolean);
+        // Si todas las líneas son ítems de lista, conservar el salto entre ellas
+        const isList = lines.length > 1 && lines.every(l => /^([-*•]|\d+[.)])\s/.test(l));
+        return isList ? lines.join('<br>') : lines.join(' ');
+    });
+
+    return paragraphs
+        .join('<br><br>')
+        .replace(/\s+([.,;:!?])/g, '$1'); // quitar espacio antes de puntuación
 }
 
 // Inicialización
