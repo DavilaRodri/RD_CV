@@ -9,14 +9,30 @@ const GEMINI_PROXY_URL = 'https://steep-shadow-ce98.tronquitomagdaleno13.workers
 // TUS DATOS - Edita esto para actualizar tu info
 // ============================================
 
+// ============================================
+// CÁLCULOS AUTOMÁTICOS (edad y experiencia se calculan solos)
+// ============================================
+
+// Devuelve años completos entre una fecha "YYYY-MM-DD" (o "YYYY-MM") y hoy
+function yearsSince(fecha) {
+    const inicio = new Date(fecha);
+    const hoy = new Date();
+    let años = hoy.getFullYear() - inicio.getFullYear();
+    const m = hoy.getMonth() - inicio.getMonth();
+    if (m < 0 || (m === 0 && hoy.getDate() < inicio.getDate())) {
+        años--;
+    }
+    return años;
+}
+
 const RODRIGO_DATA = {
     personal: {
         nombre: "Rodrigo Dávila López",
-        edad: 32,
+        fechaNacimiento: "1992-11-17", // la edad se calcula sola
         ubicacion: "Madrid, España",
         email: "rdavila92@gmail.com",
-        añosExperiencia: 8,
-        familia: "Casado, con una hija y un hijo en camino",
+        inicioCarrera: "2017-09", // primer puesto (Accenture Junior) — los años de exp se calculan solos
+        familia: "Casado, con dos hijos",
         linkedin: "https://www.linkedin.com/in/rodrigo-d%C3%A1vila-5b675383/",
         github: "https://github.com/DavilaRodri"
     },
@@ -184,6 +200,8 @@ const RODRIGO_DATA = {
 
 function buildSystemPrompt() {
     const d = RODRIGO_DATA;
+    const edad = yearsSince(d.personal.fechaNacimiento);
+    const añosExp = yearsSince(d.personal.inicioCarrera);
     
     // Construir resumen de experiencia
     let experiencia = d.carrera.map(job => {
@@ -214,7 +232,7 @@ function buildSystemPrompt() {
     const pers = d.personalidad;
     const datos = d.datosPersonales;
 
-    return `Eres Rodrigo Dávila, Manager Associate de IA Generativa en Accenture, con ${d.personal.edad} años y ${d.personal.añosExperiencia} años de experiencia en tecnología. Estás hablando a través de tu portfolio personal, donde probablemente te escriben reclutadores, compañeros de sector o gente curiosa. Trátalo como una conversación profesional en la que representas tu propia candidatura.
+    return `Eres Rodrigo Dávila, Manager de IA Generativa en Accenture, con ${edad} años y ${añosExp} años de experiencia en tecnología. Estás hablando a través de tu portfolio personal, donde probablemente te escriben reclutadores, compañeros de sector o gente curiosa. Trátalo como una conversación profesional en la que representas tu propia candidatura.
 
 Respondes SIEMPRE en primera persona, como si fueras el propio Rodrigo. Eres cercano, seguro de ti mismo sin ser arrogante, y directo.
 
@@ -256,10 +274,10 @@ QUIÉN SOY (mi resumen profesional, úsalo para contextualizar quién soy):
 
 DATOS PERSONALES:
 - Nombre: ${d.personal.nombre}
-- Edad: ${d.personal.edad} años
+- Edad: ${edad} años
 - Ubicación: ${d.personal.ubicacion}
 - Email: ${d.personal.email}
-- Experiencia: ${d.personal.añosExperiencia} años en tecnología
+- Experiencia: ${añosExp} años en tecnología
 - Familia: ${d.personal.familia}
 - LinkedIn: ${d.personal.linkedin}
 - GitHub: ${d.personal.github}
