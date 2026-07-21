@@ -139,14 +139,19 @@ function escapeHtml(text) {
 function formatResponse(text) {
     let html = escapeHtml(text.trim())
         .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-        .replace(/\*(.*?)\*/g, '<em>$1</em>');
+        // Cursiva: solo *texto* real, sin tragarse los asteriscos de las listas
+        .replace(/(^|[^*])\*(?!\*)([^*\n]+?)\*(?!\*)/g, '$1<em>$2</em>');
 
     // Separar en párrafos por líneas en blanco
     const paragraphs = html.split(/\n\s*\n/).map(block => {
         const lines = block.split(/\n/).map(l => l.trim()).filter(Boolean);
-        // Si todas las líneas son ítems de lista, conservar el salto entre ellas
-        const isList = lines.length > 1 && lines.every(l => /^([-*•]|\d+[.)])\s/.test(l));
-        return isList ? lines.join('<br>') : lines.join(' ');
+        // Si todas las líneas son ítems de lista, convertir el marcador a viñeta •
+        const isList = lines.length > 0 && lines.every(l => /^([-*•]|\d+[.)])\s+/.test(l));
+        if (isList) {
+            return lines.map(l => l.replace(/^([-*•]|\d+[.)])\s+/, '• ')).join('<br>');
+        }
+        // Texto normal: unir saltos sueltos (evita romper negritas / dejar puntos colgando)
+        return lines.join(' ');
     });
 
     return paragraphs
