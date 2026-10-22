@@ -482,6 +482,18 @@ a.web:hover { background: var(--surface-2); transform: translateY(-4px); }
 .js .app-moviles .movil.aparece.visto:nth-child(2) { transform: translateY(-28px); }
 @media (max-width: 999px) { .js .app-moviles .movil.aparece.visto:nth-child(2) { transform: translateY(-20px); } }
 @media (max-width: 599px) { .js .app-moviles .movil.aparece.visto:nth-child(2) { transform: translateY(-12px); } }
+/* Volver arriba */
+.subir {
+    position: fixed; z-index: 40; right: max(16px, env(safe-area-inset-right, 0px)); bottom: max(16px, env(safe-area-inset-bottom, 0px));
+    display: grid; place-items: center; width: 52px; height: 52px; border-radius: 16px;
+    background: var(--boton-bg); color: var(--boton-ink);
+    opacity: 0; transform: translateY(16px); pointer-events: none;
+    transition: opacity .25s var(--curva), transform .25s var(--curva), background-color .2s;
+}
+.subir.visible { opacity: 1; transform: none; pointer-events: auto; }
+.subir:hover { background: var(--acento); color: var(--acento-ink); }
+.subir:active { transform: scale(.94); }
+
 @media (prefers-reduced-motion: reduce) {
     html { scroll-behavior: auto; }
     *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }

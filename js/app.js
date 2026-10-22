@@ -65,6 +65,20 @@
     window.addEventListener('scroll', bordeBarra, { passive: true });
     bordeBarra();
 
+    /* ---------- Volver arriba ---------- */
+    var subir = document.querySelector('[data-subir]');
+    if (subir) {
+        subir.hidden = false;
+        var verSubir = function () { subir.classList.toggle('visible', window.scrollY > 700); };
+        window.addEventListener('scroll', verSubir, { passive: true });
+        verSubir();
+        subir.addEventListener('click', function (e) {
+            e.preventDefault();
+            window.scrollTo({ top: 0 });
+            history.replaceState(null, '', location.pathname + location.search);
+        });
+    }
+
     /* ---------- Copiar email ---------- */
     document.querySelectorAll('[data-copiar]').forEach(function (b) {
         var original = b.innerHTML;
