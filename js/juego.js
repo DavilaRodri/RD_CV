@@ -1106,20 +1106,48 @@
             peatones.push({ x: x0, y: y, dir: r() < 0.5 ? -1 : 1, vel: 10 + r() * 14, color: NEONES[Math.floor(r() * NEONES.length)], abrigo: ['#3a3358', '#4a2a3a', '#2a3a4a', '#3a3a2a'][p % 4], fase: r() * 10 });
         }
     }
+    // Los coches giran a la derecha en los cruces en vez de atravesar edificios:
+    // los que bajan o suben por una avenida vertical entran en la horizontal al llegar
+    // al final (y a veces en la del medio), y los de las horizontales a veces se meten
+    // por las verticales.
+    function cruza(antes, ahora, v) { return (antes - v) * (ahora - v) <= 0 && antes !== ahora; }
+    function girar(c, antes) {
+        var i, v;
+        if (c.eje === 'v') {
+            for (i = 0; i < AVENIDAS_H.length; i++) {
+                var fila = AVENIDAS_H[i] * T, ultima = c.dir > 0 ? i === AVENIDAS_H.length - 1 : i === 0;
+                v = c.dir > 0 ? fila + 14 : fila + 36;
+                if (!cruza(antes, c.pos, v)) continue;
+                if (ultima || (i === 1 && Math.random() < 0.4)) {
+                    var x0 = c.fijo;
+                    c.eje = 'h'; c.fijo = v; c.pos = x0; c.dir = -c.dir;
+                    // bajando gira al oeste (-1); subiendo, al este (+1)
+                }
+                return;
+            }
+        } else if (!c.roadster) {
+            var fila2 = c.fijo - (c.dir > 0 ? 36 : 14), idx = AVENIDAS_H.indexOf(fila2 / T);
+            if (idx < 0 || (c.dir > 0 && idx === AVENIDAS_H.length - 1) || (c.dir < 0 && idx === 0)) return;
+            for (i = 0; i < AVENIDAS_V.length; i++) {
+                v = AVENIDAS_V[i] * T + (c.dir > 0 ? 14 : 34);
+                if (!cruza(antes, c.pos, v)) continue;
+                if (Math.random() < 0.3) { var y0 = c.fijo; c.eje = 'v'; c.fijo = v; c.pos = y0; }
+                return;
+            }
+        }
+    }
     function moverTrafico(dt) {
         coches.forEach(function (c) {
             // ¿Está el personaje en su carril, delante?
             var lateral = c.eje === 'h' ? Math.abs(heroe.y - 4 - c.fijo) : Math.abs(heroe.x - c.fijo);
             var delante = ((c.eje === 'h' ? heroe.x : heroe.y) - c.pos) * c.dir;
-            var enCarril = lateral < 13 && delante > 0 && delante < 52;
+            var enCarril = lateral < 16 && delante > -8 && delante < 56;
             // Los coches normales frenan; los descapotables saltan con sus propulsores
             c.freno = !c.roadster && enCarril ? Math.max(0, (c.freno || 1) - dt * 4) : Math.min(1, (c.freno === undefined ? 1 : c.freno) + dt * 1.5);
+            var antes = c.pos;
             c.pos += c.vel * c.dir * dt * c.freno;
             if (c.eje === 'h') { if (c.pos < -60) c.pos = PW + 60; if (c.pos > PW + 60) c.pos = -60; }
-            else {
-                var a = AVENIDAS_H[0] * T - 40, b = (AVENIDAS_H[2] + 3) * T + 40;
-                if (c.pos < a) c.pos = b; if (c.pos > b) c.pos = a;
-            }
+            girar(c, antes);
             if (!c.roadster) return;
             // El descapotable salta por encima del personaje y, de vez en cuando, por gusto
             if (c.salto) {
@@ -1129,9 +1157,11 @@
                     vx: -c.dir * (10 + Math.random() * 25), vy: 8 + Math.random() * 14, r: 2 + Math.random() * 2, v: 1
                 });
                 if (c.salto >= 1) c.salto = 0;
-            } else if (!reducido) {
+            } else {
+                // Saltar por encima del personaje es parte del juego: se hace siempre.
+                // Los saltos por gusto se quitan si el sistema pide menos movimiento.
                 c.prox -= dt;
-                if (enCarril || (c.prox <= 0 && c.pos > 0 && c.pos < PW)) {
+                if (enCarril || (!reducido && c.prox <= 0 && c.pos > 0 && c.pos < PW)) {
                     c.salto = 0.001; c.prox = 6 + Math.random() * 9;
                     if (enCarril && !dicho.salto) { dicho.salto = 1; decir({ es: '¡Cuidado! Los descapotables de esta ciudad saltan con propulsores.', en: 'Careful! The roadsters in this city jump on thrusters.' }); }
                 }
@@ -1463,7 +1493,7 @@
         var objetivo;
         if (vistaMapa) objetivo = mapaCam;
         else if (camLibre) objetivo = camObj;
-        else { objetivo = { x: heroe.x, y: heroe.y - 16 }; }
+        else { objetivo = { x: heroe.x, y: heroe.y - 16 }; if (movil) encuadrar(objetivo); }
         var kc = reducido ? 1 : 1 - Math.exp(-dt * (camLibre ? 14 : 6));
         cam.x += (objetivo.x - cam.x) * kc; cam.y += (objetivo.y - cam.y) * kc;
         if (!camLibre) { camObj.x = cam.x; camObj.y = cam.y; }
@@ -1473,6 +1503,24 @@
         if (arriba) gy = (heroe.y - 34 - v.t) * esc / dpr;
         globo.classList.toggle('arriba', arriba);
         globo.style.transform = 'translate(' + Math.round(gx) + 'px,' + Math.round(gy) + 'px)';
+    }
+
+    // En el móvil la cámara va muy cerca: delante de un edificio alto (las torres de
+    // empresas) se aleja y sube lo justo para que se vea entero, con el personaje abajo.
+    function encuadrar(obj) {
+        var hud = 58 * dpr, vwb = cw / escBase, techo = Infinity;
+        NIVELES.forEach(function (n) {
+            if (heroe.y < n.py - 8 || heroe.y - n.py > 96) return;
+            if (n.px + n.w / 2 < heroe.x - vwb / 2 || n.px - n.w / 2 > heroe.x + vwb / 2) return;
+            techo = Math.min(techo, n.py - n.h - 8);
+        });
+        if (techo === Infinity) { escObj = escBase; return; }
+        var suelo = heroe.y + 30;
+        var e = Math.max(Math.min(2, escBase), Math.min(escBase, Math.floor((ch - hud) / (suelo - techo))));
+        escObj = e;
+        var alto = ch / e;
+        obj.y = Math.max(techo - hud / e + alto / 2, suelo - alto / 2);
+        obj.y = Math.min(obj.y, heroe.y - 16);
     }
 
     function dibujar() {
@@ -1524,7 +1572,7 @@
         }
         coches.forEach(function (c) {
             var cx = c.eje === 'h' ? c.pos : c.fijo, cy = c.eje === 'h' ? c.fijo : c.pos;
-            if (cx > v.l - 40 && cx < v.l + v.w + 40 && cy > v.t - 40 && cy < v.t + v.h + 40) lista.push({ coche: c, base: cy + 6 });
+            if (cx > v.l - 40 && cx < v.l + v.w + 40 && cy > v.t - 40 && cy < v.t + v.h + 40) lista.push({ coche: c, base: cy + 6 + (c.salto ? 40 : 0) });
         });
         peatones.forEach(function (p) { if (p.x > v.l - 20 && p.x < v.l + v.w + 20 && p.y > v.t - 30 && p.y < v.t + v.h + 30) lista.push({ peaton: p, base: p.y }); });
         lista.push({ base: heroe.y, heroe: true });
@@ -1812,7 +1860,7 @@
         x.font = fs + 'px Silkscreen, Geist, sans-serif';
         NIVELES.forEach(function (n) {
             // Encima del edificio; si el tejado queda fuera de pantalla, lo más arriba posible sin tapar la puerta
-            var sx = (n.px - v.l) * esc, sy = Math.min((n.py - 30 - v.t) * esc - 16 * dpr, Math.max((n.py - n.h - v.t) * esc - 18 * dpr, 150 * dpr));
+            var sx = (n.px - v.l) * esc, sy = Math.min((n.py - 30 - v.t) * esc - 16 * dpr, Math.max((n.py - n.h - v.t) * esc - 18 * dpr, (movil ? 84 : 150) * dpr));
             if (vistaMapa) sy = (n.py - v.t) * esc + 14 * dpr;
             // En el móvil, si el edificio queda por encima de la pantalla, su nombre se queda arriba con una flecha
             var fuera = false;

@@ -499,3 +499,6 @@ a.web:hover { background: var(--surface-2); transform: translateY(-4px); }
     *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
     .js .aparece { opacity: 1; transform: none; }
 }
+
+/* En el móvil la flecha de volver arriba sobra (y pisaba el aviso de "dónde lo he usado") */
+@media (hover: none) and (pointer: coarse) { .subir { display: none !important; } }
