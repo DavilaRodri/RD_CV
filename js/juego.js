@@ -1493,7 +1493,7 @@
         var objetivo;
         if (vistaMapa) objetivo = mapaCam;
         else if (camLibre) objetivo = camObj;
-        else { objetivo = { x: heroe.x, y: heroe.y - 16 }; if (movil) encuadrar(objetivo); }
+        else { objetivo = { x: heroe.x, y: heroe.y - 16 }; }
         var kc = reducido ? 1 : 1 - Math.exp(-dt * (camLibre ? 14 : 6));
         cam.x += (objetivo.x - cam.x) * kc; cam.y += (objetivo.y - cam.y) * kc;
         if (!camLibre) { camObj.x = cam.x; camObj.y = cam.y; }
@@ -1503,24 +1503,6 @@
         if (arriba) gy = (heroe.y - 34 - v.t) * esc / dpr;
         globo.classList.toggle('arriba', arriba);
         globo.style.transform = 'translate(' + Math.round(gx) + 'px,' + Math.round(gy) + 'px)';
-    }
-
-    // En el móvil la cámara va muy cerca: delante de un edificio alto (las torres de
-    // empresas) se aleja y sube lo justo para que se vea entero, con el personaje abajo.
-    function encuadrar(obj) {
-        var hud = 58 * dpr, vwb = cw / escBase, techo = Infinity;
-        NIVELES.forEach(function (n) {
-            if (heroe.y < n.py - 8 || heroe.y - n.py > 96) return;
-            if (n.px + n.w / 2 < heroe.x - vwb / 2 || n.px - n.w / 2 > heroe.x + vwb / 2) return;
-            techo = Math.min(techo, n.py - n.h - 8);
-        });
-        if (techo === Infinity) { escObj = escBase; return; }
-        var suelo = heroe.y + 30;
-        var e = Math.max(Math.min(2, escBase), Math.min(escBase, Math.floor((ch - hud) / (suelo - techo))));
-        escObj = e;
-        var alto = ch / e;
-        obj.y = Math.max(techo - hud / e + alto / 2, suelo - alto / 2);
-        obj.y = Math.min(obj.y, heroe.y - 16);
     }
 
     function dibujar() {
@@ -1860,7 +1842,7 @@
         x.font = fs + 'px Silkscreen, Geist, sans-serif';
         NIVELES.forEach(function (n) {
             // Encima del edificio; si el tejado queda fuera de pantalla, lo más arriba posible sin tapar la puerta
-            var sx = (n.px - v.l) * esc, sy = Math.min((n.py - 30 - v.t) * esc - 16 * dpr, Math.max((n.py - n.h - v.t) * esc - 18 * dpr, (movil ? 84 : 150) * dpr));
+            var sx = (n.px - v.l) * esc, sy = Math.min((n.py - 30 - v.t) * esc - 16 * dpr, Math.max((n.py - n.h - v.t) * esc - 18 * dpr, 150 * dpr));
             if (vistaMapa) sy = (n.py - v.t) * esc + 14 * dpr;
             // En el móvil, si el edificio queda por encima de la pantalla, su nombre se queda arriba con una flecha
             var fuera = false;
