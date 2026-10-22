@@ -18,8 +18,9 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Silkscreen&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/estilo.css">
+    <link rel="stylesheet" href="css/juego.css">
     <script>
         // Idioma y tema antes de pintar: lo guardado; si no, lo del sistema.
         (function () {
@@ -51,6 +52,7 @@
                 <a href="#contacto"><span lang="es">Contacto</span><span lang="en">Contact</span></a>
             </nav>
             <div class="ajustes">
+                <button type="button" class="ajuste" data-modo-juego hidden><span lang="es">Modo juego</span><span lang="en">Game mode</span></button>
                 <button type="button" class="ajuste" data-cambiar-idioma aria-label="Cambiar idioma / Change language"><span lang="es">EN</span><span lang="en">ES</span></button>
                 <button type="button" class="ajuste" data-cambiar-tema data-label-es="Cambiar tema claro u oscuro" data-label-en="Switch light or dark theme" aria-label="Cambiar tema claro u oscuro">
                     <svg class="icono-sol" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><circle cx="12" cy="12" r="4.2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
@@ -422,5 +424,6 @@
     </footer>
 
     <script src="js/app.js" defer></script>
+    <script src="js/juego.js" defer></script>
 </body>
 </html>
