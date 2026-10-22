@@ -831,6 +831,12 @@
             '<p class="mapa-aviso">' + (tactil
                 ? '<span lang="es">Toca un edificio para ir · arrastra para mirar</span><span lang="en">Tap a building to go · drag to look around</span>'
                 : '<span lang="es">Haz clic en un edificio para ir · M o Esc para volver</span><span lang="en">Click a building to go there · M or Esc to go back</span>') + '</p>' +
+            '<div class="girar" aria-live="polite">' +
+                '<svg viewBox="0 0 64 64" width="72" height="72" aria-hidden="true"><rect x="20" y="8" width="24" height="42" rx="4" fill="none" stroke="currentColor" stroke-width="3"/><path d="M50 40c4 6 2 14-6 17M44 57l1-6 5 3" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>' +
+                '<p class="girar-titulo"><span lang="es">Gira el móvil para jugar</span><span lang="en">Turn your phone to play</span></p>' +
+                '<p class="girar-texto"><span lang="es">La ciudad se juega en horizontal.</span><span lang="en">The city is played in landscape.</span></p>' +
+                '<button type="button" class="opcion" data-j-clasica><strong><span lang="es">Ver versión clásica</span><span lang="en">See classic version</span></strong></button>' +
+            '</div>' +
             '<div class="juego-titulo" data-j-titulo>' +
                 '<div class="titulo-caja">' +
                     '<p class="titulo-pixel"><span lang="es">rodrigodavila.com</span><span lang="en">rodrigodavila.com</span></p>' +
@@ -1167,7 +1173,7 @@
     }
 
     function limitarCam(c) {
-        var vw = cw / esc, vh = ch / esc, abajo = tactil && !vistaMapa ? 170 * dpr / esc : 0;
+        var vw = cw / esc, vh = ch / esc, abajo = tactil && !vistaMapa && ch > cw ? 170 * dpr / esc : 0;
         c.x = vw < PW ? Math.max(vw / 2, Math.min(PW - vw / 2, c.x)) : PW / 2;
         c.y = vh < PH + abajo ? Math.max(vh / 2, Math.min(PH + abajo - vh / 2, c.y)) : PH / 2;
     }
@@ -1202,7 +1208,7 @@
     }
     function vistaRect() {
         var vw = cw / esc, vh = ch / esc;
-        var abajo = tactil && !vistaMapa ? 170 * dpr / esc : 0;
+        var abajo = tactil && !vistaMapa && ch > cw ? 170 * dpr / esc : 0;
         var l = cam.x - vw / 2, t = cam.y - vh / 2;
         if (vw < PW) l = Math.max(0, Math.min(PW - vw, l)); else l = (PW - vw) / 2;
         if (vh < PH + abajo) t = Math.max(0, Math.min(PH + abajo - vh, t)); else t = (PH - vh) / 2;
