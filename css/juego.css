@@ -206,22 +206,43 @@ html.en-juego .barra, html.en-juego main, html.en-juego .pie, html.en-juego .sal
 @media (orientation: portrait) and (pointer: coarse) {
     .juego.tactil .girar { display: grid; }
 }
-/* Móvil en horizontal: poca altura, el HUD se aprieta */
+/* Móvil en horizontal: HUD mínimo. Arriba, gemas a la izquierda y Mapa + menú a la
+   derecha; abajo, el mando y el botón A. El nombre del edificio solo aparece junto a su puerta. */
+.hud-menu { display: none; }
+.juego.movil .hud-arriba { padding-top: max(10px, env(safe-area-inset-top, 0px)); gap: 8px; }
+.juego.movil .hud-marca, .juego.movil .minimapa, .juego.movil .barrio-cartel, .juego.movil .gemas-txt, .juego.movil .hud-paso, .juego.movil .hud-nivel { display: none; }
+.juego.movil .hud-gemas, .juego.movil .hud-boton { height: 40px; }
+.juego.movil .hud-menu { display: grid; place-items: center; width: 40px; padding: 0; }
+.juego.movil .hud-botones { gap: 8px; }
+.juego.movil .hud-botones [data-j-idioma], .juego.movil .hud-botones .hud-clasica { display: none; }
+.juego.movil .hud-botones.abierto [data-j-idioma], .juego.movil .hud-botones.abierto .hud-clasica { display: block; }
+.juego.movil.menu-abierto .hada-globo { visibility: hidden; }
+.juego.movil .hud-clasica [lang] { font-size: 0; }
+.juego.movil .hud-clasica [lang]::after { font-size: var(--t-s); }
+.juego.movil .hud-clasica [lang="es"]::after { content: "Clásica"; }
+.juego.movil .hud-clasica [lang="en"]::after { content: "Classic"; }
+.juego.movil .hud-entrar { width: auto; min-width: 200px; max-width: calc(100vw - 340px); }
+.juego.movil .hud-botones.abierto .hud-menu { background: var(--marco); color: #05040a; } /* taste-skill-ignore */
+.juego.movil .hud-niveles { display: none; top: auto; bottom: max(14px, env(safe-area-inset-bottom, 0px)); }
+.juego.movil.cerca .hud-niveles { display: flex; }
+.juego.movil .hud-entrar { width: min(320px, calc(100vw - 340px)); height: 48px; grid-template-rows: auto; }
+.juego.movil .hud-entrar strong { font-size: var(--t-s); }
+.juego.movil .hud-accion { grid-row: 1; height: 34px; }
+.juego.movil .mando { width: 108px; height: 108px; left: max(16px, env(safe-area-inset-left, 0px)); bottom: max(14px, env(safe-area-inset-bottom, 0px)); background: rgba(9, 8, 18, .45); } /* taste-skill-ignore */
+.juego.movil .mando-bola { width: 44px; height: 44px; }
+.juego.movil .boton-a { width: 76px; height: 76px; right: max(16px, env(safe-area-inset-right, 0px)); bottom: max(20px, env(safe-area-inset-bottom, 0px)); }
+.juego.movil .boton-a span { font-size: 22px; } /* taste-skill-ignore */
+/* aRDi habla arriba, en el centro, sin tapar al personaje */
+.juego.movil .hada-globo {
+    left: 50%; top: max(10px, env(safe-area-inset-top, 0px)); translate: -50% 0;
+    max-width: min(400px, calc(100vw - 340px)); padding: 7px 12px 8px;
+}
+.juego.movil .hada-globo::after { display: none; }
+.juego.movil .hada-texto { font-size: 13px; line-height: 1.35; } /* taste-skill-ignore */
+.juego.movil .hada-nombre { font-size: 10px; } /* taste-skill-ignore */
+.juego.movil .mapa-aviso { top: max(10px, env(safe-area-inset-top, 0px)); bottom: auto; padding: 8px 12px; font-size: 13px; } /* taste-skill-ignore */
+.juego.movil.en-mapa .hud-niveles { display: none; }
 @media (max-height: 500px) and (orientation: landscape) {
-    .hud-arriba { padding-top: max(8px, env(safe-area-inset-top, 0px)); }
-    .hud-marca, .hud-gemas, .hud-boton { height: 38px; }
-    .hud-marca > span:last-child { display: none; }
-    .hud-niveles { top: auto; bottom: max(10px, env(safe-area-inset-bottom, 0px)); }
-    .hud-entrar { width: min(300px, calc(100vw - 420px)); height: 46px; }
-    .hud-entrar strong { font-size: var(--t-s); }
-    .hud-paso { width: 40px; height: 46px; }
-    .minimapa { width: 130px; height: 90px; top: calc(max(8px, env(safe-area-inset-top, 0px)) + 50px); }
-    .mando { width: 104px; height: 104px; bottom: max(12px, env(safe-area-inset-bottom, 0px)); }
-    .mando-bola { width: 44px; height: 44px; }
-    .boton-a { width: 74px; height: 74px; bottom: max(18px, env(safe-area-inset-bottom, 0px)); }
-    .boton-a span { font-size: 22px; } /* taste-skill-ignore */
-    .barrio-cartel { top: calc(max(8px, env(safe-area-inset-top, 0px)) + 52px); bottom: auto; }
-    .hada-globo { max-width: min(280px, 46vw); }
     .titulo-caja { gap: 10px; }
     .titulo-caja h2 { font-size: 2.2rem; }
     .titulo-opciones { grid-template-columns: 1fr 1fr; }
@@ -307,6 +328,20 @@ html.en-juego .barra, html.en-juego main, html.en-juego .pie, html.en-juego .sal
     .panel-pie .boton { flex: 1; }
     .sig-nombre { display: none; }
 }
+
+/* Panel en el móvil: pantalla completa, cabecera fina y el pie al final del contenido */
+.juego.movil .juego-panel { place-items: stretch; padding: 0; }
+.juego.movil .panel-caja { max-width: none; max-height: none; height: 100%; border: 0; border-radius: 0; }
+.juego.movil .panel-cabeza {
+    padding: max(8px, env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) 8px max(16px, env(safe-area-inset-left, 0px));
+    border-bottom: 2px solid var(--marco);
+}
+.juego.movil .panel-num { font-size: 10px; } /* taste-skill-ignore */
+.juego.movil .panel-cabeza h2 { font-size: 1.15rem; line-height: 1.2; }
+.juego.movil .panel-cerrar { height: 40px; }
+.juego.movil .panel-cuerpo { padding: 16px max(16px, env(safe-area-inset-right, 0px)) 20px max(16px, env(safe-area-inset-left, 0px)); }
+.juego.movil .panel-cuerpo > .portada-texto h1 { font-size: 2.4rem; }
+.juego.movil .panel-pie { position: static; padding: 12px max(16px, env(safe-area-inset-right, 0px)) max(12px, env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px)); }
 
 /* Empresas: todos los proyectos */
 .mision-cabeza { display: grid; gap: 6px; max-width: 70ch; }

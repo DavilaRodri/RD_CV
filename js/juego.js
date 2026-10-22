@@ -635,6 +635,7 @@
     var vistos = {};
     try { vistos = JSON.parse(guardado('gemas') || '{}') || {}; } catch (e) { vistos = {}; }
     var tactil = window.matchMedia('(pointer: coarse)').matches;
+    var movil = false, libreT = 0;   // movil: teléfono en horizontal, con HUD mínimo y cámara cerca
     function total() { return PANTALLAS.filter(function (p) { return vistos[p.id]; }).length; }
 
     function libreCasilla(tx, ty) { return dentro(tx, ty) && !solido[ix(tx, ty)]; }
@@ -775,8 +776,9 @@
         ];
     }
     var CONSEJOS = [
-        { es: 'El minimapa de la esquina te lleva a cualquier edificio.', en: 'The minimap in the corner takes you to any building.' },
-        { es: 'Las flechas de arriba te llevan al nivel siguiente.', en: 'The arrows at the top take you to the next level.' },
+        { es: 'El minimapa de la esquina te lleva a cualquier edificio.', en: 'The minimap in the corner takes you to any building.', escritorio: true },
+        { es: 'Pulsa Mapa para ver la ciudad entera y saltar a cualquier edificio.', en: 'Tap Map to see the whole city and jump to any building.' },
+        { es: 'Las flechas de abajo te llevan al nivel siguiente.', en: 'The arrows at the bottom take you to the next level.', escritorio: true },
         { es: 'En el núcleo de IA de la plaza puedes preguntarle cosas a Rodrigo.', en: 'At the AI core in the plaza you can ask Rodrigo anything.' },
         { es: 'Pulsa el contador de gemas para ver lo que te falta.', en: 'Tap the gem counter to see what\'s left.' }
     ];
@@ -813,10 +815,11 @@
                 '<div class="hud-gemas-caja"><button type="button" class="hud-gemas" data-j-gemas aria-expanded="false"><i class="gema-icono" aria-hidden="true"></i><span class="gemas-cuenta" data-j-cuenta></span><span class="gemas-txt"><span lang="es">gemas</span><span lang="en">gems</span></span></button>' +
                     '<div class="inventario" data-j-inventario hidden><p class="inventario-titulo"><span lang="es">Tus gemas</span><span lang="en">Your gems</span></p><ol>' + inventario + '</ol>' +
                     '<button type="button" class="inventario-reinicio" data-j-reinicio><span lang="es">Empezar de cero</span><span lang="en">Start over</span></button></div></div>' +
-                '<div class="hud-botones">' +
+                '<div class="hud-botones" data-j-botones>' +
                     '<button type="button" class="hud-boton" data-j-mapa><span lang="es">Mapa</span><span lang="en">Map</span></button>' +
                     '<button type="button" class="hud-boton" data-j-idioma><span lang="es">EN</span><span lang="en">ES</span></button>' +
                     '<button type="button" class="hud-boton hud-clasica" data-j-clasica><span lang="es">Versión clásica</span><span lang="en">Classic version</span></button>' +
+                    '<button type="button" class="hud-boton hud-menu" data-j-menu aria-expanded="false" aria-label="Menú"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg></button>' +
                 '</div>' +
             '</div>' +
             '<canvas class="minimapa" data-j-mini aria-label="Minimapa"></canvas>' +
@@ -891,7 +894,7 @@
                 if (arrastre.movido) {
                     var dx = (e.clientX - arrastre.ux) * dpr / esc, dy = (e.clientY - arrastre.uy) * dpr / esc;
                     if (vistaMapa) { mapaCam.x -= dx; mapaCam.y -= dy; limitarCam(mapaCam); cam.x = mapaCam.x; cam.y = mapaCam.y; }
-                    else { camLibre = true; cam.x -= dx; cam.y -= dy; limitarCam(cam); camObj.x = cam.x; camObj.y = cam.y; }
+                    else { camLibre = true; libreT = 0; cam.x -= dx; cam.y -= dy; limitarCam(cam); camObj.x = cam.x; camObj.y = cam.y; }
                     arrastre.ux = e.clientX; arrastre.uy = e.clientY;
                     arrancar();
                 }
@@ -957,6 +960,12 @@
         });
         juego.querySelector('[data-j-cerrar]').addEventListener('click', cerrar);
         juego.querySelector('[data-j-mapa]').addEventListener('click', function () { if (vistaMapa) cerrarMapa(); else abrirMapa(); });
+        var botones = juego.querySelector('[data-j-botones]'), botonMenu = juego.querySelector('[data-j-menu]');
+        botonMenu.addEventListener('click', function () {
+            var abierto = botones.classList.toggle('abierto');
+            botonMenu.setAttribute('aria-expanded', String(abierto));
+            juego.classList.toggle('menu-abierto', abierto);
+        });
         var inv = juego.querySelector('[data-j-inventario]'), botonGemas = juego.querySelector('[data-j-gemas]');
         botonGemas.addEventListener('click', function () { inv.hidden = !inv.hidden; botonGemas.setAttribute('aria-expanded', String(!inv.hidden)); });
         inv.addEventListener('click', function (e) {
@@ -1186,7 +1195,10 @@
         lienzoEl.width = cw; lienzoEl.height = ch;
         var vw = lienzoEl.clientWidth, vh = lienzoEl.clientHeight;
         // Unas 44 casillas de ancho en escritorio y unas 22 en un móvil vertical
-        var zoom = Math.max(1.1, Math.min(vw / (44 * T), vh / (26 * T)));
+        movil = tactil && Math.min(vw, vh) < 560;
+        juego.classList.toggle('movil', movil);
+        // En el móvil la cámara va mucho más cerca: unas 12 casillas de alto
+        var zoom = movil ? Math.max(1.5, vh / (12.5 * T)) : Math.max(1.1, Math.min(vw / (44 * T), vh / (26 * T)));
         escBase = Math.max(1, Math.round(zoom * dpr));
         escObj = escalaActual();
         esc = escObj;
@@ -1242,6 +1254,7 @@
         juego.querySelector('[data-j-a-texto]').textContent = accion;
         juego.querySelector('[data-j-a]').classList.toggle('listo', !!cerca);
         juego.querySelector('[data-j-entrar]').classList.toggle('listo', !!cerca);
+        juego.classList.toggle('cerca', !!cerca);
         juego.querySelector('[data-j-cuenta]').textContent = total() + ' / ' + PANTALLAS.length;
         juego.querySelectorAll('[data-gema]').forEach(function (g) {
             var lleno = !!vistos[PANTALLAS[Number(g.getAttribute('data-gema'))].id];
@@ -1332,7 +1345,7 @@
 
         var antes = cerca;
         cerca = null;
-        NIVELES.forEach(function (n) { if (Math.hypot(heroe.x - n.entrada.x, heroe.y - n.entrada.y) < 18) cerca = n; });
+        NIVELES.forEach(function (n) { if (Math.hypot(heroe.x - n.entrada.x, heroe.y - n.entrada.y) < (tactil ? 24 : 18)) cerca = n; });
         if (cerca !== antes) { if (cerca) sel = pantalla(cerca.id); pintarHud(); }
         if (cerca && iy2 < -0.5 && Math.abs(ix2) < 0.5 && heroe.y < cerca.entrada.y + 2) {
             heroe.arriba += dt;
@@ -1355,7 +1368,7 @@
             });
         }
         quieto = heroe.moviendo ? 0 : quieto + dt;
-        if (quieto > 14 && !frase && juego.querySelector('[data-j-titulo]').hidden) { quieto = 0; decir(CONSEJOS[consejo++ % CONSEJOS.length]); }
+        if (quieto > 14 && !frase && juego.querySelector('[data-j-titulo]').hidden) { quieto = 0; var lista = movil ? CONSEJOS.filter(function (c) { return !c.escritorio; }) : CONSEJOS; decir(lista[consejo++ % lista.length]); }
         avanzarFrase(dt);
 
         // aRDi: muelle hacia un punto junto al personaje
@@ -1378,6 +1391,8 @@
         var kz = reducido ? 1 : 1 - Math.exp(-dt * 7);
         esc += (escObj - esc) * kz;
         if (Math.abs(escObj - esc) < 0.002) esc = escObj;
+        // En el móvil, la cámara vuelve sola al personaje tras mirar un rato
+        if (camLibre && movil && !juego.classList.contains('arrastrando')) { libreT += dt; if (libreT > 3) camLibre = false; }
         var objetivo;
         if (vistaMapa) objetivo = mapaCam;
         else if (camLibre) objetivo = camObj;
@@ -1385,6 +1400,7 @@
         var kc = reducido ? 1 : 1 - Math.exp(-dt * (camLibre ? 14 : 6));
         cam.x += (objetivo.x - cam.x) * kc; cam.y += (objetivo.y - cam.y) * kc;
         if (!camLibre) { camObj.x = cam.x; camObj.y = cam.y; }
+        if (movil) { globo.style.transform = ''; globo.classList.remove('arriba'); return; }
         var v = vistaRect();
         var gx = (heroe.x - v.l) * esc / dpr, gy = (heroe.y + 8 - v.t) * esc / dpr, arriba = gy > ch / dpr * 0.62;
         if (arriba) gy = (heroe.y - 34 - v.t) * esc / dpr;
@@ -1434,6 +1450,13 @@
         lista.forEach(function (o) {
             if (o.heroe) {
                 var fr = heroe.moviendo ? [1, 0, 2, 0][Math.floor(heroe.dist / 7) % 4] : 0;
+                // Aro de neón a los pies: el personaje siempre se encuentra a simple vista
+                var pulso = reducido ? 0 : Math.sin(reloj * 4);
+                x.save();
+                x.globalAlpha = 0.5 + pulso * 0.2;
+                x.strokeStyle = cerca ? '#ff2fb3' : '#22e4ff'; x.lineWidth = 1.5;
+                x.beginPath(); x.ellipse(Math.round(heroe.x), Math.round(heroe.y) + 1, 10 + pulso, 4.5 + pulso * 0.4, 0, 0, Math.PI * 2); x.stroke();
+                x.restore();
                 dibujaHeroe(x, Math.round(heroe.x), Math.round(heroe.y), heroe.dir, fr);
                 return;
             }
@@ -1674,9 +1697,19 @@
 
     // Rótulos sobre las puertas, en pantalla, con la gema si falta por ver
     function etiquetas(x, v) {
-        var l = idioma(), fs = Math.round(12 * dpr);
+        var l = idioma(), fs = Math.round((movil && vistaMapa ? 9 : 12) * dpr), puestos = [];
         x.font = fs + 'px Silkscreen, Geist, sans-serif';
         x.textAlign = 'center'; x.textBaseline = 'middle';
+        // Primero los barrios, para que los rótulos de los edificios queden encima
+        if (vistaMapa) {
+            x.font = Math.round((movil ? 10 : 13) * dpr) + 'px Silkscreen, Geist, sans-serif';
+            [[BARRIOS[0], PW / 2, 4 * T], [BARRIOS[2], 14 * T, 23 * T], [BARRIOS[3], PW / 2, 45 * T]].forEach(function (b) {
+                var sx = (b[1] - v.l) * esc, sy = (b[2] - v.t) * esc;
+                x.fillStyle = 'rgba(5,4,10,.7)'; var w = x.measureText(b[0][l]).width + 24 * dpr; x.fillRect(sx - w / 2, sy - 13 * dpr, w, 26 * dpr);
+                x.fillStyle = C.rosa; x.fillText(b[0][l].toUpperCase(), sx, sy + dpr);
+            });
+        }
+        x.font = fs + 'px Silkscreen, Geist, sans-serif';
         NIVELES.forEach(function (n) {
             // Encima del edificio; si el tejado queda fuera de pantalla, lo más arriba posible sin tapar la puerta
             var sx = (n.px - v.l) * esc, sy = Math.min((n.py - 30 - v.t) * esc - 16 * dpr, Math.max((n.py - n.h - v.t) * esc - 18 * dpr, 150 * dpr));
@@ -1688,6 +1721,12 @@
             var txt = (vistaMapa ? (pantalla(n.id) + 1) + ' ' : '') + n[l];
             var w = x.measureText(txt).width + 20 * dpr + (hecho ? 12 * dpr : 0), h = fs + 12 * dpr;
             var X = Math.round(sx - w / 2), Y = Math.round(sy - h / 2);
+            // En el mapa, si choca con el rótulo de al lado, baja un renglón
+            if (vistaMapa) {
+                var choca = function () { return puestos.some(function (r) { return X < r.x + r.w + 4 * dpr && X + w + 4 * dpr > r.x && Y < r.y + r.h + 2 * dpr && Y + h + 2 * dpr > r.y; }); };
+                for (var k = 0; k < 3 && choca(); k++) { Y += h + 6 * dpr; sy += h + 6 * dpr; }
+                puestos.push({ x: X, y: Y, w: w, h: h });
+            }
             x.fillStyle = '#05040a'; x.fillRect(X - 2 * dpr, Y - 2 * dpr, w + 4 * dpr, h + 4 * dpr);
             x.fillStyle = activo ? C.cian : '#3a3560'; x.fillRect(X - dpr, Y - dpr, w + 2 * dpr, h + 2 * dpr);
             x.fillStyle = activo ? '#062a33' : '#120f1e'; x.fillRect(X + dpr, Y + dpr, w - 2 * dpr, h - 2 * dpr);
@@ -1704,14 +1743,6 @@
                 x.fillStyle = C.cian; x.beginPath(); x.moveTo(sx - 5 * dpr, ay); x.lineTo(sx + 5 * dpr, ay); x.lineTo(sx, ay + 6 * dpr); x.fill();
             }
         });
-        if (vistaMapa) {
-            x.font = Math.round(13 * dpr) + 'px Silkscreen, Geist, sans-serif';
-            [[BARRIOS[0], PW / 2, 4 * T], [BARRIOS[2], 14 * T, 23 * T], [BARRIOS[3], PW / 2, 45 * T]].forEach(function (b) {
-                var sx = (b[1] - v.l) * esc, sy = (b[2] - v.t) * esc;
-                x.fillStyle = 'rgba(5,4,10,.7)'; var w = x.measureText(b[0][l]).width + 24 * dpr; x.fillRect(sx - w / 2, sy - 13 * dpr, w, 26 * dpr);
-                x.fillStyle = C.rosa; x.fillText(b[0][l].toUpperCase(), sx, sy + dpr);
-            });
-        }
     }
     function gemaEtiqueta(x, cx, cy, r) {
         x.fillStyle = '#05040a';
