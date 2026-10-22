@@ -1,9 +1,10 @@
 /* rodrigodavila.com · modo juego
-   Un mundo en pixel art que se recorre andando, con aRDi, un hada que
-   acompaña. Cada edificio es un nivel; las apps esperan en cofres dentro de
-   el castillo de las apps. Las empresas tienen su propio contenido (todos los
-   proyectos); el resto usa el mismo HTML de la versión clásica, que se mueve
-   al panel y vuelve a su sitio al cerrarlo. */
+   Una ciudad cyberpunk en pixel art que se recorre andando, con aRDi, un dron
+   que acompaña. La ciudad va por barrios: el distrito de empresas (cada torre
+   es una etapa de su carrera), la plaza central, la zona creativa y el barrio
+   de las apps, donde cada local es una app. Las empresas tienen su propio
+   contenido (todos los proyectos); el resto usa el mismo HTML de la versión
+   clásica, que se mueve al panel y vuelve a su sitio al cerrarlo. */
 
 (function () {
     'use strict';
@@ -27,51 +28,59 @@
         return ((h ^ (h >>> 16)) >>> 0) / 4294967295;
     }
 
-    /* ---------- Edificios del mundo ---------- */
-    // ang: dónde está la puerta sobre el anillo del pueblo (0 = este, 90 = sur).
-    // El edificio queda encima de su puerta y mira al sur, como en Kakariko.
+    /* ---------- Plano de la ciudad ---------- */
+    // Tres avenidas de este a oeste y dos de norte a sur. Los edificios dan a la
+    // acera que queda justo encima de cada avenida; x, y es la casilla de la puerta.
+    var MW = 84, MH = 58;
+    var AVENIDAS_H = [18, 38, 52];          // primera fila de cada avenida (3 de alto)
+    var AVENIDAS_V = [28, 56];              // primera columna de cada avenida (3 de ancho)
+    var PLAZA = { x0: 32, x1: 54, y0: 27, y1: 36 };
+    var BARRIOS = [
+        { id: 'empresas', y0: 0, y1: 21, es: 'Distrito de empresas', en: 'Business district',
+            hada: { es: 'El distrito de empresas: cada torre es una etapa de la carrera de Rodrigo.', en: 'The business district: every tower is a stage of Rodrigo\'s career.' } },
+        { id: 'plaza', x0: 32, x1: 54, y0: 22, y1: 37, es: 'Plaza central', en: 'Central plaza',
+            hada: { es: 'La plaza central. Aquí viven Rodrigo y su IA.', en: 'The central plaza. Rodrigo and his AI live here.' } },
+        { id: 'creativa', y0: 22, y1: 41, es: 'Zona creativa', en: 'Creative quarter',
+            hada: { es: 'La zona creativa: webs a medida y el taller de proyectos.', en: 'The creative quarter: custom websites and the project workshop.' } },
+        { id: 'apps', y0: 42, y1: 58, es: 'Barrio de las apps', en: 'App quarter',
+            hada: { es: '¡El barrio de las apps! Cada local es una app que Rodrigo ha publicado.', en: 'The app quarter! Every shop is an app Rodrigo has shipped.' } }
+    ];
+
     var NIVELES = [
-        { id: 'inicio', ang: 150, tipo: 'casa', es: 'Inicio', en: 'Home', sub: 'Rodrigo Dávila', piezas: ['#inicio .portada-texto'],
-            hada: { es: 'Esta es la casa de Rodrigo. Entra para saber quién es.', en: 'This is Rodrigo\'s home. Step in to meet him.' } },
-        { id: 'chat', ang: 128, tipo: 'faro', es: 'Pregúntame', en: 'Ask me', sub: { es: 'Mi IA', en: 'My AI' }, piezas: ['#asistente .chat'],
-            hada: { es: 'En el faro vive la IA de Rodrigo. ¡Pregúntale lo que quieras!', en: 'Rodrigo\'s AI lives in the lighthouse. Ask it anything!' } },
-        { id: 'accenture-2017', ang: 205, tipo: 'oficina', pisos: 2, logo: 'accenture', es: 'Accenture', en: 'Accenture', sub: '2017 – 2018', carrera: true,
+        { id: 'inicio', x: 37, y: 26, tipo: 'loft', w: 72, h: 78, es: 'Inicio', en: 'Home', sub: 'Rodrigo Dávila', piezas: ['#inicio .portada-texto'],
+            hada: { es: 'Este es el loft de Rodrigo. Entra para saber quién es.', en: 'This is Rodrigo\'s loft. Step in to meet him.' } },
+        { id: 'chat', x: 48, y: 26, tipo: 'nucleo', w: 48, h: 96, es: 'Pregúntame', en: 'Ask me', sub: { es: 'Mi IA', en: 'My AI' }, piezas: ['#asistente .chat'],
+            hada: { es: 'En el núcleo de IA vive el asistente de Rodrigo. ¡Pregúntale lo que quieras!', en: 'Rodrigo\'s assistant lives in the AI core. Ask it anything!' } },
+        { id: 'accenture-2017', x: 8, y: 16, tipo: 'oficina', logo: 'accenture', w: 64, h: 176, es: 'Accenture', en: 'Accenture', sub: '2017 – 2018', carrera: true,
             hada: { es: 'Aquí empezó todo, en 2017: su primer código Java para BBVA.', en: 'It all began here in 2017: his first Java code for BBVA.' } },
-        { id: 'altia', ang: 236, tipo: 'oficina', pisos: 3, logo: 'altia', es: 'Altia', en: 'Altia', sub: '2018 – 2021', carrera: true,
+        { id: 'altia', x: 18, y: 16, tipo: 'oficina', logo: 'altia', w: 64, h: 170, es: 'Altia', en: 'Altia', sub: '2018 – 2021', carrera: true,
             hada: { es: 'En Altia trabajó para Cepsa, BMW y la Comunidad de Madrid.', en: 'At Altia he worked for Cepsa, BMW and the Madrid regional government.' } },
-        { id: 'deloitte', ang: 268, tipo: 'oficina', pisos: 5, logo: 'deloitte', es: 'Deloitte', en: 'Deloitte', sub: '2021 – 2025', carrera: true,
+        { id: 'deloitte', x: 36, y: 16, tipo: 'oficina', logo: 'deloitte', w: 72, h: 200, es: 'Deloitte', en: 'Deloitte', sub: '2021 – 2025', carrera: true,
             hada: { es: 'Deloitte: cuatro años y medio liderando proyectos para Santander, Acciona y Cruz Roja.', en: 'Deloitte: four and a half years leading projects for Santander, Acciona and the Red Cross.' } },
-        { id: 'accenture', ang: 298, tipo: 'torre', es: 'Accenture · BBVA', en: 'Accenture · BBVA', sub: { es: '2025 – hoy', en: '2025 – now' }, carrera: true,
+        { id: 'accenture', x: 47, y: 16, tipo: 'torre', w: 80, h: 248, es: 'Accenture · BBVA', en: 'Accenture · BBVA', sub: { es: '2025 – hoy', en: '2025 – now' }, carrera: true,
             hada: { es: '¡Mira los agentes dando vueltas! Aquí diseña sistemas multiagente para BBVA.', en: 'Look at those agents spinning! This is where he designs multi-agent systems for BBVA.' } },
-        { id: 'habilidades', ang: 326, tipo: 'templo', es: 'Lo que sé hacer', en: 'What I can do', sub: { es: 'Habilidades', en: 'Skills' }, piezas: ['#capacidades .mapa', '.formacion'],
-            hada: { es: 'El templo guarda todo lo que sabe hacer: IA, código, cloud y gestión.', en: 'The temple holds everything he can do: AI, code, cloud and management.' } },
-        { id: 'trofeos', ang: 70, tipo: 'castillo', es: 'Apps desarrolladas', en: 'Apps I\'ve built', sala: true,
-            hada: { es: 'El castillo de las apps: dentro, cada cofre guarda una app de Rodrigo.', en: 'The apps castle: inside, every chest holds one of Rodrigo\'s apps.' } },
-        { id: 'webs', ang: 50, tipo: 'cartel', es: 'Webs', en: 'Websites', sub: { es: 'A medida', en: 'Custom' }, piezas: ['#webs .webs-rejilla'],
-            hada: { es: 'También hace webs a medida: bodas, restaurantes y comercios.', en: 'He also builds custom websites: weddings, restaurants and shops.' } },
-        { id: 'taller', ang: 98, tipo: 'taller', es: 'El taller', en: 'Workbench', sub: 'Zapeo · RunClap', piezas: ['#zapeo', '#runclap'],
-            hada: { es: 'En el taller hay cosas cociéndose: Zapeo y RunClap.', en: 'Things are cooking in the workshop: Zapeo and RunClap.' } },
-        { id: 'contacto', ang: 24, tipo: 'buzon', es: 'Contacto', en: 'Contact', sub: { es: '¿Hablamos?', en: 'Let\'s talk' }, piezas: ['#contacto .contacto-caja'],
-            hada: { es: '¿Te ha gustado? Déjale un mensaje en el buzón.', en: 'Enjoyed it? Leave him a message in the mailbox.' } }
-    ];
-    var APPS = [
-        { id: 'urbapadel', icono: 'urbapadel', es: 'UrbaPadel', en: 'UrbaPadel', sub: 'App', piezas: ['#urbapadel'],
+        { id: 'habilidades', x: 68, y: 16, tipo: 'lab', w: 104, h: 112, es: 'Lo que sé hacer', en: 'What I can do', sub: { es: 'Habilidades', en: 'Skills' }, piezas: ['#capacidades .mapa', '.formacion'],
+            hada: { es: 'El laboratorio guarda todo lo que sabe hacer: IA, código, cloud y gestión.', en: 'The lab holds everything he can do: AI, code, cloud and management.' } },
+        { id: 'urbapadel', x: 8, y: 50, tipo: 'club', app: 'urbapadel', w: 96, h: 112, es: 'UrbaPadel', en: 'UrbaPadel', sub: 'App', piezas: ['#urbapadel'],
             hada: { es: 'UrbaPadel: reservas de pádel para urbanizaciones. ¡La usan más de 150 vecinos!', en: 'UrbaPadel: padel court booking for residential communities. Over 150 residents use it!' } },
-        { id: 'lullcam', icono: 'lullcam', es: 'LullCam', en: 'LullCam', sub: 'App', piezas: ['#lullcam'],
+        { id: 'lullcam', x: 19, y: 50, tipo: 'casita', app: 'lullcam', w: 64, h: 96, es: 'LullCam', en: 'LullCam', sub: 'App', piezas: ['#lullcam'],
             hada: { es: 'LullCam: un vigilabebés sin nube y cifrado de extremo a extremo.', en: 'LullCam: a baby monitor with no cloud and end-to-end encryption.' } },
-        { id: 'tumenu', icono: 'tumenu', es: 'TuMenu', en: 'TuMenu', sub: 'App', piezas: ['#tumenu'],
+        { id: 'tumenu', x: 37, y: 50, tipo: 'bar', app: 'tumenu', w: 80, h: 100, es: 'TuMenu', en: 'TuMenu', sub: 'App', piezas: ['#tumenu'],
             hada: { es: 'TuMenu: el bar manda el menú por WhatsApp y la IA hace el resto.', en: 'TuMenu: the bar sends its menu over WhatsApp and AI does the rest.' } },
-        { id: 'godafly', icono: 'godafly', es: 'GodaFly', en: 'GodaFly', sub: 'App', piezas: ['#godafly'],
+        { id: 'godafly', x: 48, y: 50, tipo: 'hangar', app: 'godafly', w: 96, h: 100, es: 'GodaFly', en: 'GodaFly', sub: 'App', piezas: ['#godafly'],
             hada: { es: 'GodaFly conecta a gente que viaja sola en aeropuertos y escalas.', en: 'GodaFly connects people travelling alone at airports and layovers.' } },
-        { id: 'mifilmoteca', icono: 'mifilmoteca', es: 'Mi Filmoteca', en: 'Mi Filmoteca', sub: 'App', piezas: ['#mifilmoteca'],
-            hada: { es: 'Mi Filmoteca fue su primera app en las tiendas, en 2020.', en: 'Mi Filmoteca was his first app on the stores, back in 2020.' } }
+        { id: 'mifilmoteca', x: 67, y: 50, tipo: 'cine', app: 'mifilmoteca', w: 96, h: 120, es: 'Mi Filmoteca', en: 'Mi Filmoteca', sub: 'App', piezas: ['#mifilmoteca'],
+            hada: { es: 'Mi Filmoteca fue su primera app en las tiendas, en 2020.', en: 'Mi Filmoteca was his first app on the stores, back in 2020.' } },
+        { id: 'webs', x: 12, y: 36, tipo: 'pantallas', w: 120, h: 200, es: 'Webs', en: 'Websites', sub: { es: 'A medida', en: 'Custom' }, piezas: ['#webs .webs-rejilla'],
+            hada: { es: 'Las pantallas gigantes enseñan sus webs a medida: bodas, restaurantes y comercios.', en: 'The giant screens show his custom websites: weddings, restaurants and shops.' } },
+        { id: 'taller', x: 66, y: 36, tipo: 'taller', w: 80, h: 92, es: 'El taller', en: 'Workbench', sub: 'Zapeo · RunClap', piezas: ['#zapeo', '#runclap'],
+            hada: { es: 'En el taller hay cosas cociéndose: Zapeo y RunClap.', en: 'Things are cooking in the workshop: Zapeo and RunClap.' } },
+        { id: 'contacto', x: 77, y: 36, tipo: 'cabina', w: 32, h: 60, es: 'Contacto', en: 'Contact', sub: { es: '¿Hablamos?', en: 'Let\'s talk' }, piezas: ['#contacto .contacto-caja'],
+            hada: { es: '¿Te ha gustado? Escríbele desde la cabina.', en: 'Enjoyed it? Send him a message from the booth.' } }
     ];
-    APPS.forEach(function (a) { a.app = true; });
     // Las 15 pantallas en orden: cada una da una gema.
-    var PANTALLAS = [];
-    NIVELES.forEach(function (n) { if (n.sala) APPS.forEach(function (a) { PANTALLAS.push(a); }); else PANTALLAS.push(n); });
+    var PANTALLAS = NIVELES;
     function pantalla(id) { for (var i = 0; i < PANTALLAS.length; i++) if (PANTALLAS[i].id === id) return i; return -1; }
-    function nivelPorId(id) { for (var i = 0; i < NIVELES.length; i++) if (NIVELES[i].id === id) return NIVELES[i]; return null; }
 
 
     /* ---------- Carrera: todos los proyectos ---------- */
@@ -173,151 +182,59 @@
     }
 
 
-    /* ---------- Paleta del mundo ---------- */
+    /* ---------- Paleta: noche de neón ---------- */
     var C = {
-        linea: '#232a38', hierba: '#5aa64a', hierba2: '#4c9440', hierba3: '#71bd5c',
-        tierra: '#dcbb7c', tierra2: '#c9a466', tierraBorde: '#ad8a50',
-        arena: '#efdca2', arena2: '#e2c98a', agua: '#3b86d1', agua2: '#5aa2e3', espuma: '#c4e8fb',
-        madera: '#a8743f', madera2: '#7d5330', copaO: '#1b3f26', copa: '#2f7d3a', copa2: '#256b31', copaL: '#4fa64a', copaLL: '#7cc76a',
-        tronco: '#6b4426', luz: '#ffd36b', acento: '#3a66f0', acento2: '#86a6ff', oro: '#e0b04a', gema: '#3ee6a0'
+        linea: '#07060c', asfalto: '#14121c', asfalto2: '#191724', raya: '#2c2a3c', amarilla: '#9c8226',
+        acera: '#252333', acera2: '#2d2a3d', bordillo: '#47425c', bloque: '#0d0c14', bloque2: '#13111c',
+        plaza: '#1a1929', plaza2: '#222138', agua: '#07102a', agua2: '#0e1f42',
+        cian: '#22e4ff', rosa: '#ff2fb3', morado: '#9b5cff', amarillo: '#ffd23f', verde: '#3dffb0', naranja: '#ff7a2f',
+        luz: '#ffd36b', gema: '#3dffb0', puerta: '#0d2a3a'
     };
+    var NEONES = [C.cian, C.rosa, C.morado, C.amarillo, C.verde, C.naranja];
 
-    /* ---------- Escenas: el pueblo y la sala de las apps ---------- */
-    var HIERBA = 0, AGUA = 1, CAMINO = 2, ARENA = 3, PUENTE = 4, FLORES = 5, MURO = 6, LOSA = 7, ALFOMBRA = 8, PUERTA = 9;
-    function escena(mw, mh) {
-        return { mw: mw, mh: mh, pw: mw * T, ph: mh * T, suelo: new Uint8Array(mw * mh), solido: new Uint8Array(mw * mh), objetos: [], img: null };
-    }
-    var mundo = escena(86, 52), sala = escena(22, 13), E = mundo;
-    function ix(x, y) { return y * E.mw + x; }
-    function dentro(x, y) { return x >= 0 && y >= 0 && x < E.mw && y < E.mh; }
-    function costa(y) { return 79 + Math.round(1.5 * Math.sin(y * 0.17) + Math.sin(y * 0.41)); }
-    // El pueblo: un anillo de camino alrededor de una plaza con fuente.
-    var ANILLO = { x: 46, y: 30, rx: 22, ry: 13 }, PLAZA_R = 4.6, PLAZA = 10;
-    var FAROLAS = [[41, 26], [52, 26], [41, 35], [52, 35]];
-    NIVELES.forEach(function (n) {
-        var a = n.ang * Math.PI / 180;
-        n.x = Math.round(ANILLO.x + ANILLO.rx * Math.cos(a));
-        n.y = Math.round(ANILLO.y + ANILLO.ry * Math.sin(a)) - 1;
-    });
+    /* ---------- Suelo ---------- */
+    var BLOQUE = 0, ASFALTO = 1, ACERA = 2, PLAZA_T = 3, AGUA = 4;
+    var suelo = new Uint8Array(MW * MH), solido = new Uint8Array(MW * MH);
+    var PW = MW * T, PH = MH * T;
+    function ix(x, y) { return y * MW + x; }
+    function dentro(x, y) { return x >= 0 && y >= 0 && x < MW && y < MH; }
+    function andable(t) { return t === ASFALTO || t === ACERA || t === PLAZA_T; }
 
-    var DIM = { casa: [64, 60, 36], torre: [64, 136, 30], templo: [80, 76, 40], castillo: [96, 88, 40], cartel: [76, 68, 14], taller: [68, 60, 36], faro: [36, 116, 24], buzon: [28, 44, 10] };
     NIVELES.forEach(function (n) {
-        var d = n.tipo === 'oficina' ? [56, 50 + n.pisos * 12, 36] : DIM[n.tipo];
-        n.w = d[0]; n.h = d[1]; n.fh = d[2];
         n.px = (n.x + 1) * T;           // centro de la puerta
-        n.py = (n.y + 1) * T;           // pie del edificio
+        n.py = (n.y + 1) * T;           // pie de la fachada
         n.entrada = { x: n.px, y: n.py + 8 };
-        n.extra = { torre: 34, templo: 22, faro: 26, castillo: 10 }[n.tipo] || 0;
-    });
-    // Cofres de la sala, en arco frente a la pared
-    APPS.forEach(function (a, i) {
-        a.cx = 64 + i * 56; a.cy = 88 + (i === 2 ? -8 : i === 1 || i === 3 ? -4 : 0);
-        a.frente = { x: a.cx, y: a.cy + 20 };
     });
 
-    function generarMundo() {
-        E = mundo;
-        var x, y, suelo = E.suelo, solido = E.solido, reservado = new Uint8Array(E.mw * E.mh);
-        for (y = 0; y < E.mh; y++) {
-            var c = costa(y);
-            for (x = 0; x < E.mw; x++) {
-                var t = HIERBA;
-                if (x >= c) t = AGUA;
-                else if (x >= c - 3) t = ARENA;
-                var lx = (x - 15) / 5.5, ly = (y - 43) / 3.2;
-                if (lx * lx + ly * ly < 1) t = AGUA;
-                var px2 = x - ANILLO.x, py2 = y - ANILLO.y;
-                if (px2 * px2 + py2 * py2 < PLAZA_R * PLAZA_R) t = PLAZA;
-                suelo[ix(x, y)] = t;
-            }
-        }
-        function pinta(x, y) {
-            for (var a = 0; a < 2; a++) for (var b = 0; b < 2; b++) {
-                var X = x + a, Y = y + b;
-                if (!dentro(X, Y)) continue;
-                var i = ix(X, Y);
-                if (suelo[i] === PLAZA) continue;
-                suelo[i] = suelo[i] === AGUA || suelo[i] === PUENTE ? PUENTE : CAMINO;
-            }
-        }
-        function linea(x1, y1, x2, y2) {
-            var dx = Math.sign(x2 - x1), dy = Math.sign(y2 - y1), X = x1, Y = y1;
-            pinta(X, Y);
-            while (X !== x2 || Y !== y2) { if (X !== x2) X += dx; else Y += dy; pinta(X, Y); }
-        }
-        // Anillo, tres calles hasta la plaza y un muelle hacia el mar
-        for (var ang = 0; ang < Math.PI * 2; ang += 0.01) pinta(Math.round(ANILLO.x + ANILLO.rx * Math.cos(ang)), Math.round(ANILLO.y + ANILLO.ry * Math.sin(ang)));
-        NIVELES.forEach(function (n) { pinta(n.x, n.y + 1); });
-        linea(ANILLO.x - ANILLO.rx, ANILLO.y, ANILLO.x - 4, ANILLO.y);
-        linea(ANILLO.x, ANILLO.y - ANILLO.ry, ANILLO.x, ANILLO.y - 4);
-        linea(ANILLO.x + 4, ANILLO.y, E.mw - 4, ANILLO.y);
-        for (y = 0; y < E.mh; y++) for (x = 0; x < E.mw; x++) {
-            var s = suelo[ix(x, y)];
-            if (s === PLAZA) { for (var j2 = -1; j2 <= 1; j2++) for (var m2 = -1; m2 <= 1; m2++) if (dentro(x + m2, y + j2)) reservado[ix(x + m2, y + j2)] = 1; continue; }
-            if (s !== CAMINO && s !== PUENTE) continue;
-            for (var j = -2; j <= 2; j++) for (var m = -2; m <= 2; m++) if (dentro(x + m, y + j)) reservado[ix(x + m, y + j)] = 1;
-        }
-        NIVELES.forEach(function (n) {
-            var x0 = Math.floor((n.px - n.w / 2) / T) - 2, x1 = Math.floor((n.px + n.w / 2) / T) + 2;
-            var y0 = Math.floor((n.py - n.h - n.extra) / T) - 1, y1 = n.y + 3;
-            for (var Y = y0; Y <= y1; Y++) for (var X = x0; X <= x1; X++) if (dentro(X, Y)) reservado[ix(X, Y)] = 1;
-            var fx0 = Math.floor((n.px - n.w / 2 + 4) / T), fx1 = Math.floor((n.px + n.w / 2 - 5) / T);
-            var fy0 = Math.floor((n.py - n.fh) / T), fy1 = Math.floor((n.py - 1) / T);
-            for (Y = fy0; Y <= fy1; Y++) for (X = fx0; X <= fx1; X++) if (dentro(X, Y)) { solido[ix(X, Y)] = 1; if (suelo[ix(X, Y)] === CAMINO) suelo[ix(X, Y)] = HIERBA; }
+    function generarCiudad() {
+        var x, y;
+        suelo.fill(BLOQUE);
+        AVENIDAS_H.forEach(function (r) {
+            for (x = 0; x < MW; x++) { suelo[ix(x, r - 1)] = ACERA; suelo[ix(x, r + 3)] = ACERA; }
         });
-        // Fuente y farolas de la plaza
-        for (y = ANILLO.y - 1; y <= ANILLO.y + 1; y++) for (x = ANILLO.x - 1; x <= ANILLO.x + 1; x++) solido[ix(x, y)] = 1;
-        FAROLAS.forEach(function (f) { solido[ix(f[0], f[1])] = 1; });
-        var r2 = azar(7), arboles = [], matas = [];
-        for (y = 0; y < E.mh - 1; y += 2) for (x = 0; x < E.mw - 1; x += 2) {
-            var ok = true;
-            for (var a = 0; a < 2 && ok; a++) for (var b = 0; b < 2 && ok; b++) {
-                var i2 = ix(x + a, y + b);
-                if (suelo[i2] !== HIERBA || reservado[i2] || solido[i2]) ok = false;
-            }
-            if (!ok) continue;
-            var borde = Math.min(x, y, E.mh - 2 - y);
-            var n = Math.sin(x * 0.23) + Math.sin(y * 0.29 + 1.3) + Math.sin((x + y) * 0.13);
-            var ex = (x + 1 - ANILLO.x) / (ANILLO.rx + 3), ey = (y + 1 - ANILLO.y) / (ANILLO.ry + 3), dentroPueblo = ex * ex + ey * ey < 1;
-            var p = borde < 3 ? 0.97 : dentroPueblo ? 0.03 : n > 1.2 ? 0.75 : 0.12;
-            if (r2() < p) { arboles.push({ x: x, y: y }); solido[ix(x, y + 1)] = 1; solido[ix(x + 1, y + 1)] = 1; }
-        }
-        for (y = 2; y < E.mh - 2; y++) for (x = 2; x < E.mw - 2; x++) {
-            var i3 = ix(x, y);
-            if (suelo[i3] !== HIERBA || reservado[i3] || solido[i3]) continue;
-            var q = r2();
-            if (q < 0.012) { matas.push({ x: x, y: y }); solido[i3] = 1; }
-            else if (q < 0.07) suelo[i3] = FLORES;
-        }
-        return { arboles: arboles, matas: matas };
-    }
-
-    function generarSala() {
-        E = sala;
-        for (var y = 0; y < E.mh; y++) for (var x = 0; x < E.mw; x++) {
-            var t = LOSA;
-            if (y < 3 || x === 0 || x === E.mw - 1 || y === E.mh - 1) t = MURO;
-            if ((x === 10 || x === 11) && y >= 7) t = y === E.mh - 1 ? PUERTA : ALFOMBRA;
-            E.suelo[ix(x, y)] = t;
-        }
-        APPS.forEach(function (a) {
-            for (var X = Math.floor((a.cx - 9) / T); X <= Math.floor((a.cx + 8) / T); X++) E.solido[ix(X, Math.floor((a.cy + 6) / T))] = 1;
+        AVENIDAS_V.forEach(function (c) {
+            for (y = AVENIDAS_H[0]; y < AVENIDAS_H[2] + 3; y++) { suelo[ix(c - 1, y)] = ACERA; suelo[ix(c + 3, y)] = ACERA; }
         });
+        for (y = PLAZA.y0; y <= PLAZA.y1; y++) for (x = PLAZA.x0; x <= PLAZA.x1; x++) suelo[ix(x, y)] = PLAZA_T;
+        AVENIDAS_H.forEach(function (r) { for (y = r; y < r + 3; y++) for (x = 0; x < MW; x++) suelo[ix(x, y)] = ASFALTO; });
+        AVENIDAS_V.forEach(function (c) { for (y = AVENIDAS_H[0]; y < AVENIDAS_H[2] + 3; y++) for (x = c; x < c + 3; x++) suelo[ix(x, y)] = ASFALTO; });
+        for (y = AVENIDAS_H[2] + 4; y < MH; y++) for (x = 0; x < MW; x++) suelo[ix(x, y)] = AGUA;
+        for (var i = 0; i < suelo.length; i++) solido[i] = andable(suelo[i]) ? 0 : 1;
+        // El proyector de la plaza
+        var pcx = Math.floor((PLAZA.x0 + PLAZA.x1) / 2), pcy = 32;
+        for (y = pcy - 1; y <= pcy; y++) for (x = pcx - 1; x <= pcx + 1; x++) solido[ix(x, y)] = 1;
     }
+    var PROYECTOR = { x: (Math.floor((PLAZA.x0 + PLAZA.x1) / 2) + 0.5) * T, y: 32 * T + 8 };
 
-    /* ---------- Dibujo en pixel art ---------- */
+    /* ---------- Dibujo ---------- */
     function lienzo(w, h) {
         var c = document.createElement('canvas');
-        c.width = w; c.height = h;
+        c.width = Math.max(1, Math.ceil(w)); c.height = Math.max(1, Math.ceil(h));
         var x = c.getContext('2d');
         x.imageSmoothingEnabled = false;
         return { c: c, x: x };
     }
-    function disco(x, cx, cy, r, color) {
-        x.fillStyle = color;
-        for (var dy = -r; dy <= r; dy++) { var w = Math.round(Math.sqrt(r * r - dy * dy)); x.fillRect(cx - w, cy + dy, w * 2, 1); }
-    }
-    // Letras de 3x5 para los rótulos de los edificios
+    // Letras de 3x5 para los rótulos de neón
     var FUENTE = {
         A: ['.#.', '#.#', '###', '#.#', '#.#'], B: ['##.', '#.#', '##.', '#.#', '##.'], C: ['.##', '#..', '#..', '#..', '.##'],
         D: ['##.', '#.#', '#.#', '#.#', '##.'], E: ['###', '#..', '##.', '#..', '###'], I: ['###', '.#.', '.#.', '.#.', '###'],
@@ -326,334 +243,406 @@
         V: ['#.#', '#.#', '#.#', '#.#', '.#.'], '>': ['#..', '.#.', '..#', '.#.', '#..']
     };
     function anchoTexto(t, s) { var w = 0; for (var i = 0; i < t.length; i++) w += (FUENTE[t[i]][0].length + 1) * s; return w - s; }
-    function letras(x, X, Y, t, color, s) {
-        s = s || 1;
-        x.fillStyle = color;
-        for (var i = 0; i < t.length; i++) {
-            var g = FUENTE[t[i]];
-            for (var f = 0; f < 5; f++) for (var c = 0; c < g[f].length; c++) if (g[f][c] === '#') x.fillRect(X + c * s, Y + f * s, s, s);
-            X += (g[0].length + 1) * s;
+
+    // Pre-renderiza el halo de los neones de un sprite. Sin filtro de desenfoque
+    // (algunos Safari), se aproxima con copias desplazadas.
+    var HALO = 10;
+    function hacerHalo(neon) {
+        var g = lienzo(neon.width + HALO * 2, neon.height + HALO * 2);
+        if (typeof g.x.filter === 'string') {
+            g.x.filter = 'blur(4px)';
+            g.x.drawImage(neon, HALO, HALO);
+            g.x.drawImage(neon, HALO, HALO);
+            g.x.filter = 'none';
+        } else {
+            g.x.globalAlpha = 0.14;
+            for (var dy = -4; dy <= 4; dy += 2) for (var dx = -4; dx <= 4; dx += 2) g.x.drawImage(neon, HALO + dx, HALO + dy);
         }
+        return g.c;
     }
 
-    function pintarSuelo(esc2) {
-        E = esc2;
-        var L = lienzo(E.pw, E.ph), x = L.x, X, Y, suelo = E.suelo;
-        function es(a, b) { return dentro(a, b) ? suelo[ix(a, b)] : HIERBA; }
-        function verde(v) { return v === HIERBA || v === FLORES; }
-        for (Y = 0; Y < E.mh; Y++) for (X = 0; X < E.mw; X++) {
-            var t = suelo[ix(X, Y)], px = X * T, py = Y * T, k;
-            if (t === HIERBA || t === FLORES) {
-                x.fillStyle = C.hierba; x.fillRect(px, py, T, T);
-                for (k = 0; k < 5; k++) {
-                    var h1 = hash(X * 7 + k, Y * 13 + k), hy = Math.floor(hash(X + k * 3, Y - k) * 13);
-                    x.fillStyle = h1 > 0.5 ? C.hierba2 : C.hierba3;
-                    x.fillRect(px + Math.floor(h1 * 14), py + hy, 2, 1);
-                    x.fillRect(px + Math.floor(h1 * 14) + 1, py + hy - 1, 1, 1);
+    // Lienzo de fachada con su capa de neón
+    function fachada(W, H) {
+        var L = lienzo(W, H), N = lienzo(W, H);
+        var f = {
+            c: L.c, x: L.x, n: N,
+            p: function (X, Y, w, h, c) { L.x.fillStyle = c; L.x.fillRect(X, Y, w, h); },
+            caja: function (X, Y, w, h, c) { f.p(X, Y, w, h, C.linea); f.p(X + 1, Y + 1, w - 2, h - 2, c); },
+            neon: function (X, Y, w, h, c, fuerza) {
+                // Los neones flojos (escaparates, ventanas) se ven tintados, no a pleno color
+                L.x.globalAlpha = fuerza != null && fuerza < 0.5 ? 0.6 : 1;
+                f.p(X, Y, w, h, c);
+                L.x.globalAlpha = 1;
+                N.x.globalAlpha = fuerza == null ? 1 : fuerza;
+                N.x.fillStyle = c; N.x.fillRect(X, Y, w, h);
+                N.x.globalAlpha = 1;
+            },
+            letras: function (X, Y, t, c, s, vertical) {
+                s = s || 1;
+                for (var i = 0; i < t.length; i++) {
+                    var g = FUENTE[t[i]], gw = g[0].length;
+                    var ox = vertical ? X - Math.floor(gw * s / 2) : X;
+                    for (var r = 0; r < 5; r++) for (var k = 0; k < gw; k++) if (g[r][k] === '#') f.neon(ox + k * s, Y + r * s, s, s, c);
+                    if (vertical) Y += 6 * s; else X += (gw + 1) * s;
                 }
-                if (t === FLORES) {
-                    var col = ['#f6f2e8', '#ff8fa3', '#ffd36b'][Math.floor(hash(X, Y) * 3)];
-                    for (k = 0; k < 3; k++) {
-                        var fx = px + 2 + Math.floor(hash(X + k, Y * 3) * 11), fy = py + 2 + Math.floor(hash(X * 5, Y + k) * 11);
-                        x.fillStyle = col; x.fillRect(fx - 1, fy, 3, 1); x.fillRect(fx, fy - 1, 1, 3);
-                        x.fillStyle = '#e8a33a'; x.fillRect(fx, fy, 1, 1);
-                    }
+            },
+            ventanas: function (x0, y0, cols, filas, ww, wh, sx, sy, prob, r, colores, apagada) {
+                for (var j = 0; j < filas; j++) for (var i = 0; i < cols; i++) {
+                    var X = x0 + i * sx, Y = y0 + j * sy;
+                    f.p(X - 1, Y - 1, ww + 2, wh + 2, C.linea);
+                    if (r() < prob) f.neon(X, Y, ww, wh, colores[Math.floor(r() * colores.length)], 0.3);
+                    else f.p(X, Y, ww, wh, apagada || '#1f2640');
                 }
-            } else if (t === CAMINO) {
-                x.fillStyle = C.tierra; x.fillRect(px, py, T, T);
-                for (k = 0; k < 4; k++) { x.fillStyle = C.tierra2; x.fillRect(px + Math.floor(hash(X * 3 + k, Y) * 14), py + Math.floor(hash(X, Y * 3 + k) * 14), 2, 1); }
-                x.fillStyle = C.tierraBorde;
-                if (verde(es(X, Y - 1))) { x.fillRect(px, py, T, 1); x.fillStyle = C.hierba; for (k = 0; k < T; k += 3) x.fillRect(px + k, py, 1, 1 + (k % 2)); x.fillStyle = C.tierraBorde; }
-                if (verde(es(X, Y + 1))) x.fillRect(px, py + T - 1, T, 1);
-                if (verde(es(X - 1, Y))) x.fillRect(px, py, 1, T);
-                if (verde(es(X + 1, Y))) x.fillRect(px + T - 1, py, 1, T);
-            } else if (t === ARENA) {
-                x.fillStyle = C.arena; x.fillRect(px, py, T, T);
-                for (k = 0; k < 4; k++) { x.fillStyle = C.arena2; x.fillRect(px + Math.floor(hash(X * 5 + k, Y) * 15), py + Math.floor(hash(X, Y * 5 + k) * 15), 1, 1); }
+            },
+            glifos: function (X, Y, n, s, c, r, vertical) {
+                // Carteles con signos inventados: dan ambiente sin decir nada
+                for (var i = 0; i < n; i++) {
+                    for (var a = 0; a < 3; a++) for (var b = 0; b < 3; b++) if (r() < 0.55) f.neon(X + b * s, Y + a * s, s, s, c);
+                    if (vertical) Y += 4 * s; else X += 4 * s;
+                }
+            },
+            fin: function () { return { c: L.c, halo: hacerHalo(N.c) }; }
+        };
+        return f;
+    }
+
+    function spriteNivel(n, semilla) {
+        var W = n.w, H = n.h, r = azar(semilla * 97 + 13), f = fachada(W, H), cx = W / 2;
+        var calidas = ['#ffd36b', '#ffb86b', '#ffe6a8'], frias = ['#7fe8ff', '#b7c4ff', '#ffd36b'];
+        if (n.tipo === 'oficina') {
+            var col = { accenture: '#b45cff', altia: C.naranja, deloitte: '#eef3ff' }[n.logo];
+            f.caja(4, 14, W - 8, H - 14, '#1b2136');
+            f.p(W - 16, 15, 11, H - 16, '#161b2d');
+            f.caja(2, 10, W - 4, 6, '#262d47');
+            f.p(W - 18, 0, 2, 11, C.linea);
+            f.ventanas(18, 22, Math.floor((W - 26) / 9), Math.floor((H - 58) / 10), 5, 6, 9, 10, 0.5, r, frias);
+            // Rótulo vertical con el nombre de la empresa
+            var txt = n.logo === 'accenture' ? '>ACCENTURE' : n.logo.toUpperCase();
+            var alto = txt.length * 12 + 6;
+            f.caja(0, 18, 15, Math.min(alto, H - 44), '#0b0a14');
+            if (n.logo === 'accenture') { f.letras(8, 22, '>', '#b45cff', 2, true); f.letras(8, 34, 'ACCENTURE', '#f3e9ff', 2, true); }
+            else f.letras(8, 22, txt, col, 2, true);
+            if (n.logo === 'deloitte') f.neon(6, 22 + txt.length * 12, 4, 4, '#86e82a');
+            f.neon(cx - 15, H - 26, 30, 2, n.logo === 'deloitte' ? '#86e82a' : col);
+            f.caja(cx - 9, H - 22, 18, 22, C.puerta);
+            f.neon(cx - 7, H - 20, 14, 2, C.cian, 0.6);
+            f.p(cx, H - 19, 1, 18, C.linea);
+        } else if (n.tipo === 'torre') {
+            f.caja(8, 42, 64, H - 42, '#121a33');
+            f.p(56, 43, 15, H - 44, '#0e1529');
+            f.caja(14, 24, 52, 20, '#16224a');
+            f.caja(26, 10, 28, 16, '#1a2a5c');
+            f.p(39, 0, 2, 11, C.linea);
+            f.letras(40 - anchoTexto('BBVA', 2) / 2, 29, 'BBVA', '#3ea2ff', 2);
+            f.neon(16, 41, 48, 2, '#2a7fff');
+            f.neon(9, 46, 2, H - 90, '#2a7fff', 0.7);
+            f.neon(69, 46, 2, H - 90, '#2a7fff', 0.7);
+            f.ventanas(15, 50, 6, Math.floor((H - 100) / 8), 5, 4, 9, 8, 0.6, r, ['#9fd0ff', '#ffffff', '#7fe8ff']);
+            f.caja(8, H - 38, 64, 10, '#0b0a14');
+            var wa = anchoTexto('>ACCENTURE', 1);
+            f.letras(40 - wa / 2, H - 35, '>', '#b45cff', 1);
+            f.letras(40 - wa / 2 + 4, H - 35, 'ACCENTURE', '#f3e9ff', 1);
+            f.caja(28, H - 24, 24, 24, C.puerta);
+            f.neon(30, H - 22, 20, 2, C.cian, 0.7);
+            f.p(40, H - 21, 1, 20, C.linea);
+        } else if (n.tipo === 'lab') {
+            f.caja(2, 36, W - 4, H - 36, '#1a1d2e');
+            f.caja(10, 22, 22, 16, '#232842'); f.caja(36, 26, 16, 12, '#232842'); f.caja(W - 30, 20, 20, 18, '#232842');
+            f.neon(14, 26, 14, 1, C.verde, 0.6); f.neon(W - 26, 24, 12, 1, C.cian, 0.6);
+            f.neon(4, 38, W - 8, 2, C.cian);
+            for (var k = 0; k < 3; k++) {
+                var bx = 8 + k * 32;
+                f.caja(bx, 46, 26, 38, '#0b0d18');
+                for (var j = 0; j < 6; j++) f.p(bx + 2, 48 + j * 6, 22, 1, '#20243a');
+            }
+            f.caja(cx - 10, H - 24, 20, 24, C.puerta);
+            f.neon(cx - 8, H - 22, 16, 2, C.cian, 0.6);
+        } else if (n.tipo === 'loft') {
+            f.caja(2, 8, W - 4, H - 8, '#2a1f33');
+            for (var b = 12; b < H; b += 5) f.p(3, b, W - 6, 1, '#241a2c');
+            f.caja(0, 4, W, 6, '#33263f');
+            f.p(8, 1, 3, 3, '#3a7d4a'); f.p(14, 0, 4, 4, '#3a7d4a'); f.p(W - 14, 1, 4, 3, '#3a7d4a');
+            f.caja(8, 14, 24, 18, '#ffb86b'); f.caja(W - 32, 14, 24, 18, '#ffb86b');
+            f.neon(9, 15, 22, 16, '#ffb86b', 0.25); f.neon(W - 31, 15, 22, 16, '#ffb86b', 0.25);
+            f.p(19, 15, 1, 16, C.linea); f.p(W - 21, 15, 1, 16, C.linea);
+            f.p(5, 33, W - 10, 2, C.linea);
+            f.neon(5, 35, W - 10, 1, C.rosa);
+            f.caja(cx - 15, H - 40, 30, 13, '#0b0a14');
+            f.letras(cx - anchoTexto('RD', 2) / 2, H - 38, 'RD', C.cian, 2);
+            f.caja(8, H - 26, 14, 12, '#ffd36b'); f.caja(W - 22, H - 26, 14, 12, '#ffd36b');
+            f.neon(9, H - 25, 12, 10, '#ffd36b', 0.25); f.neon(W - 21, H - 25, 12, 10, '#ffd36b', 0.25);
+            f.caja(cx - 8, H - 24, 16, 24, '#3b2a1e');
+            f.neon(cx - 6, H - 22, 12, 1, C.luz, 0.8);
+        } else if (n.tipo === 'nucleo') {
+            f.caja(4, H - 26, W - 8, 26, '#1a1d2e');
+            f.caja(12, 22, 24, H - 46, '#151a2c');
+            for (var y2 = 28; y2 < H - 30; y2 += 9) f.neon(12, y2, 24, 2, C.cian, 0.8);
+            f.caja(9, 12, 30, 12, '#1d2440');
+            f.neon(13, 15, 22, 2, C.rosa);
+            f.p(23, 2, 2, 11, C.linea);
+            f.caja(cx - 7, H - 20, 14, 20, C.puerta);
+            f.neon(cx - 5, H - 18, 10, 2, C.cian, 0.7);
+        } else if (n.tipo === 'pantallas') {
+            f.caja(4, 10, W - 8, H - 10, '#17141f');
+            f.p(W - 18, 11, 13, H - 12, '#120f19');
+            f.caja(10, 24, W - 20, 72, '#05050a');
+            f.neon(8, 21, W - 16, 2, C.rosa);
+            f.neon(8, 97, W - 16, 2, C.cian);
+            f.caja(10, 106, 46, 32, '#05050a'); f.caja(W - 56, 106, 46, 32, '#05050a');
+            f.ventanas(14, 148, 10, 2, 6, 5, 10, 9, 0.35, r, ['#ffd36b', '#ff8bd6', '#7fe8ff']);
+            f.caja(10, H - 34, 30, 22, '#ff8bd6'); f.neon(11, H - 33, 28, 20, '#ff8bd6', 0.2);
+            f.caja(W - 40, H - 34, 30, 22, '#7fe8ff'); f.neon(W - 39, H - 33, 28, 20, '#7fe8ff', 0.2);
+            f.caja(cx - 10, H - 26, 20, 26, C.puerta);
+            f.neon(cx - 8, H - 24, 16, 2, C.cian, 0.7);
+        } else if (n.tipo === 'taller') {
+            f.caja(2, 22, W - 4, H - 22, '#2a2430');
+            for (var t2 = 0; t2 < 4; t2++) {
+                var sx = 4 + t2 * 18;
+                for (var yy = 0; yy < 10; yy++) f.p(sx, 12 + yy, Math.round(yy * 1.7) + 1, 1, '#33293a');
+                f.neon(sx + 16, 14, 1, 8, C.luz, 0.5);
+            }
+            f.caja(cx - 20, H - 42, 40, 42, '#1b1720');
+            for (var s2 = 0; s2 < 5; s2++) f.p(cx - 19, H - 41 + s2 * 3, 38, 2, s2 % 2 ? '#4a4252' : '#3e3746');
+            f.p(cx - 19, H - 26, 38, 25, '#3a2a1a');
+            f.neon(cx - 19, H - 26, 38, 2, '#ffb347');
+            f.p(cx - 14, H - 14, 12, 3, '#6b4a2a'); f.p(cx + 4, H - 18, 10, 17, '#2f2a36');
+            f.caja(W - 18, H - 30, 12, 10, '#ffd36b');
+            f.neon(W - 17, H - 29, 10, 8, '#ffd36b', 0.3);
+        } else if (n.tipo === 'cabina') {
+            f.caja(4, 12, W - 8, H - 12, '#0f1a24');
+            f.p(7, 16, W - 14, H - 20, '#12304a');
+            f.neon(4, 12, W - 8, 2, C.cian); f.neon(4, 12, 2, H - 12, C.cian); f.neon(W - 6, 12, 2, H - 12, C.cian);
+            f.caja(6, 0, W - 12, 13, '#0b0a14');
+            f.neon(11, 24, W - 22, 7, C.verde, 0.6);
+            f.p(cx - 1, 36, 2, 12, C.linea);
+        } else if (n.tipo === 'club') {
+            f.caja(2, 26, W - 4, H - 26, '#1b2230');
+            f.caja(0, 20, W, 8, '#232c3e');
+            f.caja(8, 36, W - 16, 44, '#0a1a14');
+            f.p(9, 37, W - 18, 42, '#1f6e4a');
+            f.p(12, 40, W - 24, 1, '#dfffe9'); f.p(12, 75, W - 24, 1, '#dfffe9'); f.p(12, 40, 1, 36, '#dfffe9'); f.p(W - 13, 40, 1, 36, '#dfffe9');
+            f.p(cx, 40, 1, 36, '#dfffe9');
+            f.p(cx - 1, 38, 3, 40, '#c9d3dc');
+            f.neon(4, 28, W - 8, 2, C.verde);
+            f.caja(W - 30, 0, 28, 22, '#0b0a14');
+            f.caja(cx - 9, H - 24, 18, 24, C.puerta);
+            f.neon(cx - 7, H - 22, 14, 2, C.verde, 0.7);
+            f.caja(8, H - 22, 22, 14, '#7fe8ff'); f.neon(9, H - 21, 20, 12, '#7fe8ff', 0.2);
+        } else if (n.tipo === 'casita') {
+            f.caja(6, 38, W - 12, H - 38, '#2a2540');
+            for (var yt = 0; yt < 24; yt++) {
+                var hw = Math.round(6 + yt * 1.15);
+                f.p(cx - hw - 1, 14 + yt, hw * 2 + 2, 1, C.linea);
+                f.p(cx - hw, 14 + yt, hw * 2, 1, yt % 4 === 3 ? '#2e2546' : '#3b2f55');
+            }
+            f.caja(4, 2, 24, 24, '#0b0a14');
+            f.caja(cx - 10, 48, 20, 16, '#ffdca8');
+            f.neon(cx - 9, 49, 18, 14, '#ffdca8', 0.25);
+            f.p(cx - 6, 58, 12, 2, '#6b4a3a'); f.p(cx - 6, 54, 1, 4, '#6b4a3a'); f.p(cx + 5, 54, 1, 4, '#6b4a3a');
+            f.caja(cx - 7, H - 22, 14, 22, '#3b2a1e');
+            f.neon(cx - 5, H - 20, 10, 1, C.luz, 0.8);
+        } else if (n.tipo === 'bar') {
+            f.caja(2, 26, W - 4, H - 26, '#2a1a24');
+            f.ventanas(10, 70 - 34, 7, 1, 5, 5, 9, 9, 0.5, r, calidas);
+            f.caja(cx - 15, 2, 30, 28, '#0b0a14');
+            f.neon(cx - 15, 2, 30, 2, C.rosa); f.neon(cx - 15, 28, 30, 2, C.rosa);
+            for (var a2 = 0; a2 < W - 4; a2 += 6) f.neon(2 + a2, H - 46, 3, 8, a2 % 12 ? '#f4e9ff' : C.rosa, a2 % 12 ? 0.2 : 0.8);
+            f.p(2, H - 38, W - 4, 2, C.linea);
+            f.caja(6, H - 34, 24, 22, '#ffb86b'); f.caja(W - 30, H - 34, 24, 22, '#ffb86b');
+            f.neon(7, H - 33, 22, 20, '#ffb86b', 0.25); f.neon(W - 29, H - 33, 22, 20, '#ffb86b', 0.25);
+            f.p(12, H - 24, 5, 12, '#3a2030'); f.p(20, H - 26, 5, 14, '#3a2030'); f.p(W - 22, H - 25, 5, 13, '#3a2030');
+            f.caja(cx - 8, H - 26, 16, 26, C.puerta);
+            f.neon(cx - 6, H - 24, 12, 2, C.rosa, 0.7);
+        } else if (n.tipo === 'hangar') {
+            for (var yh = 0; yh < 26; yh++) {
+                var hh = Math.round(Math.sqrt(Math.max(0, 1 - Math.pow((25 - yh) / 26, 2))) * (W / 2 - 2));
+                f.p(cx - hh - 1, 16 + yh, hh * 2 + 2, 1, C.linea);
+                f.p(cx - hh, 16 + yh, hh * 2, 1, yh % 5 === 4 ? '#262e40' : '#2f384d');
+            }
+            f.caja(2, 42, W - 4, H - 42, '#1d2433');
+            f.caja(4, 0, 24, 24, '#0b0a14');
+            f.caja(14, H - 46, W - 28, 46, '#0a0d16');
+            f.neon(14, H - 46, W - 28, 2, C.cian, 0.7);
+            f.p(cx - 22, H - 26, 40, 10, '#dfe6f2'); f.p(cx + 18, H - 24, 6, 6, '#dfe6f2');
+            f.neon(cx + 12, H - 25, 8, 3, C.cian);
+            f.p(cx - 8, H - 18, 18, 3, '#b8c2d4'); f.p(cx - 22, H - 32, 4, 7, '#b8c2d4');
+        } else if (n.tipo === 'cine') {
+            f.caja(2, 22, W - 4, H - 22, '#2a1426');
+            f.caja(cx - 16, 28, 32, 30, '#0b0a14');
+            f.neon(cx - 16, 28, 32, 2, C.amarillo); f.neon(cx - 16, 56, 32, 2, C.amarillo);
+            f.caja(6, H - 58, W - 12, 20, '#0b0a14');
+            f.neon(10, H - 50, W - 20, 3, C.rosa, 0.8);
+            f.caja(8, H - 34, 16, 24, '#3a2a5a'); f.caja(W - 24, H - 34, 16, 24, '#5a2a3a');
+            f.neon(9, H - 33, 14, 22, '#9b5cff', 0.25); f.neon(W - 23, H - 33, 14, 22, '#ff2fb3', 0.25);
+            f.caja(cx - 12, H - 30, 24, 30, '#3b0f24');
+            f.neon(cx - 10, H - 28, 20, 2, C.amarillo, 0.7);
+            f.p(cx, H - 27, 1, 26, C.linea);
+        }
+        return f.fin();
+    }
+
+    // Edificios de relleno: torres de pisos y tiendas con carteles de neón
+    function spriteRelleno(W, H, semilla) {
+        var r = azar(semilla), f = fachada(W, H);
+        var cuerpo = ['#1a1830', '#1c2236', '#221a2e', '#16202a', '#201d2c'][Math.floor(r() * 5)];
+        var neon = NEONES[Math.floor(r() * NEONES.length)];
+        var top = H > 100 ? 8 : 4;
+        f.caja(1, top, W - 2, H - top, cuerpo);
+        f.p(W - 9, top + 1, 7, H - top - 2, 'rgba(0,0,0,.25)');
+        f.caja(0, top - 4, W, 6, '#262438');
+        if (r() < 0.7) f.caja(4 + Math.floor(r() * (W - 20)), top - 10, 10, 7, '#2a2840');
+        if (r() < 0.4) f.p(W - 10, 0, 2, top, C.linea);
+        var cols = Math.max(1, Math.floor((W - 12) / 8)), filas = Math.max(0, Math.floor((H - top - 38) / 9));
+        f.ventanas(6 + Math.floor(((W - 12) - cols * 8 + 3) / 2), top + 8, cols, filas, 4, 5, 8, 9, 0.38, r, ['#ffd36b', '#7fe8ff', '#ff8bd6', '#ffb86b']);
+        // Planta baja: escaparate con toldo
+        var toldo = NEONES[Math.floor(r() * NEONES.length)];
+        f.p(2, H - 26, W - 4, 3, C.linea);
+        f.neon(2, H - 27, W - 4, 2, toldo, 0.9);
+        f.caja(5, H - 22, W - 10, 18, '#0f0e18');
+        f.neon(6, H - 21, W - 12, 16, toldo, 0.18);
+        if (W > 40) f.caja(Math.floor(W / 2) - 5, H - 20, 10, 20, '#121020');
+        // Cartel vertical u horizontal con signos
+        if (H > 90 && r() < 0.75) {
+            var n2 = 3 + Math.floor(r() * 4), lado = r() < 0.5 ? 0 : W - 12;
+            f.caja(lado, top + 14, 12, n2 * 8 + 4, '#0b0a14');
+            f.glifos(lado + 3, top + 17, n2, 2, neon, r, true);
+        } else if (r() < 0.6) {
+            var n3 = Math.max(2, Math.floor((W - 16) / 8));
+            f.caja(4, H - 40, n3 * 8 + 6, 12, '#0b0a14');
+            f.glifos(7, H - 37, n3, 2, neon, r, false);
+        }
+        return f.fin();
+    }
+
+    function pintarSuelo() {
+        var L = lienzo(PW, PH), x = L.x, X, Y, k;
+        function es(a, b) { return dentro(a, b) ? suelo[ix(a, b)] : BLOQUE; }
+        function horizontal(Y) { for (var i = 0; i < AVENIDAS_H.length; i++) if (Y >= AVENIDAS_H[i] && Y < AVENIDAS_H[i] + 3) return AVENIDAS_H[i]; return -1; }
+        function vertical(X) { for (var i = 0; i < AVENIDAS_V.length; i++) if (X >= AVENIDAS_V[i] && X < AVENIDAS_V[i] + 3) return AVENIDAS_V[i]; return -1; }
+        for (Y = 0; Y < MH; Y++) for (X = 0; X < MW; X++) {
+            var t = suelo[ix(X, Y)], px = X * T, py = Y * T;
+            if (t === ASFALTO) {
+                x.fillStyle = C.asfalto; x.fillRect(px, py, T, T);
+                for (k = 0; k < 5; k++) { x.fillStyle = C.asfalto2; x.fillRect(px + Math.floor(hash(X * 3 + k, Y) * 15), py + Math.floor(hash(X, Y * 3 + k) * 15), 2, 1); }
+                var h = horizontal(Y), v = vertical(X);
+                if (h >= 0 && v < 0) {
+                    if (Y === h + 1) { x.fillStyle = C.amarilla; for (k = 0; k < T; k += 8) x.fillRect(px + k, py + 7, 5, 2); }
+                    if (Y === h) { x.fillStyle = C.raya; x.fillRect(px, py + 2, T, 1); }
+                    if (Y === h + 2) { x.fillStyle = C.raya; x.fillRect(px, py + T - 3, T, 1); }
+                    var cerca = AVENIDAS_V.some(function (c) { return X === c - 1 || X === c + 3; });
+                    if (cerca) { x.fillStyle = '#3a374e'; for (k = 1; k < T; k += 4) x.fillRect(px + 2, py + k, 12, 2); }
+                } else if (v >= 0 && h < 0) {
+                    if (X === v + 1) { x.fillStyle = C.amarilla; for (k = 0; k < T; k += 8) x.fillRect(px + 7, py + k, 2, 5); }
+                    var cruce = AVENIDAS_H.some(function (r) { return Y === r - 1 || Y === r + 3; });
+                    if (cruce) { x.fillStyle = '#3a374e'; for (k = 1; k < T; k += 4) x.fillRect(px + k, py + 2, 2, 12); }
+                }
+                // Charcos que reflejan los neones
+                if (hash(X * 7, Y * 11) < 0.05) {
+                    var cx0 = px + 3 + Math.floor(hash(X, Y) * 6), cy0 = py + 5 + Math.floor(hash(Y, X) * 6);
+                    x.fillStyle = '#1d2346'; x.fillRect(cx0, cy0, 9, 3); x.fillRect(cx0 + 2, cy0 - 1, 5, 5);
+                    x.fillStyle = NEONES[Math.floor(hash(X + 3, Y) * NEONES.length)]; x.globalAlpha = 0.5; x.fillRect(cx0 + 2, cy0 + 1, 4, 1); x.globalAlpha = 1;
+                }
+            } else if (t === ACERA) {
+                x.fillStyle = C.acera; x.fillRect(px, py, T, T);
+                x.fillStyle = C.acera2; x.fillRect(px, py, T, 1); x.fillRect(px, py + 8, T, 1); x.fillRect(px + ((Y % 2) ? 4 : 12), py, 1, T);
+                if (es(X, Y - 1) === ASFALTO) { x.fillStyle = C.bordillo; x.fillRect(px, py, T, 2); }
+                if (es(X, Y + 1) === ASFALTO) { x.fillStyle = C.bordillo; x.fillRect(px, py + T - 2, T, 2); }
+                if (es(X - 1, Y) === ASFALTO) { x.fillStyle = C.bordillo; x.fillRect(px, py, 2, T); }
+                if (es(X + 1, Y) === ASFALTO) { x.fillStyle = C.bordillo; x.fillRect(px + T - 2, py, 2, T); }
+                if (es(X, Y - 1) === BLOQUE) { x.fillStyle = '#100f18'; x.fillRect(px, py, T, 3); }
+                if (es(X, Y + 1) === AGUA) {
+                    x.fillStyle = '#45405a'; x.fillRect(px, py + T - 3, T, 2);
+                    x.fillStyle = C.linea; x.fillRect(px + 2, py + T - 8, 2, 6); x.fillRect(px + 10, py + T - 8, 2, 6);
+                    x.fillStyle = '#5a5574'; x.fillRect(px, py + T - 9, T, 2);
+                }
+            } else if (t === PLAZA_T) {
+                x.fillStyle = C.plaza; x.fillRect(px, py, T, T);
+                x.fillStyle = C.plaza2; x.fillRect(px, py, T, 1); x.fillRect(px, py, 1, T);
+                var dx = X + 0.5 - PROYECTOR.x / T, dy = (Y + 0.5 - PROYECTOR.y / T) * 1.5, d = Math.sqrt(dx * dx + dy * dy);
+                if (Math.abs(d - 5) < 0.6) { x.fillStyle = C.cian; x.globalAlpha = 0.45; x.fillRect(px + 7, py + 7, 2, 2); x.globalAlpha = 1; }
+                if (es(X, Y - 1) === BLOQUE) { x.fillStyle = '#100f18'; x.fillRect(px, py, T, 3); }
             } else if (t === AGUA) {
                 x.fillStyle = C.agua; x.fillRect(px, py, T, T);
-                for (k = 0; k < 2; k++) { x.fillStyle = C.agua2; x.fillRect(px + Math.floor(hash(X * 9 + k, Y) * 10), py + Math.floor(hash(X, Y * 9 + k) * 14), 5, 1); }
-                x.fillStyle = C.espuma;
-                function tierra(v) { return v !== AGUA && v !== PUENTE; }
-                if (tierra(es(X, Y - 1))) x.fillRect(px, py, T, 2);
-                if (tierra(es(X - 1, Y))) x.fillRect(px, py, 2, T);
-                if (tierra(es(X + 1, Y))) x.fillRect(px + T - 2, py, 2, T);
-                if (tierra(es(X, Y + 1))) x.fillRect(px, py + T - 1, T, 1);
-            } else if (t === PUENTE) {
-                x.fillStyle = C.agua; x.fillRect(px, py, T, T);
-                x.fillStyle = C.madera; x.fillRect(px, py + 1, T, T - 2);
-                x.fillStyle = C.madera2;
-                for (k = 0; k < T; k += 4) x.fillRect(px + k, py + 1, 1, T - 2);
-                if (es(X, Y - 1) !== PUENTE) { x.fillStyle = C.linea; x.fillRect(px, py, T, 2); }
-                if (es(X, Y + 1) !== PUENTE) { x.fillStyle = C.linea; x.fillRect(px, py + T - 2, T, 2); }
-            } else if (t === PLAZA) {
-                // Adoquines en filas desplazadas
-                x.fillStyle = '#b9b2a2'; x.fillRect(px, py, T, T);
-                for (k = 0; k < 4; k++) {
-                    var off2 = (Y * 4 + k) % 2 ? 4 : 0;
-                    for (var cc2 = -1; cc2 < 2; cc2++) {
-                        var bx2 = px + off2 + cc2 * 8, by2 = py + k * 4;
-                        x.fillStyle = hash(X * 4 + cc2, Y * 4 + k) > 0.5 ? '#cfc8b8' : '#c4bdac';
-                        x.fillRect(Math.max(px, bx2 + 1), by2 + 1, Math.min(px + T, bx2 + 8) - Math.max(px, bx2 + 1), 3);
-                    }
-                }
-                if (verde(es(X, Y - 1))) { x.fillStyle = '#8f8878'; x.fillRect(px, py, T, 1); }
-                if (verde(es(X, Y + 1))) { x.fillStyle = '#8f8878'; x.fillRect(px, py + T - 1, T, 1); }
-                if (verde(es(X - 1, Y))) { x.fillStyle = '#8f8878'; x.fillRect(px, py, 1, T); }
-                if (verde(es(X + 1, Y))) { x.fillStyle = '#8f8878'; x.fillRect(px + T - 1, py, 1, T); }
-            } else if (t === MURO) {
-                var lado = X === 0 || X === E.mw - 1 || Y === E.mh - 1;
-                x.fillStyle = lado ? '#3e414d' : '#5a5e6d'; x.fillRect(px, py, T, T);
-                x.fillStyle = lado ? '#33363f' : '#4a4d5a';
-                for (k = 0; k < T; k += 6) x.fillRect(px, py + k, T, 1);
-                var off = (Math.floor(Y * T / 6)) % 2 ? 4 : 0;
-                for (k = 0; k < 3; k++) x.fillRect(px + (off + k * 8) % T, py + (k * 6) % T, 1, 6);
-                if (!lado) { x.fillStyle = '#6c7081'; x.fillRect(px + 2 + Math.floor(hash(X, Y) * 10), py + 2, 3, 1); }
-                if (Y === 2 && !lado) { x.fillStyle = '#2b2d36'; x.fillRect(px, py + T - 3, T, 3); }
-            } else if (t === LOSA) {
-                x.fillStyle = (X + Y) % 2 ? '#8f8a7c' : '#857f71'; x.fillRect(px, py, T, T);
-                x.fillStyle = '#6f6a5d'; x.fillRect(px, py, T, 1); x.fillRect(px, py, 1, T);
-                x.fillStyle = '#a19c8d'; x.fillRect(px + 3, py + 3, 2, 1);
-            } else if (t === ALFOMBRA) {
-                x.fillStyle = '#a3352c'; x.fillRect(px, py, T, T);
-                x.fillStyle = '#8a2b24'; for (k = 2; k < T; k += 5) x.fillRect(px + 2, py + k, T - 4, 1);
-                x.fillStyle = C.oro;
-                if (X === 10) x.fillRect(px, py, 2, T); else x.fillRect(px + T - 2, py, 2, T);
-            } else if (t === PUERTA) {
-                x.fillStyle = '#14151b'; x.fillRect(px, py, T, T);
-                x.fillStyle = '#a3352c'; x.fillRect(px, py, T, 4);
-            }
-        }
-        return L.c;
-    }
-
-    function spriteArbol() {
-        var L = lienzo(32, 34), x = L.x;
-        x.fillStyle = 'rgba(0,0,0,.22)'; x.fillRect(5, 29, 22, 4); x.fillRect(3, 30, 26, 2);
-        x.fillStyle = C.linea; x.fillRect(12, 22, 8, 10);
-        x.fillStyle = C.tronco; x.fillRect(13, 22, 6, 9);
-        x.fillStyle = '#82552f'; x.fillRect(14, 23, 2, 7);
-        disco(x, 16, 13, 14, C.copaO);
-        disco(x, 16, 13, 13, C.copa2);
-        disco(x, 15, 12, 11, C.copa);
-        disco(x, 12, 9, 7, C.copaL);
-        disco(x, 10, 7, 3, C.copaLL);
-        x.fillStyle = C.copa2;
-        [[20, 16], [9, 17], [22, 9], [16, 20], [6, 12]].forEach(function (p) { x.fillRect(p[0], p[1], 3, 2); });
-        x.fillStyle = C.copaLL; x.fillRect(19, 7, 2, 1); x.fillRect(7, 14, 2, 1);
-        return L.c;
-    }
-    function spriteMata() {
-        var L = lienzo(16, 16), x = L.x;
-        x.fillStyle = 'rgba(0,0,0,.2)'; x.fillRect(2, 13, 12, 2);
-        disco(x, 8, 8, 7, C.copaO); disco(x, 8, 8, 6, C.copa); disco(x, 6, 6, 3, C.copaL);
-        x.fillStyle = '#ff8fa3'; x.fillRect(10, 9, 1, 1); x.fillRect(5, 10, 1, 1);
-        return L.c;
-    }
-
-    // Edificios: cada uno devuelve su lienzo y las ventanas que se encienden de noche.
-    function spriteEdificio(n, i) {
-        var L = lienzo(n.w, n.h), x = L.x, luces = [], r = azar(i * 53 + 11);
-        function p(X, Y, w, h, c) { x.fillStyle = c; x.fillRect(X, Y, w, h); }
-        function caja(X, Y, w, h, c) { p(X, Y, w, h, C.linea); p(X + 1, Y + 1, w - 2, h - 2, c); }
-        function luz(X, Y, w, h) { p(X, Y, w, h, C.luz); luces.push([X, Y, w, h]); }
-        function tejado(cx, y0, y1, base, ancho, color, oscuro) {
-            for (var y = y0; y <= y1; y++) {
-                var hw = Math.round(base + (y - y0) * ancho);
-                p(cx - hw - 1, y, hw * 2 + 2, 1, C.linea);
-                p(cx - hw, y, hw * 2, 1, (y - y0) % 4 === 3 ? oscuro : color);
-            }
-            p(cx - Math.round(base + (y1 - y0) * ancho) - 1, y1 + 1, Math.round(base + (y1 - y0) * ancho) * 2 + 2, 1, C.linea);
-        }
-        function almenas(X, Y, w, c) { for (var k = 0; k < w; k += 6) caja(X + k, Y, 4, 5, c); }
-        var W = n.w, H = n.h;
-        p(4, H - 4, W - 8, 4, 'rgba(0,0,0,.22)');
-        if (n.tipo === 'casa') {
-            caja(44, 4, 8, 14, '#8b8f9c');
-            caja(8, 28, 48, 29, '#f1e3c2');
-            p(9, 51, 46, 5, '#d9c49c');
-            tejado(32, 6, 27, 9, 1.05, '#c8463a', '#a3352c');
-            caja(27, 38, 10, 19, '#7a4a28'); p(34, 47, 1, 2, C.luz);
-            caja(13, 34, 10, 9, C.luz); luces.push([14, 35, 8, 7]); p(17, 35, 1, 7, C.linea); p(14, 38, 8, 1, C.linea);
-            caja(41, 34, 10, 9, C.luz); luces.push([42, 35, 8, 7]); p(45, 35, 1, 7, C.linea); p(42, 38, 8, 1, C.linea);
-            p(22, 56, 20, 2, '#b9a27a');
-        } else if (n.tipo === 'oficina') {
-            caja(4, 8, 48, H - 12, '#cfd8e8');
-            p(40, 9, 11, H - 14, '#b9c4da');
-            caja(2, 4, 52, 7, '#8d9bb5');
-            p(40, 0, 2, 5, C.linea);
-            for (var f = 0; f < n.pisos; f++) for (var c = 0; c < 4; c++) {
-                var X = 9 + c * 10, Y = 14 + f * 12;
-                p(X, Y, 7, 8, C.linea);
-                if (r() > 0.4) luz(X + 1, Y + 1, 5, 6); else p(X + 1, Y + 1, 5, 6, '#5f86c4');
-                p(X + 1, Y + 1, 2, 1, '#ffffff55');
-            }
-            // Rótulo con el logo de la empresa
-            caja(3, H - 33, 50, 11, '#1b1f2a');
-            if (n.logo === 'accenture') {
-                var wa = anchoTexto('ACCENTURE', 1);
-                letras(x, 28 - Math.round((wa + 4) / 2) + 4, H - 30, 'ACCENTURE', '#ffffff');
-                letras(x, 28 - Math.round((wa + 4) / 2), H - 30, '>', '#a100ff');
-            } else if (n.logo === 'deloitte') {
-                var wd = anchoTexto('DELOITTE', 1);
-                letras(x, 28 - Math.round((wd + 3) / 2), H - 30, 'DELOITTE', '#ffffff');
-                p(28 - Math.round((wd + 3) / 2) + wd + 1, H - 27, 2, 2, '#86bc25');
+                x.fillStyle = C.agua2; x.fillRect(px + Math.floor(hash(X, Y) * 8), py + 4 + Math.floor(hash(Y, X) * 8), 6, 1);
             } else {
-                var wl = anchoTexto('ALTIA', 1);
-                letras(x, 28 - Math.round(wl / 2), H - 30, 'ALTIA', '#ffffff');
-                p(28 - Math.round(wl / 2) - 4, H - 29, 2, 3, '#e4572e'); p(28 + Math.round(wl / 2) + 2, H - 29, 2, 3, '#e4572e');
+                // Azoteas de las manzanas
+                x.fillStyle = C.bloque; x.fillRect(px, py, T, T);
+                x.fillStyle = C.bloque2;
+                if (hash(X, Y * 5) < 0.2) x.fillRect(px + 3, py + 3, 8, 6);
+                if (hash(X * 5, Y) < 0.15) { x.fillRect(px + 9, py + 9, 4, 4); x.fillStyle = '#1b1926'; x.fillRect(px + 10, py + 10, 2, 2); }
+                if (es(X, Y + 1) !== BLOQUE && es(X, Y + 1) !== AGUA) { x.fillStyle = '#100f18'; x.fillRect(px, py + T - 2, T, 2); }
             }
-            caja(21, H - 21, 14, 18, '#6fa8dc'); p(28, H - 20, 1, 16, C.linea); p(23, H - 19, 3, 2, '#ffffff88');
-            p(18, H - 4, 20, 2, '#9aa3b5');
-        } else if (n.tipo === 'torre') {
-            caja(10, 22, 44, 112, '#1f3b73');
-            p(42, 23, 11, 110, '#18305f');
-            for (var yy = 44; yy < 108; yy += 8) for (var cc = 0; cc < 5; cc++) {
-                if (r() > 0.45) luz(14 + cc * 8, yy, 4, 5); else p(14 + cc * 8, yy, 4, 5, '#4f7fd6');
-            }
-            // Rótulo BBVA arriba y marca de Accenture en la base
-            caja(13, 25, 38, 16, '#004481');
-            letras(x, 32 - Math.round(anchoTexto('BBVA', 2) / 2), 28, 'BBVA', '#ffffff', 2);
-            caja(18, 14, 28, 10, '#2c4f93');
-            p(31, 0, 2, 15, C.linea);
-            caja(10, 108, 44, 8, '#1b1f2a');
-            letras(x, 32 - Math.round((anchoTexto('ACCENTURE', 1) + 4) / 2), 110, '>', '#a100ff');
-            letras(x, 32 - Math.round((anchoTexto('ACCENTURE', 1) + 4) / 2) + 4, 110, 'ACCENTURE', '#ffffff');
-            caja(10, 115, 44, 19, '#2c4f93');
-            caja(25, 119, 14, 15, '#9cd0ff'); p(31, 120, 1, 13, C.linea);
-        } else if (n.tipo === 'templo') {
-            caja(4, 64, 72, 9, '#cfc8b6');
-            caja(10, 57, 60, 8, '#ddd6c4');
-            p(12, 26, 56, 32, '#6f6a5d');
-            for (var k = 0; k < 4; k++) { var cx = 14 + k * 16; caja(cx, 25, 9, 34, '#efe9da'); p(cx + 6, 26, 2, 32, '#d3ccbb'); }
-            caja(8, 19, 64, 8, '#e6dfcd');
-            tejado(40, 3, 18, 2, 2.15, '#e6dfcd', '#d3ccbb');
-            p(37, 10, 6, 4, '#7fe0ff');
-        } else if (n.tipo === 'castillo') {
-            // Torres laterales, cuerpo central con puerta en arco y copa dorada
-            caja(0, 14, 24, H - 16, '#cfc8b6'); caja(72, 14, 24, H - 16, '#cfc8b6');
-            almenas(0, 9, 24, '#cfc8b6'); almenas(72, 9, 24, '#cfc8b6');
-            caja(22, 30, 52, H - 32, '#ddd6c4');
-            almenas(22, 25, 52, '#ddd6c4');
-            for (var b = 0; b < 4; b++) { p(24, 36 + b * 12, 48, 1, '#c3bba8'); p(2, 22 + b * 14, 20, 1, '#b9b19e'); p(74, 22 + b * 14, 20, 1, '#b9b19e'); }
-            caja(8, 26, 8, 12, '#2b2d36'); caja(80, 26, 8, 12, '#2b2d36');
-            luz(9, 27, 6, 4); luz(81, 27, 6, 4);
-            p(10, 40, 4, 26, '#a3352c'); p(10, 66, 2, 3, '#a3352c'); p(12, 66, 2, 2, '#a3352c');
-            p(82, 40, 4, 26, '#a3352c'); p(82, 66, 2, 3, '#a3352c'); p(84, 66, 2, 2, '#a3352c');
-            // copa
-            p(42, 36, 12, 2, C.linea); p(43, 38, 10, 6, C.oro); p(45, 44, 6, 2, C.oro); p(47, 46, 2, 3, C.oro); p(44, 49, 8, 2, C.oro);
-            p(40, 38, 3, 4, C.oro); p(53, 38, 3, 4, C.oro); p(45, 39, 2, 3, '#fff3c4');
-            // puerta en arco
-            for (var yd = 0; yd < 30; yd++) {
-                var hw = yd < 6 ? Math.round(Math.sqrt(36 - (6 - yd) * (6 - yd)) + 5) : 11;
-                p(48 - hw - 1, H - 32 + yd, hw * 2 + 2, 1, C.linea);
-                p(48 - hw, H - 32 + yd, hw * 2, 1, '#3b2a1e');
-            }
-            luz(42, H - 22, 12, 4);
-            p(36, H - 3, 24, 2, '#b9b19e');
-        } else if (n.tipo === 'cartel') {
-            caja(10, 40, 6, 26, C.madera2); caja(60, 40, 6, 26, C.madera2);
-            caja(2, 4, 72, 42, C.madera);
-            p(3, 5, 70, 2, '#c38c52');
-            p(7, 9, 62, 32, '#20242c');
-        } else if (n.tipo === 'taller') {
-            caja(6, 26, 52, 32, '#b07a45');
-            for (var pl = 30; pl < 56; pl += 4) p(7, pl, 50, 1, '#9a6838');
-            tejado(32, 8, 26, 6, 1.4, '#5d6b7a', '#4a5664');
-            caja(13, 36, 22, 22, '#3b2a1e');
-            luz(15, 38, 18, 4);
-            caja(40, 34, 12, 10, C.luz); luces.push([41, 35, 10, 8]); p(46, 35, 1, 8, C.linea);
-        } else if (n.tipo === 'faro') {
-            caja(1, 104, 34, 11, '#8d939c');
-            for (var y = 24; y < 104; y++) {
-                var hw2 = Math.round(8 + (y - 24) / 80 * 6);
-                p(18 - hw2 - 1, y, hw2 * 2 + 2, 1, C.linea);
-                p(18 - hw2, y, hw2 * 2, 1, Math.floor((y - 24) / 14) % 2 ? '#f3f3f3' : '#d6453a');
-            }
-            caja(6, 18, 24, 7, '#3a3f4b');
-            caja(10, 8, 16, 11, C.luz); luces.push([11, 9, 14, 9]);
-            caja(12, 2, 12, 7, '#d6453a');
-            caja(15, 92, 7, 12, '#5a3a22');
-        } else if (n.tipo === 'buzon') {
-            caja(12, 22, 5, 20, C.madera2);
-            caja(2, 6, 24, 18, C.acento);
-            p(4, 4, 20, 3, C.linea); p(5, 5, 18, 2, C.acento);
-            p(8, 12, 12, 2, C.linea);
-            p(4, 8, 6, 1, '#ffffff66');
         }
-        return { c: L.c, luces: luces };
+        return L.c;
     }
 
-    /* ---------- Personaje ---------- */
-    function dibujaHeroe(x, X, Y, dir, paso, trofeo) {
+    /* ---------- Personaje y dron ---------- */
+    function dibujaHeroe(x, X, Y, dir, paso) {
         var bob = paso ? -1 : 0, partes = [];
         function parte(px, py, w, h, c) { partes.push([px, py, w, h, c]); }
         var pa = paso === 1 ? -1 : 0, pb = paso === 2 ? -1 : 0;
         if (dir === 'izq' || dir === 'der') {
-            parte(X - 3 + (paso === 1 ? -1 : 0), Y - 5, 3, 5, '#2b2f3d');
-            parte(X + (paso === 2 ? 1 : 0), Y - 5, 3, 5, '#2b2f3d');
+            parte(X - 3 + (paso === 1 ? -1 : 0), Y - 5, 3, 5, '#1a1a26');
+            parte(X + (paso === 2 ? 1 : 0), Y - 5, 3, 5, '#1a1a26');
         } else {
-            parte(X - 4, Y - 5 + pa, 3, 5 - pa, '#2b2f3d');
-            parte(X + 1, Y - 5 + pb, 3, 5 - pb, '#2b2f3d');
+            parte(X - 4, Y - 5 + pa, 3, 5 - pa, '#1a1a26');
+            parte(X + 1, Y - 5 + pb, 3, 5 - pb, '#1a1a26');
         }
-        if (dir === 'izq') parte(X + 3, Y - 12 + bob, 4, 7, '#f5a524');
-        if (dir === 'der') parte(X - 7, Y - 12 + bob, 4, 7, '#f5a524');
-        parte(X - 5, Y - 12 + bob, 10, 8, C.acento);
-        if (trofeo) {
-            parte(X - 8, Y - 26, 2, 14, '#2446b8'); parte(X + 6, Y - 26, 2, 14, '#2446b8');
-        } else if (dir === 'abajo' || dir === 'arriba') {
+        if (dir === 'izq') parte(X + 3, Y - 12 + bob, 4, 7, '#3a3358');
+        if (dir === 'der') parte(X - 7, Y - 12 + bob, 4, 7, '#3a3358');
+        parte(X - 5, Y - 13 + bob, 10, 9, '#30285a');
+        if (dir === 'abajo' || dir === 'arriba') {
             var sw = paso === 1 ? 1 : paso === 2 ? -1 : 0;
-            parte(X - 7, Y - 11 + bob + sw, 2, 6, '#2446b8');
-            parte(X + 5, Y - 11 + bob - sw, 2, 6, '#2446b8');
+            parte(X - 7, Y - 12 + bob + sw, 2, 7, '#30285a');
+            parte(X + 5, Y - 12 + bob - sw, 2, 7, '#30285a');
         } else {
             var ax = paso === 1 ? -1 : paso === 2 ? 1 : 0;
-            parte(X - 1 + ax, Y - 11 + bob, 3, 6, '#2446b8');
+            parte(X - 1 + ax, Y - 12 + bob, 3, 7, '#30285a');
         }
-        if (dir === 'arriba') parte(X - 4, Y - 12 + bob, 8, 6, '#f5a524');
-        parte(X - 5, Y - 21 + bob, 10, 9, '#f1c7a3');
-        x.fillStyle = 'rgba(0,0,0,.25)'; x.fillRect(X - 6, Y - 1, 12, 3);
+        parte(X - 5, Y - 22 + bob, 10, 9, '#f1c7a3');
+        x.fillStyle = 'rgba(0,0,0,.35)'; x.fillRect(X - 6, Y - 1, 12, 3);
         partes.forEach(function (q) { x.fillStyle = C.linea; x.fillRect(q[0] - 1, q[1] - 1, q[2] + 2, q[3] + 2); });
         partes.forEach(function (q) { x.fillStyle = q[4]; x.fillRect(q[0], q[1], q[2], q[3]); });
-        if (trofeo) { x.fillStyle = '#f1c7a3'; x.fillRect(X - 8, Y - 28, 2, 2); x.fillRect(X + 6, Y - 28, 2, 2); }
-        x.fillStyle = '#2446b8'; x.fillRect(X - 5, Y - 6 + bob, 10, 2);
-        x.fillStyle = '#3b2416';
-        var hy = Y - 21 + bob;
+        // Ribetes de neón en la chaqueta
+        x.fillStyle = C.cian;
+        if (dir === 'abajo') { x.fillRect(X - 1, Y - 13 + bob, 2, 8); }
+        else if (dir === 'arriba') { x.fillRect(X - 3, Y - 11 + bob, 6, 1); x.fillStyle = C.rosa; x.fillRect(X - 1, Y - 9 + bob, 2, 2); }
+        else x.fillRect(dir === 'izq' ? X - 5 : X + 4, Y - 13 + bob, 1, 8);
+        x.fillStyle = '#1a1a26'; x.fillRect(X - 5, Y - 6 + bob, 10, 2);
+        x.fillStyle = '#2a1a12';
+        var hy = Y - 22 + bob;
         if (dir === 'arriba') x.fillRect(X - 5, hy, 10, 8);
-        else if (dir === 'abajo') { x.fillRect(X - 5, hy, 10, 3); x.fillRect(X - 5, hy + 3, 1, 3); x.fillRect(X + 4, hy + 3, 1, 3); x.fillRect(X - 2, hy + 3, 3, 1); }
+        else if (dir === 'abajo') { x.fillRect(X - 5, hy, 10, 3); x.fillRect(X - 5, hy + 3, 1, 3); x.fillRect(X + 4, hy + 3, 1, 3); }
         else if (dir === 'izq') { x.fillRect(X - 5, hy, 10, 3); x.fillRect(X, hy + 3, 5, 4); }
         else { x.fillRect(X - 5, hy, 10, 3); x.fillRect(X - 5, hy + 3, 5, 4); }
-        x.fillStyle = '#1d2433';
-        if (dir === 'abajo') { x.fillRect(X - 3, hy + 4, 1, 2); x.fillRect(X + 2, hy + 4, 1, 2); x.fillStyle = trofeo ? '#7a3b2e' : '#e8a08a'; x.fillRect(X - 1, hy + 7, 2, trofeo ? 2 : 1); }
-        if (dir === 'izq') x.fillRect(X - 4, hy + 4, 1, 2);
-        if (dir === 'der') x.fillRect(X + 3, hy + 4, 1, 2);
+        // Visor
+        x.fillStyle = C.cian;
+        if (dir === 'abajo') x.fillRect(X - 4, hy + 4, 8, 2);
+        if (dir === 'izq') x.fillRect(X - 5, hy + 4, 4, 2);
+        if (dir === 'der') x.fillRect(X + 1, hy + 4, 4, 2);
     }
 
     /* ---------- Estado ---------- */
-    var juego, lienzoEl, ctx, mini, miniCtx, miniBase, imgArbol, imgMata, iconos = {}, websImgs = [];
-    var heroe = { x: 0, y: 0, dir: 'abajo', dist: 0, moviendo: false, arriba: 0, trofeo: null };
+    var juego, lienzoEl, ctx, mini, miniCtx, miniBase, sueloImg, iconos = {}, websImgs = [];
+    var objetos = [], coches = [], voladores = [], peatones = [], lluvia = [], farolas = [];
+    var heroe = { x: 0, y: 0, dir: 'abajo', dist: 0, moviendo: false, arriba: 0 };
     var hada = { x: 0, y: 0, vx: 0, vy: 0, estela: [] };
-    var mapaCam = { x: 0, y: 0 }, cam = { x: 0, y: 0 }, esc = 3, escObj = 3, escBase = 3, dpr = 1;
-    var teclas = {}, mando = { x: 0, y: 0 }, ruta = [], alLlegar = null, objetivo = null, marca = null;
-    var sel = 0, cerca = null, abierta = -1, vistaMapa = false, enMarcha = false, ultimo = 0, reloj = 0, bloqueo = 0;
+    var cam = { x: 0, y: 0 }, camLibre = false, esc = 3, escObj = 3, escBase = 3, dpr = 1, mapaCam = { x: 0, y: 0 };
+    var teclas = {}, mando = { x: 0, y: 0 }, ruta = [], alLlegar = null, marca = null;
+    var sel = 0, cerca = null, abierta = -1, vistaMapa = false, enMarcha = false, ultimo = 0, reloj = 0;
     var devueltas = [], cuerpoPanel, panel, globo, globoTexto, cola = [], dicho = {}, quieto = 0, consejo = 0, frase = null;
-    var particulas = [], oscuro = true, cw = 0, ch = 0, miniReloj = 0, abriendo = null;
+    var particulas = [], cw = 0, ch = 0, miniReloj = 0, barrio = null;
     var vistos = {};
     try { vistos = JSON.parse(guardado('gemas') || '{}') || {}; } catch (e) { vistos = {}; }
     var tactil = window.matchMedia('(pointer: coarse)').matches;
     function total() { return PANTALLAS.filter(function (p) { return vistos[p.id]; }).length; }
-    function appsAbiertas() { return APPS.filter(function (a) { return vistos[a.id]; }).length; }
 
-    function libreCasilla(tx, ty) {
-        if (!dentro(tx, ty)) return false;
-        var i = ix(tx, ty), s = E.suelo[i];
-        return !E.solido[i] && s !== AGUA && s !== MURO;
-    }
+    function libreCasilla(tx, ty) { return dentro(tx, ty) && !solido[ix(tx, ty)]; }
     function librePx(x, y) { return libreCasilla(Math.floor(x / T), Math.floor(y / T)); }
     function libreEn(x, y) { return librePx(x - 5, y - 4) && librePx(x + 4, y - 4) && librePx(x - 5, y) && librePx(x + 4, y); }
 
     /* ---------- Rutas (A*) ---------- */
     function buscarRuta(ax, ay, bx, by) {
-        var MW = E.mw, MH = E.mh;
         var sx = Math.floor(ax / T), sy = Math.floor(ay / T), ex = Math.floor(bx / T), ey = Math.floor(by / T);
         if (!libreCasilla(ex, ey)) {
             var mejor = null, md = 1e9;
@@ -699,7 +688,9 @@
                 var nx = cx + vecinos[v][0], ny = cy + vecinos[v][1];
                 if (!libreCasilla(nx, ny)) continue;
                 if (vecinos[v][2] > 1 && (!libreCasilla(cx + vecinos[v][0], cy) || !libreCasilla(cx, cy + vecinos[v][1]))) continue;
-                var ni = ix(nx, ny), ng = g[c] + vecinos[v][2];
+                // Mejor por la acera que por el asfalto
+                var coste = vecinos[v][2] * (suelo[ix(nx, ny)] === ASFALTO ? 1.25 : 1);
+                var ni = ix(nx, ny), ng = g[c] + coste;
                 if (ng < g[ni]) { g[ni] = ng; de[ni] = c; meter(ni, ng + h(ni)); }
             }
         }
@@ -730,28 +721,15 @@
         ruta = r || [];
         alLlegar = r ? luego || null : null;
         marca = r && !luego ? { x: ruta[ruta.length - 1].x, y: ruta[ruta.length - 1].y, t: 0 } : null;
-        if (r && !ruta.length && luego) { alLlegar = null; luego(); }
+        camLibre = false;
         arrancar();
     }
-    // Ir a una pantalla (edificio o cofre), pasando por la puerta de la sala si hace falta.
     function irA(i, entrar) {
         if (i < 0 || i >= PANTALLAS.length) return;
         sel = i;
-        objetivo = { i: i, entrar: entrar };
+        var p = PANTALLAS[i];
         pintarHud();
-        seguirObjetivo();
-    }
-    function seguirObjetivo() {
-        if (!objetivo) return;
-        var p = PANTALLAS[objetivo.i], entrar = objetivo.entrar;
-        if (p.app) {
-            if (E === mundo) { var t = nivelPorId('trofeos'); irAPunto(t.entrada.x, t.entrada.y, entrarSala); }
-            else irAPunto(p.frente.x, p.frente.y, function () { objetivo = null; heroe.dir = 'arriba'; if (entrar) abrirCofre(p); });
-        } else if (E === sala) {
-            irAPunto(sala.pw / 2, sala.ph - 2, null);
-        } else {
-            irAPunto(p.entrada.x, p.entrada.y, function () { objetivo = null; heroe.dir = 'arriba'; if (entrar) abrir(pantalla(p.id)); });
-        }
+        irAPunto(p.entrada.x, p.entrada.y, function () { heroe.dir = 'arriba'; if (entrar) abrir(i); });
     }
 
     /* ---------- aRDi: bocadillos ---------- */
@@ -787,45 +765,35 @@
     }
     function frasesIntro() {
         return [
-            { es: '¡Hola! Soy aRDi y te acompaño por la carrera de Rodrigo.', en: 'Hi! I\'m aRDi, and I\'ll guide you through Rodrigo\'s career.' },
+            { es: '¡Hola! Soy aRDi, el dron guía de esta ciudad. Te enseño la carrera de Rodrigo.', en: 'Hi! I\'m aRDi, this city\'s guide drone. Let me show you Rodrigo\'s career.' },
             tactil
-                ? { es: 'Usa el mando o toca el mapa para moverte.', en: 'Use the pad or tap the map to move.' }
-                : { es: 'Muévete con WASD o las flechas, o haz clic en el mapa.', en: 'Move with WASD or the arrow keys, or click on the map.' },
+                ? { es: 'Muévete con el mando. Arrastra para mirar la ciudad y toca un edificio para ir.', en: 'Move with the pad. Drag to look around and tap a building to go there.' }
+                : { es: 'Muévete con WASD o las flechas. Arrastra para mirar la ciudad y haz clic en un edificio para ir.', en: 'Move with WASD or the arrow keys. Drag to look around and click a building to go there.' },
             tactil
                 ? { es: 'Junto a una puerta, pulsa A para entrar. ¡Hay 15 gemas!', en: 'Next to a door, press A to go in. There are 15 gems!' }
                 : { es: 'Junto a una puerta, pulsa E para entrar. ¡Hay 15 gemas!', en: 'Next to a door, press E to go in. There are 15 gems!' }
         ];
     }
     var CONSEJOS = [
-        { es: 'El minimapa de la esquina te lleva a cualquier sitio: tócalo.', en: 'The minimap in the corner takes you anywhere: tap it.' },
+        { es: 'El minimapa de la esquina te lleva a cualquier edificio.', en: 'The minimap in the corner takes you to any building.' },
         { es: 'Las flechas de arriba te llevan al nivel siguiente.', en: 'The arrows at the top take you to the next level.' },
-        { es: 'En el faro puedes preguntarle cosas a su IA.', en: 'At the lighthouse you can ask his AI anything.' },
-        { es: 'Las gemas que flotan marcan lo que te queda por ver.', en: 'Floating gems mark what you still have to see.' }
+        { es: 'En el núcleo de IA de la plaza puedes preguntarle cosas a Rodrigo.', en: 'At the AI core in the plaza you can ask Rodrigo anything.' },
+        { es: 'Pulsa el contador de gemas para ver lo que te falta.', en: 'Tap the gem counter to see what\'s left.' }
     ];
 
     /* ---------- Construcción ---------- */
     function crear() {
-        var gen = generarMundo();
-        generarSala();
-        mundo.img = pintarSuelo(mundo);
-        sala.img = pintarSuelo(sala);
-        E = mundo;
-        imgArbol = spriteArbol();
-        imgMata = spriteMata();
-        gen.arboles.forEach(function (a) { mundo.objetos.push({ img: imgArbol, x: a.x * T, y: a.y * T - 2, base: (a.y + 2) * T - 3, w: 32, h: 34 }); });
-        gen.matas.forEach(function (m) { mundo.objetos.push({ img: imgMata, x: m.x * T, y: m.y * T, base: m.y * T + 14, w: 16, h: 16 }); });
-        var fcx = (ANILLO.x + 0.5) * T, fcy = (ANILLO.y + 0.5) * T;
-        mundo.objetos.push({ fuente: true, x: fcx - 26, y: fcy - 34, base: fcy + 14, w: 52, h: 52 });
-        FAROLAS.forEach(function (f) { mundo.objetos.push({ farola: true, x: f[0] * T, y: f[1] * T - 18, base: f[1] * T + 14, w: 16, h: 34, cx: f[0] * T + 8, cy: f[1] * T + 14 }); });
+        generarCiudad();
+        sueloImg = pintarSuelo();
         NIVELES.forEach(function (n, i) {
-            var s = spriteEdificio(n, i);
+            var s = spriteNivel(n, i + 1);
             n.sprite = s;
-            mundo.objetos.push({ img: s.c, x: n.px - n.w / 2, y: n.py - n.h, base: n.py, w: n.w, h: n.h, nivel: n });
+            objetos.push({ img: s.c, halo: s.halo, x: n.px - n.w / 2, y: n.py - n.h, base: n.py, w: n.w, h: n.h, nivel: n });
+            if (n.app) { var im = new Image(); im.src = 'img/apps/' + n.app + '-icono.webp'; iconos[n.app] = im; }
         });
-        APPS.forEach(function (a) {
-            var im = new Image(); im.src = 'img/apps/' + a.icono + '-icono.webp'; iconos[a.icono] = im;
-            sala.objetos.push({ cofre: a, x: a.cx - 12, y: a.cy - 30, base: a.cy + 6, w: 24, h: 40 });
-        });
+        rellenar();
+        ponerFarolas();
+        crearTrafico();
         ['boda-finca', 'tumenu', 'urbapadel', 'godafly', 'lullcam'].forEach(function (w) { var im = new Image(); im.src = 'img/webs/' + w + '.webp'; websImgs.push(im); });
 
         juego = document.createElement('div');
@@ -839,7 +807,7 @@
         juego.innerHTML =
             '<canvas class="juego-lienzo" aria-hidden="true"></canvas>' +
             '<div class="hada-globo" data-j-globo aria-live="polite"><p class="hada-nombre">aRDi</p><p class="hada-texto" data-j-globo-texto></p></div>' +
-            '<div class="fundido" data-j-fundido></div>' +
+            '<p class="barrio-cartel" data-j-barrio aria-hidden="true"></p>' +
             '<div class="hud hud-arriba">' +
                 '<p class="hud-marca"><span class="marca-sello" aria-hidden="true">RD</span><span>Rodrigo Dávila</span></p>' +
                 '<div class="hud-gemas-caja"><button type="button" class="hud-gemas" data-j-gemas aria-expanded="false"><i class="gema-icono" aria-hidden="true"></i><span class="gemas-cuenta" data-j-cuenta></span><span class="gemas-txt"><span lang="es">gemas</span><span lang="en">gems</span></span></button>' +
@@ -857,27 +825,29 @@
                 '<button type="button" class="hud-entrar" data-j-entrar><span class="hud-nivel" data-j-num></span><strong data-j-nombre></strong><span class="hud-accion" data-j-accion></span></button>' +
                 '<button type="button" class="hud-paso" data-j-paso="1" aria-label="Siguiente">▶</button>' +
             '</div>' +
-            '<p class="hud-ayuda"><span lang="es"><kbd>WASD</kbd> moverte · <kbd>E</kbd> entrar · <kbd>M</kbd> mapa · o haz clic</span><span lang="en"><kbd>WASD</kbd> move · <kbd>E</kbd> enter · <kbd>M</kbd> map · or click</span></p>' +
+            '<p class="hud-ayuda"><span lang="es"><kbd>WASD</kbd> moverte · <kbd>E</kbd> entrar · <kbd>M</kbd> mapa · arrastra para mirar</span><span lang="en"><kbd>WASD</kbd> move · <kbd>E</kbd> enter · <kbd>M</kbd> map · drag to look</span></p>' +
             '<div class="mando" data-j-mando aria-hidden="true"><span class="mando-bola"></span></div>' +
             '<button type="button" class="boton-a" data-j-a><span>A</span><small data-j-a-texto></small></button>' +
             '<p class="mapa-aviso">' + (tactil
-                ? '<span lang="es">Toca un nivel para ir · arrastra para mirar</span><span lang="en">Tap a level to go · drag to look around</span>'
-                : '<span lang="es">Haz clic en un nivel para ir · M o Esc para volver</span><span lang="en">Click a level to go there · M or Esc to go back</span>') + '</p>' +
+                ? '<span lang="es">Toca un edificio para ir · arrastra para mirar</span><span lang="en">Tap a building to go · drag to look around</span>'
+                : '<span lang="es">Haz clic en un edificio para ir · M o Esc para volver</span><span lang="en">Click a building to go there · M or Esc to go back</span>') + '</p>' +
             '<div class="juego-titulo" data-j-titulo>' +
                 '<div class="titulo-caja">' +
-                    '<p class="titulo-pixel"><span lang="es">Portfolio · modo aventura</span><span lang="en">Portfolio · adventure mode</span></p>' +
+                    '<p class="titulo-pixel"><span lang="es">rodrigodavila.com</span><span lang="en">rodrigodavila.com</span></p>' +
                     '<h2>Rodrigo Dávila</h2>' +
-                    '<p class="titulo-lead"><span lang="es">Manager de IA Generativa y creador de apps. Recorre el mundo con aRDi: cada edificio es un nivel de mi carrera y cada cofre, una app.</span><span lang="en">Generative AI Manager and app maker. Explore the world with aRDi: every building is a level of my career and every chest, an app.</span></p>' +
-                    '<div class="titulo-botones"><button type="button" class="boton boton-lleno" data-j-empezar><span lang="es">Empezar</span><span lang="en">Start</span></button>' +
-                    '<button type="button" class="boton" data-j-clasica><span lang="es">Ver versión clásica</span><span lang="en">See classic version</span></button></div>' +
-                    '<p class="titulo-ayuda"><span lang="es">Pulsa Enter para empezar</span><span lang="en">Press Enter to start</span></p>' +
+                    '<p class="titulo-lead"><span lang="es">Manager de IA Generativa y creador de apps. ¿Cómo quieres ver la web?</span><span lang="en">Generative AI Manager and app maker. How would you like to see the site?</span></p>' +
+                    '<div class="titulo-opciones">' +
+                        '<button type="button" class="opcion opcion-juego" data-j-empezar><strong><span lang="es">Modo juego</span><span lang="en">Game mode</span></strong><small><span lang="es">Recorre una ciudad cyberpunk con aRDi</span><span lang="en">Explore a cyberpunk city with aRDi</span></small></button>' +
+                        '<button type="button" class="opcion" data-j-clasica><strong><span lang="es">Versión clásica</span><span lang="en">Classic version</span></strong><small><span lang="es">La web de siempre, para leer rápido</span><span lang="en">The regular site, quick to read</span></small></button>' +
+                    '</div>' +
+                    '<p class="titulo-ayuda"><span lang="es">Enter para jugar</span><span lang="en">Press Enter to play</span></p>' +
                 '</div>' +
             '</div>' +
             '<div class="juego-panel" role="dialog" aria-modal="true" aria-labelledby="j-panel-titulo" hidden>' +
                 '<div class="panel-caja">' +
                     '<div class="panel-cabeza">' +
                         '<div><p class="panel-num" data-j-panel-num></p><h2 id="j-panel-titulo" tabindex="-1" data-j-panel-titulo></h2></div>' +
-                        '<button type="button" class="panel-cerrar" data-j-cerrar><span lang="es">Volver al mapa</span><span lang="en">Back to map</span><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg></button>' +
+                        '<button type="button" class="panel-cerrar" data-j-cerrar><span lang="es">Volver a la ciudad</span><span lang="en">Back to the city</span><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg></button>' +
                     '</div>' +
                     '<div class="panel-cuerpo" data-j-cuerpo></div>' +
                     '<div class="panel-pie">' +
@@ -898,46 +868,56 @@
         if (tactil) juego.classList.add('tactil');
 
         var n0 = NIVELES[0];
-        heroe.x = n0.entrada.x; heroe.y = n0.entrada.y + 6;
+        heroe.x = n0.entrada.x; heroe.y = n0.entrada.y + 4;
         hada.x = heroe.x + 14; hada.y = heroe.y - 30;
         cam.x = heroe.x; cam.y = heroe.y - 16;
 
-        // Toque o clic sobre el mapa: lleva al personaje; en el mapa completo, arrastrar lo desplaza.
-        var inicio = null;
-        lienzoEl.addEventListener('pointerdown', function (e) { inicio = { x: e.clientX, y: e.clientY, ux: e.clientX, uy: e.clientY }; });
-        lienzoEl.addEventListener('pointercancel', function () { inicio = null; });
-        lienzoEl.addEventListener('pointerup', function (e) {
-            if (!inicio) return;
-            var lejos = Math.hypot(e.clientX - inicio.x, e.clientY - inicio.y) > 12;
-            inicio = null;
-            if (lejos || abierta >= 0 || abriendo) return;
-            var r = lienzoEl.getBoundingClientRect();
-            var w = aMundo((e.clientX - r.left) * dpr, (e.clientY - r.top) * dpr);
-            if (vistaMapa) cerrarMapa();
-            tocar(w.x, w.y);
+        // Arrastrar mueve la cámara; un toque sobre un edificio lleva hasta él.
+        var arrastre = null;
+        lienzoEl.addEventListener('pointerdown', function (e) {
+            arrastre = { x: e.clientX, y: e.clientY, ux: e.clientX, uy: e.clientY, movido: false, id: e.pointerId };
+            try { lienzoEl.setPointerCapture(e.pointerId); } catch (er) {}
         });
+        lienzoEl.addEventListener('pointercancel', function () { arrastre = null; juego.classList.remove('arrastrando'); });
         lienzoEl.addEventListener('pointermove', function (e) {
-            if (vistaMapa && inicio) {
-                var v = vistaRect();
-                mapaCam.x = Math.max(Math.min(v.w / 2, E.pw / 2), Math.min(Math.max(E.pw - v.w / 2, E.pw / 2), mapaCam.x - (e.clientX - inicio.ux) * dpr / esc));
-                mapaCam.y = Math.max(Math.min(v.h / 2, E.ph / 2), Math.min(Math.max(E.ph - v.h / 2, E.ph / 2), mapaCam.y - (e.clientY - inicio.uy) * dpr / esc));
-                cam.x = mapaCam.x; cam.y = mapaCam.y;
-                inicio.ux = e.clientX; inicio.uy = e.clientY;
+            if (arrastre && arrastre.id === e.pointerId) {
+                if (!arrastre.movido && Math.hypot(e.clientX - arrastre.x, e.clientY - arrastre.y) > 6) { arrastre.movido = true; juego.classList.add('arrastrando'); }
+                if (arrastre.movido) {
+                    var dx = (e.clientX - arrastre.ux) * dpr / esc, dy = (e.clientY - arrastre.uy) * dpr / esc;
+                    if (vistaMapa) { mapaCam.x -= dx; mapaCam.y -= dy; limitarCam(mapaCam); cam.x = mapaCam.x; cam.y = mapaCam.y; }
+                    else { camLibre = true; cam.x -= dx; cam.y -= dy; limitarCam(cam); camObj.x = cam.x; camObj.y = cam.y; }
+                    arrastre.ux = e.clientX; arrastre.uy = e.clientY;
+                    arrancar();
+                }
                 return;
             }
             if (tactil) return;
             var r = lienzoEl.getBoundingClientRect();
             var w = aMundo((e.clientX - r.left) * dpr, (e.clientY - r.top) * dpr);
-            lienzoEl.style.cursor = cosaEn(w.x, w.y) ? 'pointer' : 'crosshair';
+            lienzoEl.style.cursor = cosaEn(w.x, w.y) ? 'pointer' : 'grab';
+        });
+        lienzoEl.addEventListener('pointerup', function (e) {
+            if (!arrastre) return;
+            var movido = arrastre.movido;
+            arrastre = null;
+            juego.classList.remove('arrastrando');
+            if (movido || abierta >= 0) return;
+            var r = lienzoEl.getBoundingClientRect();
+            var w = aMundo((e.clientX - r.left) * dpr, (e.clientY - r.top) * dpr);
+            var n = cosaEn(w.x, w.y);
+            if (!n) return;
+            if (vistaMapa) cerrarMapa();
+            irA(pantalla(n.id), true);
         });
         mini.addEventListener('click', function (e) {
-            if (abierta >= 0 || abriendo) return;
+            if (abierta >= 0) return;
             var r = mini.getBoundingClientRect();
-            var wx = (e.clientX - r.left) / r.width * mundo.pw, wy = (e.clientY - r.top) / r.height * mundo.ph;
-            var mejor = null, md = 60;
+            var wx = (e.clientX - r.left) / r.width * PW, wy = (e.clientY - r.top) / r.height * PH;
+            var mejor = null, md = 70;
             NIVELES.forEach(function (n) { var d = Math.hypot(n.px - wx, n.py - 20 - wy); if (d < md) { md = d; mejor = n; } });
-            if (mejor) { irANivel(mejor); return; }
-            if (E === mundo) irAPunto(wx, wy);
+            if (mejor) { irA(pantalla(mejor.id), true); return; }
+            camLibre = true; camObj.x = wx; camObj.y = wy; limitarCam(camObj);
+            arrancar();
         });
 
         // Mando táctil
@@ -976,7 +956,6 @@
         inv.addEventListener('click', function (e) {
             if (e.target.closest('[data-j-reinicio]')) {
                 vistos = {}; guardar('gemas', '{}');
-                APPS.forEach(function (a) { a.abierto = false; });
                 inv.hidden = true; botonGemas.setAttribute('aria-expanded', 'false');
                 decir({ es: '¡Gemas a cero! A por las 15 otra vez.', en: 'Gems reset! Go get all 15 again.' }, true);
                 pintarHud();
@@ -1008,39 +987,191 @@
         document.addEventListener('keyup', function (e) { teclas[e.key.toLowerCase()] = false; });
         window.addEventListener('blur', function () { teclas = {}; });
         window.addEventListener('resize', medir);
-        new MutationObserver(function () { pintarHud(); mirarTema(); }).observe(raiz, { attributes: true, attributeFilter: ['data-lang', 'data-theme'] });
-        window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', mirarTema);
-        mirarTema();
-        // Base del minimapa: el suelo del mundo reducido
-        var mb = lienzo(mundo.mw * 2, mundo.mh * 2);
+        new MutationObserver(function () { pintarHud(); }).observe(raiz, { attributes: true, attributeFilter: ['data-lang'] });
+        var mb = lienzo(MW * 3, MH * 3);
         mb.x.imageSmoothingEnabled = true;
-        mb.x.drawImage(mundo.img, 0, 0, mundo.mw * 2, mundo.mh * 2);
+        mb.x.drawImage(sueloImg, 0, 0, MW * 3, MH * 3);
+        objetos.forEach(function (o) {
+            if (!o.img) return;
+            mb.x.fillStyle = o.nivel ? '#3a3560' : '#24223a';
+            mb.x.fillRect(o.x / T * 3, (o.base - Math.min(o.h, 40)) / T * 3, o.w / T * 3, Math.min(o.h, 40) / T * 3);
+        });
         miniBase = mb.c;
         medir();
     }
 
-    function tocar(x, y) {
-        var c = cosaEn(x, y);
-        if (c && c.app) { irA(pantalla(c.id), true); return; }
-        if (c) { irANivel(c); return; }
-        if (E === sala && y > sala.ph - 20) { irAPunto(sala.pw / 2, sala.ph - 2); return; }
-        objetivo = null;
-        irAPunto(x, y);
-    }
-    function irANivel(n) {
-        if (n.sala) {
-            if (E === sala) return;
-            objetivo = null;
-            irAPunto(n.entrada.x, n.entrada.y, entrarSala);
-            return;
-        }
-        irA(pantalla(n.id), true);
+    // Edificios de relleno a lo largo de cada acera, dejando libres avenidas, plaza y niveles
+    function rellenar() {
+        var filas = [
+            { base: AVENIDAS_H[0] * T - T, tramos: [[0, PW]], h: [120, 236] },
+            { base: (PLAZA.y0) * T, tramos: [[PLAZA.x0 * T, (PLAZA.x1 + 1) * T]], h: [40, 72] },
+            { base: AVENIDAS_H[1] * T - T, tramos: [[0, (AVENIDAS_V[0] - 1) * T], [(AVENIDAS_V[1] + 4) * T, PW]], h: [90, 220] },
+            { base: AVENIDAS_H[2] * T - T, tramos: [[0, (AVENIDAS_V[0] - 1) * T], [(AVENIDAS_V[0] + 4) * T, (AVENIDAS_V[1] - 1) * T], [(AVENIDAS_V[1] + 4) * T, PW]], h: [60, 136] }
+        ];
+        var r = azar(31), semilla = 100;
+        filas.forEach(function (f) {
+            var ocupados = NIVELES.filter(function (n) { return n.py === f.base; }).map(function (n) { return [n.px - n.w / 2 - 2, n.px + n.w / 2 + 2]; });
+            f.tramos.forEach(function (tr) {
+                var huecos = [[tr[0], tr[1]]];
+                ocupados.forEach(function (o) {
+                    var nuevos = [];
+                    huecos.forEach(function (h) {
+                        if (o[1] <= h[0] || o[0] >= h[1]) { nuevos.push(h); return; }
+                        if (o[0] > h[0]) nuevos.push([h[0], o[0]]);
+                        if (o[1] < h[1]) nuevos.push([o[1], h[1]]);
+                    });
+                    huecos = nuevos;
+                });
+                huecos.forEach(function (h) {
+                    var x = h[0];
+                    while (h[1] - x >= 24) {
+                        var w = Math.min(h[1] - x, 36 + Math.floor(r() * 9) * 4);
+                        if (h[1] - x - w < 24) w = h[1] - x;
+                        var alto = Math.round(f.h[0] + r() * (f.h[1] - f.h[0]));
+                        var s = spriteRelleno(w, alto, semilla++);
+                        objetos.push({ img: s.c, halo: s.halo, x: x, y: f.base - alto, base: f.base, w: w, h: alto });
+                        x += w;
+                    }
+                });
+            });
+        });
     }
 
-    function mirarTema() {
-        var t = raiz.getAttribute('data-theme');
-        oscuro = t ? t === 'dark' : !window.matchMedia('(prefers-color-scheme: light)').matches;
+    function ponerFarolas() {
+        var filas = [];
+        AVENIDAS_H.forEach(function (r) { filas.push({ y: (r - 1) * T + 4, arriba: true }); if (r !== AVENIDAS_H[2]) filas.push({ y: (r + 3) * T + 13 }); });
+        var r2 = azar(5);
+        filas.forEach(function (f) {
+            for (var x = 2 * T + 8; x < PW - T; x += 6 * T) {
+                var tx = Math.floor(x / T);
+                if (!libreCasilla(tx, Math.floor(f.y / T))) continue;
+                if (NIVELES.some(function (n) { return Math.abs(n.px - x) < 28 && Math.abs(n.entrada.y - f.y) < 20; })) continue;
+                if (suelo[ix(tx, Math.floor(f.y / T))] !== ACERA) continue;
+                var c = r2() < 0.5 ? C.cian : C.rosa;
+                farolas.push({ x: x, y: f.y, color: c });
+                objetos.push({ farola: true, x: x - 6, y: f.y - 40, base: f.y, w: 12, h: 40, fx: x, fy: f.y, color: c });
+            }
+        });
+        objetos.push({ proyector: true, x: PROYECTOR.x - 30, y: PROYECTOR.y - 70, base: PROYECTOR.y + 6, w: 60, h: 80 });
     }
+
+    /* ---------- Tráfico, lluvia y peatones ---------- */
+    function crearTrafico() {
+        var r = azar(77), colores = ['#c9d1dc', '#ff2fb3', '#22e4ff', '#ffd23f', '#9b5cff', '#c9d1dc'];
+        AVENIDAS_H.forEach(function (fila) {
+            [[fila * T + 14, -1], [fila * T + 36, 1]].forEach(function (c) {
+                for (var k = 0; k < 2; k++) coches.push({ eje: 'h', fijo: c[0], dir: c[1], pos: r() * PW, vel: 60 + r() * 50, color: colores[Math.floor(r() * colores.length)], salto: 0, cyber: r() < 0.5 });
+            });
+        });
+        AVENIDAS_V.forEach(function (col) {
+            [[col * T + 14, 1], [col * T + 34, -1]].forEach(function (c) {
+                coches.push({ eje: 'v', fijo: c[0], dir: c[1], pos: AVENIDAS_H[0] * T + r() * (AVENIDAS_H[2] - AVENIDAS_H[0]) * T, vel: 50 + r() * 40, color: colores[Math.floor(r() * colores.length)], salto: 0 });
+            });
+        });
+        for (var v = 0; v < 6; v++) voladores.push({ x: r() * PW, y: 30 + r() * (PH * 0.75), vel: (40 + r() * 70) * (r() < 0.5 ? -1 : 1), color: NEONES[Math.floor(r() * 4)] });
+        // Peatones con paraguas por las aceras
+        var aceras = [];
+        AVENIDAS_H.forEach(function (fila) { aceras.push((fila - 1) * T + 9); if (fila !== AVENIDAS_H[2]) aceras.push((fila + 3) * T + 8); });
+        for (var p = 0; p < 16; p++) {
+            var y = aceras[p % aceras.length], x0 = r() * PW;
+            peatones.push({ x: x0, y: y, dir: r() < 0.5 ? -1 : 1, vel: 10 + r() * 14, color: NEONES[Math.floor(r() * NEONES.length)], abrigo: ['#3a3358', '#4a2a3a', '#2a3a4a', '#3a3a2a'][p % 4], fase: r() * 10 });
+        }
+    }
+    function moverTrafico(dt) {
+        coches.forEach(function (c) {
+            c.pos += c.vel * c.dir * dt;
+            if (c.eje === 'h') { if (c.pos < -60) c.pos = PW + 60; if (c.pos > PW + 60) c.pos = -60; }
+            else {
+                var a = AVENIDAS_H[0] * T - 40, b = (AVENIDAS_H[2] + 3) * T + 40;
+                if (c.pos < a) c.pos = b; if (c.pos > b) c.pos = a;
+            }
+            // Si el personaje está en su carril, el coche salta por encima
+            if (c.salto) { c.salto += dt / 0.75; if (c.salto >= 1) c.salto = 0; }
+            else if (!reducido) {
+                var lateral = c.eje === 'h' ? Math.abs(heroe.y - 4 - c.fijo) : Math.abs(heroe.x - c.fijo);
+                var delante = ((c.eje === 'h' ? heroe.x : heroe.y) - c.pos) * c.dir;
+                if (lateral < 13 && delante > 0 && delante < 52) {
+                    c.salto = 0.001;
+                    if (!dicho.salto) { dicho.salto = 1; decir({ es: '¡Cuidado! Aquí los coches saltan. Mejor ve por la acera.', en: 'Careful! Cars jump around here. Better stick to the pavement.' }); }
+                }
+            }
+        });
+        voladores.forEach(function (v) { v.x += v.vel * dt; if (v.x < -80) v.x = PW + 80; if (v.x > PW + 80) v.x = -80; });
+        peatones.forEach(function (p) {
+            var nx = p.x + p.dir * p.vel * dt;
+            var cerca = Math.hypot(nx - heroe.x, p.y - heroe.y) < 12;
+            if (!libreEn(nx + p.dir * 4, p.y) || nx < 8 || nx > PW - 8 || cerca) p.dir *= -1;
+            else p.x = nx;
+            p.fase += dt * p.vel * 0.3;
+        });
+    }
+    function dibujaCoche(x, c) {
+        var alto = c.salto ? Math.sin(c.salto * Math.PI) * 26 : 0;
+        if (c.eje === 'h') {
+            var X = Math.round(c.pos), Y = Math.round(c.fijo);
+            x.fillStyle = 'rgba(0,0,0,.4)'; x.fillRect(X - 15, Y + 3, 30, 4);
+            x.save(); x.translate(X, Y - Math.round(alto)); if (c.dir < 0) x.scale(-1, 1);
+            if (c.cyber) {
+                // Furgoneta de líneas rectas
+                x.fillStyle = C.linea;
+                x.beginPath(); x.moveTo(-16, 3); x.lineTo(-16, -6); x.lineTo(2, -11); x.lineTo(16, -5); x.lineTo(16, 3); x.closePath(); x.fill();
+                x.fillStyle = c.color;
+                x.beginPath(); x.moveTo(-15, 2); x.lineTo(-15, -5); x.lineTo(2, -10); x.lineTo(15, -4); x.lineTo(15, 2); x.closePath(); x.fill();
+                x.fillStyle = '#1a2440'; x.beginPath(); x.moveTo(-4, -6); x.lineTo(2, -9); x.lineTo(10, -5); x.lineTo(-4, -5); x.fill();
+                x.fillStyle = 'rgba(0,0,0,.25)'; x.fillRect(-15, -1, 30, 3);
+            } else {
+                x.fillStyle = C.linea; x.fillRect(-15, -6, 30, 9); x.fillRect(-8, -11, 15, 6);
+                x.fillStyle = c.color; x.fillRect(-14, -5, 28, 7); x.fillRect(-7, -10, 13, 5);
+                x.fillStyle = '#1a2440'; x.fillRect(-5, -9, 4, 4); x.fillRect(1, -9, 4, 4);
+            }
+            x.fillStyle = C.linea; x.fillRect(-11, 1, 6, 4); x.fillRect(5, 1, 6, 4);
+            x.fillStyle = '#fff7c2'; x.fillRect(14, -3, 2, 2);
+            x.fillStyle = '#ff2f5a'; x.fillRect(-16, -3, 2, 2);
+            x.restore();
+        } else {
+            var X2 = Math.round(c.fijo), Y2 = Math.round(c.pos - alto);
+            x.fillStyle = 'rgba(0,0,0,.4)'; x.fillRect(X2 - 8, Math.round(c.pos) - 8, 16, 22);
+            x.fillStyle = C.linea; x.fillRect(X2 - 8, Y2 - 12, 16, 24);
+            x.fillStyle = c.color; x.fillRect(X2 - 7, Y2 - 11, 14, 22);
+            x.fillStyle = '#1a2440'; x.fillRect(X2 - 5, Y2 + (c.dir > 0 ? 2 : -8), 10, 5);
+            x.fillStyle = 'rgba(255,255,255,.25)'; x.fillRect(X2 - 5, Y2 - 2, 10, 3);
+            x.fillStyle = c.dir > 0 ? '#fff7c2' : '#ff2f5a'; x.fillRect(X2 - 6, Y2 + 10, 3, 2); x.fillRect(X2 + 3, Y2 + 10, 3, 2);
+            x.fillStyle = c.dir > 0 ? '#ff2f5a' : '#fff7c2'; x.fillRect(X2 - 6, Y2 - 12, 3, 2); x.fillRect(X2 + 3, Y2 - 12, 3, 2);
+        }
+    }
+    function dibujaPeaton(x, p) {
+        var X = Math.round(p.x), Y = Math.round(p.y), paso = Math.floor(p.fase) % 2;
+        x.fillStyle = 'rgba(0,0,0,.3)'; x.fillRect(X - 4, Y - 1, 8, 2);
+        x.fillStyle = C.linea; x.fillRect(X - 3, Y - 12, 7, 12);
+        x.fillStyle = '#1a1a26'; x.fillRect(X - 2, Y - 4, 2, 4 - paso); x.fillRect(X + 1, Y - 4, 2, 3 + paso);
+        x.fillStyle = p.abrigo; x.fillRect(X - 2, Y - 11, 5, 7);
+        x.fillStyle = '#e0b48f'; x.fillRect(X - 1, Y - 14, 3, 3);
+        x.fillStyle = C.linea; x.fillRect(X, Y - 19, 1, 7);
+        x.fillStyle = C.linea; x.fillRect(X - 8, Y - 22, 17, 4);
+        x.fillStyle = '#1b1a26'; x.fillRect(X - 7, Y - 21, 15, 2);
+        x.fillStyle = p.color; x.fillRect(X - 8, Y - 19, 17, 1); x.fillRect(X - 5, Y - 23, 11, 1);
+    }
+
+    function tocarLluvia(dt) {
+        if (reducido) return;
+        var quiero = Math.min(240, Math.floor(cw * ch / (7000 * dpr * dpr)));
+        while (lluvia.length < quiero) lluvia.push({ x: Math.random() * cw, y: Math.random() * ch, v: (420 + Math.random() * 260) * dpr, l: (8 + Math.random() * 10) * dpr });
+        if (lluvia.length > quiero) lluvia.length = quiero;
+        lluvia.forEach(function (g) {
+            g.y += g.v * dt; g.x -= g.v * dt * 0.18;
+            if (g.y > ch || g.x < 0) {
+                if (Math.random() < 0.3) particulas.push({ salpicon: true, sx: g.x, sy: Math.min(g.y, ch), v: 0.3 });
+                g.y = -g.l; g.x = Math.random() * (cw + 100);
+            }
+        });
+    }
+
+    function limitarCam(c) {
+        var vw = cw / esc, vh = ch / esc, abajo = tactil && !vistaMapa ? 170 * dpr / esc : 0;
+        c.x = vw < PW ? Math.max(vw / 2, Math.min(PW - vw / 2, c.x)) : PW / 2;
+        c.y = vh < PH + abajo ? Math.max(vh / 2, Math.min(PH + abajo - vh / 2, c.y)) : PH / 2;
+    }
+    var camObj = { x: 0, y: 0 };
 
     function medir() {
         if (!juego) return;
@@ -1048,8 +1179,8 @@
         cw = Math.round(lienzoEl.clientWidth * dpr); ch = Math.round(lienzoEl.clientHeight * dpr);
         lienzoEl.width = cw; lienzoEl.height = ch;
         var vw = lienzoEl.clientWidth, vh = lienzoEl.clientHeight;
-        // Se ven unas 48 casillas de ancho en escritorio y unas 22 en un móvil vertical.
-        var zoom = Math.max(1.1, Math.min(vw / (48 * T), vh / (28 * T)));
+        // Unas 44 casillas de ancho en escritorio y unas 22 en un móvil vertical
+        var zoom = Math.max(1.1, Math.min(vw / (44 * T), vh / (26 * T)));
         escBase = Math.max(1, Math.round(zoom * dpr));
         escObj = escalaActual();
         esc = escObj;
@@ -1058,93 +1189,49 @@
         arrancar();
     }
     function escalaActual() {
-        if (vistaMapa) return ch > cw ? ch / mundo.ph * 0.92 : Math.min(cw / mundo.pw, ch / mundo.ph) * 0.96;
-        // En vertical la sala no cabe entera: se ve un trozo y la cámara sigue al personaje.
-        if (E === sala) return Math.max(escBase, Math.min(cw / (sala.pw * (cw < ch ? 0.6 : 1) + 48 * dpr), ch / (sala.ph + 150 * dpr)));
+        if (vistaMapa) return ch > cw ? ch / PH * 0.92 : Math.min(cw / PW, ch / PH) * 0.98;
         return escBase;
     }
 
     function cosaEn(x, y) {
-        if (E === sala) {
-            for (var k = 0; k < APPS.length; k++) { var a = APPS[k]; if (Math.abs(x - a.cx) < 16 && y > a.cy - 34 && y < a.cy + 12) return a; }
-            return null;
-        }
         for (var i = 0; i < NIVELES.length; i++) {
             var n = NIVELES[i];
-            if (x > n.px - n.w / 2 - 4 && x < n.px + n.w / 2 + 4 && y > n.py - n.h - n.extra - 8 && y < n.py + (vistaMapa ? 44 : 16)) return n;
+            if (x > n.px - n.w / 2 - 4 && x < n.px + n.w / 2 + 4 && y > n.py - n.h - 8 && y < n.py + 18) return n;
         }
         return null;
     }
     function vistaRect() {
         var vw = cw / esc, vh = ch / esc;
+        var abajo = tactil && !vistaMapa ? 170 * dpr / esc : 0;
         var l = cam.x - vw / 2, t = cam.y - vh / 2;
-        if (vw < E.pw) l = Math.max(0, Math.min(E.pw - vw, l)); else l = (E.pw - vw) / 2;
-        // En móvil la cámara puede pasar del borde de abajo para que los mandos no tapen al personaje
-        var abajo = tactil && E === mundo && !vistaMapa ? 170 * dpr / esc : 0;
-        if (vh < E.ph + abajo) t = Math.max(0, Math.min(E.ph + abajo - vh, t)); else t = (E.ph - vh) / 2;
+        if (vw < PW) l = Math.max(0, Math.min(PW - vw, l)); else l = (PW - vw) / 2;
+        if (vh < PH + abajo) t = Math.max(0, Math.min(PH + abajo - vh, t)); else t = (PH - vh) / 2;
         return { l: l, t: t, w: vw, h: vh };
     }
     function aMundo(sx, sy) { var v = vistaRect(); return { x: v.l + sx / esc, y: v.t + sy / esc }; }
 
     function abrirMapa() {
-        if (abierta >= 0 || E !== mundo) return;
-        mapaCam.x = ch > cw ? heroe.x : mundo.pw / 2; mapaCam.y = mundo.ph / 2;
+        if (abierta >= 0) return;
+        mapaCam.x = ch > cw ? heroe.x : PW / 2; mapaCam.y = PH / 2;
         vistaMapa = true; escObj = escalaActual(); ruta = [];
         juego.classList.add('en-mapa');
         arrancar();
     }
     function cerrarMapa() {
         vistaMapa = false; escObj = escalaActual();
+        camLibre = false;
         juego.classList.remove('en-mapa');
         arrancar();
-    }
-
-    /* ---------- Cambiar de escena ---------- */
-    function fundido(fn) {
-        var f = juego.querySelector('[data-j-fundido]');
-        if (reducido) { fn(); return; }
-        bloqueo = 1;
-        f.classList.add('negro');
-        setTimeout(function () { fn(); f.classList.remove('negro'); bloqueo = 0; }, 260);
-    }
-    function ponerEscena(s, x, y, dir) {
-        E = s;
-        heroe.x = x; heroe.y = y; heroe.dir = dir;
-        hada.x = x + 14; hada.y = y - 30; hada.vx = 0; hada.vy = 0; hada.estela = [];
-        ruta = []; marca = null; alLlegar = null;
-        escObj = escalaActual(); esc = escObj;
-        cam.x = x; cam.y = y - 16;
-        juego.classList.toggle('en-sala', s === sala);
-        pintarHud();
-    }
-    function entrarSala() {
-        fundido(function () {
-            ponerEscena(sala, sala.pw / 2, sala.ph - 10, 'arriba');
-            if (!dicho.sala) { dicho.sala = 1; decir({ es: '¡Las apps de Rodrigo! Cada cofre guarda una. Acércate y ábrelos.', en: 'Rodrigo\'s apps! Every chest holds one. Walk up and open them.' }, true); }
-            setTimeout(seguirObjetivo, 300);
-        });
-    }
-    function salirSala() {
-        var t = nivelPorId('trofeos');
-        fundido(function () {
-            ponerEscena(mundo, t.entrada.x, t.entrada.y + 6, 'abajo');
-            setTimeout(seguirObjetivo, 300);
-        });
     }
 
     /* ---------- HUD ---------- */
     function pintarHud() {
         if (!juego) return;
         var l = idioma();
-        var accion = cerca ? (cerca.app ? (vistos[cerca.id] ? (l === 'es' ? 'Ver' : 'View') : (l === 'es' ? 'Abrir' : 'Open')) : (l === 'es' ? 'Entrar' : 'Enter')) : (l === 'es' ? 'Ir' : 'Go');
-        var nombre, num;
-        if (cerca && cerca.sala) { nombre = cerca[l]; num = appsAbiertas() + ' / 5 ' + (l === 'es' ? 'cofres' : 'chests'); }
-        else {
-            var p = cerca ? PANTALLAS[pantalla(cerca.id)] : PANTALLAS[sel];
-            nombre = p[l]; num = (l === 'es' ? 'Nivel ' : 'Level ') + (pantalla(p.id) + 1) + ' / ' + PANTALLAS.length;
-        }
-        juego.querySelector('[data-j-num]').textContent = num;
-        juego.querySelector('[data-j-nombre]').textContent = nombre;
+        var accion = cerca ? (l === 'es' ? 'Entrar' : 'Enter') : (l === 'es' ? 'Ir' : 'Go');
+        var p = cerca || PANTALLAS[sel];
+        juego.querySelector('[data-j-num]').textContent = (l === 'es' ? 'Nivel ' : 'Level ') + (pantalla(p.id) + 1) + ' / ' + PANTALLAS.length;
+        juego.querySelector('[data-j-nombre]').textContent = p[l];
         juego.querySelector('[data-j-accion]').textContent = accion;
         juego.querySelector('[data-j-a-texto]').textContent = accion;
         juego.querySelector('[data-j-a]').classList.toggle('listo', !!cerca);
@@ -1159,26 +1246,12 @@
             var d = Number(b.getAttribute('data-j-paso'));
             b.disabled = sel + d < 0 || sel + d >= PANTALLAS.length;
         });
+        if (barrio) juego.querySelector('[data-j-barrio]').textContent = barrio[l];
     }
     function accion() {
         if (vistaMapa) { cerrarMapa(); return; }
-        if (abriendo || bloqueo) return;
-        if (cerca) {
-            if (cerca.sala) entrarSala();
-            else if (cerca.app) abrirCofre(cerca);
-            else abrir(pantalla(cerca.id));
-        } else irA(sel, true);
-    }
-
-    /* ---------- Cofres ---------- */
-    function abrirCofre(a) {
-        if (vistos[a.id]) { abrir(pantalla(a.id)); return; }
-        abriendo = { a: a, t: 0 };
-        teclas = {}; ruta = []; objetivo = null;
-        heroe.dir = 'abajo';
-        a.abierto = true;
-        decir({ es: '¡Has encontrado ' + a.es + '!', en: 'You found ' + a.en + '!' }, true);
-        for (var k = 0; k < 30; k++) particulas.push({ x: a.cx, y: a.cy - 6, vx: (Math.random() - 0.5) * 80, vy: -30 - Math.random() * 60, v: 1 + Math.random() * 0.6, c: ['#ffd36b', '#fff3c4', '#3ee6a0', '#ffffff'][k % 4] });
+        if (cerca) abrir(pantalla(cerca.id));
+        else irA(sel, true);
     }
 
     /* ---------- Bucle ---------- */
@@ -1201,9 +1274,17 @@
         requestAnimationFrame(paso);
     }
 
+    function barrioDe(x, y) {
+        var tx = x / T, ty = y / T;
+        if (tx >= PLAZA.x0 && tx <= PLAZA.x1 + 1 && ty >= 22 && ty < 38) return BARRIOS[1];
+        if (ty < 22) return BARRIOS[0];
+        if (ty < 42) return BARRIOS[2];
+        return BARRIOS[3];
+    }
+
     function actualizar(dt) {
         var ix2 = 0, iy2 = 0;
-        var libre = !vistaMapa && !abriendo && !bloqueo && juego.querySelector('[data-j-titulo]').hidden;
+        var libre = !vistaMapa && juego.querySelector('[data-j-titulo]').hidden;
         if (libre) {
             if (teclas.a || teclas.arrowleft) ix2 -= 1;
             if (teclas.d || teclas.arrowright) ix2 += 1;
@@ -1211,15 +1292,15 @@
             if (teclas.s || teclas.arrowdown) iy2 += 1;
             if (mando.x || mando.y) { ix2 = mando.x; iy2 = mando.y; }
         }
-        var vel = 92, vx = 0, vy = 0;
+        var vel = 96, vx = 0, vy = 0;
         if (ix2 || iy2) {
-            ruta = []; alLlegar = null; objetivo = null; marca = null;
+            ruta = []; alLlegar = null; marca = null;
             var m = Math.hypot(ix2, iy2), k = Math.min(1, m) / m;
             vx = ix2 * k * vel; vy = iy2 * k * vel;
         } else if (ruta.length && libre) {
             var obj = ruta[0], dx = obj.x - heroe.x, dy = obj.y - heroe.y, d = Math.hypot(dx, dy);
             if (d < 3) { ruta.shift(); if (!ruta.length) { marca = null; var f = alLlegar; alLlegar = null; if (f) f(); } }
-            else { vx = dx / d * 124; vy = dy / d * 124; }
+            else { vx = dx / d * 130; vy = dy / d * 130; }
         }
         var x0 = heroe.x, y0 = heroe.y;
         if (vx) {
@@ -1234,71 +1315,71 @@
         }
         var mov = Math.hypot(heroe.x - x0, heroe.y - y0);
         heroe.moviendo = mov > 0.01;
+        if (heroe.moviendo) camLibre = false;
         if (vx || vy) heroe.dir = Math.abs(vx) > Math.abs(vy) ? (vx < 0 ? 'izq' : 'der') : (vy < 0 ? 'arriba' : 'abajo');
         heroe.dist += mov;
+        if (abierta >= 0) return;
         if (ruta.length && !heroe.moviendo && libre) {
             heroe.atasco = (heroe.atasco || 0) + dt;
             if (heroe.atasco > 0.5) { heroe.atasco = 0; var fin = ruta[ruta.length - 1], luego = alLlegar; irAPunto(fin.x, fin.y, luego); }
         } else heroe.atasco = 0;
 
-        // Salir de la sala por la puerta
-        if (E === sala && heroe.y > sala.ph - 5 && !bloqueo) { salirSala(); return; }
-
-        // ¿Junto a una puerta o un cofre?
         var antes = cerca;
         cerca = null;
-        if (E === mundo) NIVELES.forEach(function (n) { if (Math.hypot(heroe.x - n.entrada.x, heroe.y - n.entrada.y) < 18) cerca = n; });
-        else APPS.forEach(function (a) { if (Math.hypot(heroe.x - a.frente.x, heroe.y - a.frente.y) < 16) cerca = a; });
-        if (cerca !== antes) { if (cerca && !cerca.sala) sel = pantalla(cerca.id); pintarHud(); }
-        // Empujar hacia la puerta también entra
-        if (cerca && !cerca.app && iy2 < -0.5 && Math.abs(ix2) < 0.5 && heroe.y < cerca.entrada.y + 2) {
+        NIVELES.forEach(function (n) { if (Math.hypot(heroe.x - n.entrada.x, heroe.y - n.entrada.y) < 18) cerca = n; });
+        if (cerca !== antes) { if (cerca) sel = pantalla(cerca.id); pintarHud(); }
+        if (cerca && iy2 < -0.5 && Math.abs(ix2) < 0.5 && heroe.y < cerca.entrada.y + 2) {
             heroe.arriba += dt;
-            if (heroe.arriba > 0.18) { heroe.arriba = 0; teclas = {}; if (cerca.sala) entrarSala(); else abrir(pantalla(cerca.id)); return; }
+            if (heroe.arriba > 0.18) { heroe.arriba = 0; teclas = {}; abrir(pantalla(cerca.id)); return; }
         } else heroe.arriba = 0;
 
-        // Cofre abriéndose: el personaje levanta la app y luego se abre su pantalla.
-        if (abriendo) {
-            abriendo.t += dt;
-            heroe.trofeo = abriendo.t > 0.35 ? abriendo.a : null;
-            if (abriendo.t > (reducido ? 0.2 : 1.7)) { var a2 = abriendo.a; abriendo = null; heroe.trofeo = null; abrir(pantalla(a2.id)); return; }
+        // Barrios: un cartel al entrar en cada uno y un comentario de aRDi la primera vez
+        if (libre) {
+            var b = barrioDe(heroe.x, heroe.y);
+            if (b !== barrio) {
+                barrio = b;
+                var cartel = juego.querySelector('[data-j-barrio]');
+                cartel.textContent = b[idioma()];
+                cartel.classList.remove('visible'); void cartel.offsetWidth; cartel.classList.add('visible');
+                if (!dicho['barrio-' + b.id]) { dicho['barrio-' + b.id] = 1; decir(b.hada); }
+            }
+            NIVELES.forEach(function (n) {
+                if (dicho[n.id]) return;
+                if (Math.hypot(heroe.x - n.entrada.x, heroe.y - n.entrada.y) < 70) { dicho[n.id] = 1; decir(n.hada); }
+            });
         }
-
-        // aRDi comenta lo que tienes cerca
-        if (E === mundo) NIVELES.forEach(function (n) {
-            if (dicho[n.id]) return;
-            if (Math.hypot(heroe.x - n.entrada.x, heroe.y - (n.py - 20)) < 90) { dicho[n.id] = 1; decir(n.hada); }
-        });
-        else APPS.forEach(function (a) {
-            if (dicho[a.id] || vistos[a.id]) return;
-            if (Math.hypot(heroe.x - a.frente.x, heroe.y - a.frente.y) < 30) { dicho[a.id] = 1; decir(a.hada); }
-        });
         quieto = heroe.moviendo ? 0 : quieto + dt;
         if (quieto > 14 && !frase && juego.querySelector('[data-j-titulo]').hidden) { quieto = 0; decir(CONSEJOS[consejo++ % CONSEJOS.length]); }
         avanzarFrase(dt);
 
         // aRDi: muelle hacia un punto junto al personaje
         var lado = heroe.dir === 'izq' ? 1 : -1;
-        var tx = heroe.x + lado * 16 + Math.sin(reloj * 1.3) * 6, ty = heroe.y - 30 + Math.sin(reloj * 3.1) * 4;
+        var tx = heroe.x + lado * 16 + Math.sin(reloj * 1.3) * 6, ty = heroe.y - 32 + Math.sin(reloj * 3.1) * 4;
         var ax = (tx - hada.x) * 30 - hada.vx * 7, ay = (ty - hada.y) * 30 - hada.vy * 7;
         hada.vx += ax * dt; hada.vy += ay * dt;
         hada.x += hada.vx * dt; hada.y += hada.vy * dt;
         if (!reducido) {
-            hada.estela.push({ x: hada.x + (Math.random() - 0.5) * 3, y: hada.y + (Math.random() - 0.5) * 3, v: 1 });
-            if (hada.estela.length > 22) hada.estela.shift();
-            hada.estela.forEach(function (p) { p.v -= dt * 1.8; p.y += dt * 6; });
+            hada.estela.push({ x: hada.x + (Math.random() - 0.5) * 3, y: hada.y + 3, v: 1 });
+            if (hada.estela.length > 18) hada.estela.shift();
+            hada.estela.forEach(function (p) { p.v -= dt * 2; p.y += dt * 8; });
         }
-        particulas.forEach(function (p) { p.x += p.vx * dt; p.y += p.vy * dt; p.vy += 40 * dt; p.v -= dt; });
+        moverTrafico(dt);
+        tocarLluvia(dt);
+        particulas.forEach(function (p) { if (p.salpicon) { p.v -= dt; return; } p.x += p.vx * dt; p.y += p.vy * dt; p.vy += 40 * dt; p.v -= dt; });
         particulas = particulas.filter(function (p) { return p.v > 0; });
         if (marca) marca.t += dt;
 
         var kz = reducido ? 1 : 1 - Math.exp(-dt * 7);
         esc += (escObj - esc) * kz;
         if (Math.abs(escObj - esc) < 0.002) esc = escObj;
-        var cx = vistaMapa ? mapaCam.x : heroe.x, cy = vistaMapa ? mapaCam.y : heroe.y - 16;
-        var kc = reducido ? 1 : 1 - Math.exp(-dt * 6);
-        cam.x += (cx - cam.x) * kc; cam.y += (cy - cam.y) * kc;
+        var objetivo;
+        if (vistaMapa) objetivo = mapaCam;
+        else if (camLibre) objetivo = camObj;
+        else { objetivo = { x: heroe.x, y: heroe.y - 16 }; }
+        var kc = reducido ? 1 : 1 - Math.exp(-dt * (camLibre ? 14 : 6));
+        cam.x += (objetivo.x - cam.x) * kc; cam.y += (objetivo.y - cam.y) * kc;
+        if (!camLibre) { camObj.x = cam.x; camObj.y = cam.y; }
         var v = vistaRect();
-        // El bocadillo va debajo del personaje, salvo si este está en la parte baja de la pantalla
         var gx = (heroe.x - v.l) * esc / dpr, gy = (heroe.y + 8 - v.t) * esc / dpr, arriba = gy > ch / dpr * 0.62;
         if (arriba) gy = (heroe.y - 34 - v.t) * esc / dpr;
         globo.classList.toggle('arriba', arriba);
@@ -1309,120 +1390,150 @@
         var x = ctx, v = vistaRect(), i;
         x.setTransform(1, 0, 0, 1, 0, 0);
         x.imageSmoothingEnabled = esc < 1.5;
-        x.fillStyle = E === sala ? '#0d0e13' : tactil ? C.copaO : C.agua; x.fillRect(0, 0, cw, ch);
+        x.fillStyle = '#05040a'; x.fillRect(0, 0, cw, ch);
         var ox = Math.round(-v.l * esc), oy = Math.round(-v.t * esc);
         x.setTransform(esc, 0, 0, esc, ox, oy);
         var sl = Math.max(0, Math.floor(v.l)), st = Math.max(0, Math.floor(v.t));
-        var sw = Math.min(E.pw - sl, Math.ceil(v.w) + 2), sh = Math.min(E.ph - st, Math.ceil(v.h) + 2);
-        x.drawImage(E.img, sl, st, sw, sh, sl, st, sw, sh);
-        if (!reducido && E === mundo) {
-            var fase = Math.floor(reloj * 2);
-            for (var ty = Math.floor(v.t / T); ty <= Math.floor((v.t + v.h) / T); ty++) for (var tx = Math.floor(v.l / T); tx <= Math.floor((v.l + v.w) / T); tx++) {
-                if (!dentro(tx, ty) || E.suelo[ix(tx, ty)] !== AGUA) continue;
-                var hh = hash(tx * 3 + fase, ty * 7 - fase);
-                if (hh < 0.12) { x.fillStyle = C.espuma; x.fillRect(tx * T + Math.floor(hh * 90), ty * T + 4 + Math.floor(hh * 60), 4, 1); }
-            }
+        var sw = Math.min(PW - sl, Math.ceil(v.w) + 2), sh = Math.min(PH - st, Math.ceil(v.h) + 2);
+        if (sw > 0 && sh > 0) x.drawImage(sueloImg, sl, st, sw, sh, sl, st, sw, sh);
+        // Reflejos del agua
+        if (!reducido) for (var ry = (AVENIDAS_H[2] + 4) * T; ry < PH; ry += 5) for (var rx = Math.floor(v.l / 24) * 24; rx < v.l + v.w; rx += 24) {
+            var hh = hash(rx, ry + Math.floor(reloj * 3));
+            if (hh < 0.35) { x.fillStyle = NEONES[Math.floor(hh * 17) % NEONES.length]; x.globalAlpha = 0.35; x.fillRect(rx + hh * 20, ry, 6 + hh * 10, 1); }
         }
-        if (E === sala) pared(x);
+        x.globalAlpha = 1;
+        // Charcos de luz bajo las farolas
+        x.globalCompositeOperation = 'lighter';
+        farolas.forEach(function (f) { if (f.x > v.l - 40 && f.x < v.l + v.w + 40 && f.y > v.t - 40 && f.y < v.t + v.h + 40) brillo(x, f.x, f.y + 2, 26, f.color === C.cian ? 'rgba(34,228,255,.13)' : 'rgba(255,47,179,.13)'); });
+        x.globalCompositeOperation = 'source-over';
         if (marca && !vistaMapa) {
             var rr = 4 + (marca.t * 10) % 5;
-            x.fillStyle = '#ffffffcc';
+            x.fillStyle = C.cian;
             x.fillRect(marca.x - rr, marca.y, 2, 1); x.fillRect(marca.x + rr - 2, marca.y, 2, 1);
             x.fillRect(marca.x - 1, marca.y - rr / 2, 2, 1); x.fillRect(marca.x - 1, marca.y + rr / 2, 2, 1);
         }
         var lista = [];
-        for (i = 0; i < E.objetos.length; i++) {
-            var o = E.objetos[i];
+        for (i = 0; i < objetos.length; i++) {
+            var o = objetos[i];
             if (o.x + o.w < v.l - 40 || o.x > v.l + v.w + 40 || o.y + o.h < v.t - 60 || o.y > v.t + v.h + 60) continue;
             lista.push(o);
         }
+        coches.forEach(function (c) {
+            var cx = c.eje === 'h' ? c.pos : c.fijo, cy = c.eje === 'h' ? c.fijo : c.pos;
+            if (cx > v.l - 40 && cx < v.l + v.w + 40 && cy > v.t - 40 && cy < v.t + v.h + 40) lista.push({ coche: c, base: cy + 6 });
+        });
+        peatones.forEach(function (p) { if (p.x > v.l - 20 && p.x < v.l + v.w + 20 && p.y > v.t - 30 && p.y < v.t + v.h + 30) lista.push({ peaton: p, base: p.y }); });
         lista.push({ base: heroe.y, heroe: true });
         lista.sort(function (a, b) { return a.base - b.base; });
         lista.forEach(function (o) {
             if (o.heroe) {
                 var fr = heroe.moviendo ? [1, 0, 2, 0][Math.floor(heroe.dist / 7) % 4] : 0;
-                dibujaHeroe(x, Math.round(heroe.x), Math.round(heroe.y), heroe.trofeo ? 'abajo' : heroe.dir, fr, !!heroe.trofeo);
-                if (heroe.trofeo) icono(x, heroe.trofeo, Math.round(heroe.x) - 8, Math.round(heroe.y) - 46, 16);
+                dibujaHeroe(x, Math.round(heroe.x), Math.round(heroe.y), heroe.dir, fr);
                 return;
             }
-            if (o.cofre) { cofre(x, o.cofre); return; }
-            if (o.fuente) { fuente(x, o.x + 26, o.base - 14); return; }
-            if (o.farola) { farola(x, o.cx, o.cy); return; }
+            if (o.coche) { dibujaCoche(x, o.coche); return; }
+            if (o.peaton) { dibujaPeaton(x, o.peaton); return; }
+            if (o.farola) { farola(x, o); return; }
+            if (o.proyector) { proyector(x); return; }
             x.drawImage(o.img, Math.round(o.x), Math.round(o.y));
             if (o.nivel) extras(x, o.nivel);
         });
-        particulas.forEach(function (p) { x.globalAlpha = Math.max(0, p.v); x.fillStyle = p.c; x.fillRect(Math.round(p.x), Math.round(p.y), 2, 2); });
-        x.globalAlpha = 1;
-        // Gemas flotantes en lo que falta por ver
-        if (E === mundo) NIVELES.forEach(function (n) {
-            var falta = n.sala ? appsAbiertas() < APPS.length : !vistos[n.id];
-            if (!falta) return;
-            var gy = n.py - n.h - n.extra - 14 + (reducido ? 0 : Math.sin(reloj * 3 + n.x) * 2);
-            gemaMundo(x, n.px, gy, reloj + n.x);
-        });
-        // Flecha sobre el destino
-        var ns = cerca || (E === mundo ? PANTALLAS[sel] : null);
-        if (ns && !vistaMapa && ns.px) {
-            var by = Math.round(ns.py - ns.h - ns.extra - 32 + Math.sin(reloj * 5) * 2);
-            flecha(x, ns.px, by, !!cerca);
-        } else if (ns && ns.app && E === sala && !vistaMapa) flecha(x, ns.cx, ns.cy - 44 + Math.sin(reloj * 5) * 2, !!cerca);
-        else if (E === sala && PANTALLAS[sel].app && !vistaMapa) flecha(x, PANTALLAS[sel].cx, PANTALLAS[sel].cy - 44 + Math.sin(reloj * 5) * 2, false);
-        // Noche (fuera) o antorchas (dentro)
-        x.setTransform(1, 0, 0, 1, 0, 0);
-        if (oscuro && E === mundo) {
-            x.globalCompositeOperation = 'multiply';
-            x.fillStyle = '#5b67a8'; x.fillRect(0, 0, cw, ch);
-            x.globalCompositeOperation = 'source-over';
-            x.setTransform(esc, 0, 0, esc, ox, oy);
-            NIVELES.forEach(function (n) {
-                var lx = n.px - n.w / 2, ly = n.py - n.h;
-                if (lx > v.l + v.w || lx + n.w < v.l || ly > v.t + v.h || n.py < v.t) return;
-                x.fillStyle = C.luz;
-                n.sprite.luces.forEach(function (q) { x.fillRect(lx + q[0], ly + q[1], q[2], q[3]); });
-            });
-            x.globalCompositeOperation = 'lighter';
-            NIVELES.forEach(function (n) { brillo(x, n.px, n.py - 6, 26, 'rgba(255,190,90,.16)'); });
-            FAROLAS.forEach(function (f) { brillo(x, f[0] * T + 8, f[1] * T - 15, 30, 'rgba(255,200,110,.3)'); brillo(x, f[0] * T + 8, f[1] * T + 12, 26, 'rgba(255,190,90,.14)'); });
-            var f = nivelPorId('chat');
-            if (!reducido) { x.fillStyle = 'rgba(255,230,150,.16)'; haz(x, f.px, f.py - f.h + 13, reloj * 1.4); }
-            x.globalCompositeOperation = 'source-over';
-        }
-        x.setTransform(esc, 0, 0, esc, ox, oy);
-        if (E === sala) {
-            x.globalCompositeOperation = 'lighter';
-            [92, 148, 204, 260].forEach(function (tx2, k) { brillo(x, tx2, 26, 40 + Math.sin(reloj * 9 + k) * 2, 'rgba(255,170,70,.22)'); });
-            x.globalCompositeOperation = 'source-over';
-        }
+        // Halos de neón, faros y luces
         x.globalCompositeOperation = 'lighter';
-        brillo(x, hada.x, hada.y, oscuro ? 34 : 18, oscuro ? 'rgba(130,200,255,.42)' : 'rgba(150,215,255,.35)');
-        x.globalCompositeOperation = 'source-over';
-        hada.estela.forEach(function (p) { if (p.v > 0) { x.globalAlpha = p.v * 0.7; x.fillStyle = '#d6f1ff'; x.fillRect(Math.round(p.x), Math.round(p.y), 1, 1); } });
+        lista.forEach(function (o) {
+            if (o.halo) { x.globalAlpha = 0.9 + (reducido ? 0 : Math.sin(reloj * 2 + o.x) * 0.1); x.drawImage(o.halo, Math.round(o.x) - HALO, Math.round(o.y) - HALO); }
+            else if (o.farola) { x.globalAlpha = 1; brillo(x, o.fx, o.fy - 36, 16, o.color === C.cian ? 'rgba(34,228,255,.5)' : 'rgba(255,47,179,.5)'); }
+            else if (o.coche) {
+                var c = o.coche; x.globalAlpha = 1;
+                if (c.eje === 'h') {
+                    var fx = c.pos + c.dir * 18, fy = c.fijo - 2 - (c.salto ? Math.sin(c.salto * Math.PI) * 26 : 0);
+                    x.fillStyle = 'rgba(255,240,180,.16)';
+                    x.beginPath(); x.moveTo(fx, fy); x.lineTo(fx + c.dir * 46, fy - 9); x.lineTo(fx + c.dir * 46, fy + 9); x.fill();
+                    brillo(x, c.pos - c.dir * 17, fy, 8, 'rgba(255,47,90,.45)');
+                } else brillo(x, c.fijo, c.pos + c.dir * 14, 14, 'rgba(255,240,180,.25)');
+            } else if (o.nivel) halosNivel(x, o.nivel);
+        });
         x.globalAlpha = 1;
-        var hx = Math.round(hada.x), hy = Math.round(hada.y), ala = Math.floor(reloj * 14) % 2;
-        x.fillStyle = '#ffffffaa';
-        x.fillRect(hx - 5, hy - 3 - ala, 3, 2 + ala); x.fillRect(hx + 3, hy - 3 - ala, 3, 2 + ala);
-        x.fillStyle = '#9fdcff'; x.fillRect(hx - 2, hy - 2, 4, 4);
-        x.fillStyle = '#ffffff'; x.fillRect(hx - 1, hy - 1, 2, 2);
+        x.globalCompositeOperation = 'source-over';
+        particulas.forEach(function (p) { if (p.salpicon) return; x.globalAlpha = Math.max(0, p.v); x.fillStyle = p.c; x.fillRect(Math.round(p.x), Math.round(p.y), 2, 2); });
+        x.globalAlpha = 1;
+        // Coches voladores por encima de todo
+        voladores.forEach(function (fv) {
+            if (fv.x < v.l - 60 || fv.x > v.l + v.w + 60 || fv.y < v.t - 20 || fv.y > v.t + v.h + 20) return;
+            var X = Math.round(fv.x), Y = Math.round(fv.y + Math.sin(reloj * 2 + fv.x * 0.01) * 3), d = fv.vel > 0 ? 1 : -1;
+            x.globalCompositeOperation = 'lighter';
+            for (var s = 0; s < 6; s++) { x.fillStyle = fv.color; x.globalAlpha = 0.28 - s * 0.04; x.fillRect(X - d * (12 + s * 7), Y + 1, 7, 2); }
+            x.globalAlpha = 1; x.globalCompositeOperation = 'source-over';
+            x.fillStyle = 'rgba(0,0,0,.25)'; x.fillRect(X - 9, Y + 22, 18, 3);
+            x.fillStyle = C.linea; x.fillRect(X - 11, Y - 4, 22, 8);
+            x.fillStyle = '#2a2840'; x.fillRect(X - 10, Y - 3, 20, 6);
+            x.fillStyle = '#7fe8ff'; x.fillRect(X + d * 2 - 3, Y - 3, 6, 2);
+            x.fillStyle = fv.color; x.fillRect(X - 10, Y + 2, 20, 1);
+            x.fillStyle = '#fff7c2'; x.fillRect(X + d * 10 - (d > 0 ? 1 : 0), Y - 1, 1, 2);
+        });
+        // aRDi, el dron
+        x.globalCompositeOperation = 'lighter';
+        brillo(x, hada.x, hada.y, 26, 'rgba(34,228,255,.35)');
+        hada.estela.forEach(function (p) { if (p.v > 0) { x.globalAlpha = p.v * 0.6; x.fillStyle = C.cian; x.fillRect(Math.round(p.x), Math.round(p.y), 1, 1); } });
+        x.globalAlpha = 1;
+        x.globalCompositeOperation = 'source-over';
+        var hx = Math.round(hada.x), hy = Math.round(hada.y), helice = Math.floor(reloj * 20) % 2;
+        x.fillStyle = C.linea; x.fillRect(hx - 5, hy - 3, 10, 7);
+        x.fillStyle = '#d9e2f2'; x.fillRect(hx - 4, hy - 2, 8, 5);
+        x.fillStyle = C.cian; x.fillRect(hx - 2 + (heroe.dir === 'izq' ? -1 : heroe.dir === 'der' ? 1 : 0), hy - 1, 4, 2);
+        x.fillStyle = C.linea; x.fillRect(hx - 1, hy - 5, 2, 2);
+        x.fillStyle = '#ffffffaa'; x.fillRect(hx - (helice ? 7 : 4), hy - 6, helice ? 14 : 8, 1);
         x.setTransform(1, 0, 0, 1, 0, 0);
+        // Lluvia y salpicones en pantalla
+        if (!reducido) {
+            x.strokeStyle = 'rgba(170,200,255,.26)'; x.lineWidth = dpr;
+            x.beginPath();
+            lluvia.forEach(function (g) { x.moveTo(g.x, g.y); x.lineTo(g.x + g.l * 0.18, g.y - g.l); });
+            x.stroke();
+            x.fillStyle = 'rgba(170,200,255,.35)';
+            particulas.forEach(function (p) { if (p.salpicon) { var r3 = (0.3 - p.v) * 20 * dpr; x.fillRect(p.sx - r3, p.sy, r3 * 2, dpr); } });
+        }
+        // Viñeta
+        var g = x.createRadialGradient(cw / 2, ch / 2, Math.min(cw, ch) * 0.35, cw / 2, ch / 2, Math.max(cw, ch) * 0.75);
+        g.addColorStop(0, 'rgba(5,4,10,0)'); g.addColorStop(1, 'rgba(5,4,10,.55)');
+        x.fillStyle = g; x.fillRect(0, 0, cw, ch);
         etiquetas(x, v);
     }
 
-    function flecha(x, px, by, listo) {
-        by = Math.round(by);
-        x.fillStyle = C.linea; x.beginPath(); x.moveTo(px - 6, by - 1); x.lineTo(px + 6, by - 1); x.lineTo(px, by + 7); x.fill();
-        x.fillStyle = listo ? C.luz : '#ffffff'; x.beginPath(); x.moveTo(px - 4, by); x.lineTo(px + 4, by); x.lineTo(px, by + 5); x.fill();
+    function farola(x, o) {
+        var X = o.fx, Y = o.fy;
+        x.fillStyle = 'rgba(0,0,0,.35)'; x.fillRect(X - 3, Y - 1, 7, 3);
+        x.fillStyle = C.linea; x.fillRect(X - 1, Y - 36, 3, 36); x.fillRect(X - 3, Y - 3, 7, 3);
+        x.fillStyle = '#3a3650'; x.fillRect(X, Y - 35, 1, 33);
+        x.fillStyle = C.linea; x.fillRect(X - 6, Y - 39, 13, 4);
+        x.fillStyle = o.color; x.fillRect(X - 5, Y - 37, 11, 1);
     }
-    function gemaMundo(x, cx, cy, t) {
-        var w = reducido ? 4 : Math.max(1, Math.round(Math.abs(Math.cos(t * 2.2)) * 4));
-        cx = Math.round(cx); cy = Math.round(cy);
-        x.fillStyle = C.linea;
-        x.fillRect(cx - w - 1, cy - 4, w * 2 + 2, 9); x.fillRect(cx - w, cy - 6, w * 2, 13);
-        x.fillStyle = C.gema;
-        x.fillRect(cx - w, cy - 4, w * 2, 9); x.fillRect(cx - w + 1, cy - 5, Math.max(0, w * 2 - 2), 11);
-        x.fillStyle = '#c9fbe5'; x.fillRect(cx - Math.max(1, w - 1), cy - 3, 1, 4);
+    function proyector(x) {
+        var X = Math.round(PROYECTOR.x), Y = Math.round(PROYECTOR.y);
+        x.fillStyle = C.linea; x.fillRect(X - 22, Y - 10, 44, 16);
+        x.fillStyle = '#26243a'; x.fillRect(X - 21, Y - 9, 42, 14);
+        x.fillStyle = '#1b1a2a'; x.fillRect(X - 16, Y - 7, 32, 8);
+        x.fillStyle = C.cian; x.fillRect(X - 14, Y - 5, 28, 2);
+        // Holograma: un rombo que gira con las iniciales
+        var t = reducido ? 0 : reloj, w = Math.max(2, Math.round(Math.abs(Math.cos(t * 1.4)) * 18)), cy = Y - 40 + Math.round(Math.sin(t * 2) * 2);
+        x.globalCompositeOperation = 'lighter';
+        x.fillStyle = 'rgba(34,228,255,.10)';
+        x.beginPath(); x.moveTo(X - 14, Y - 6); x.lineTo(X + 14, Y - 6); x.lineTo(X + w, cy); x.lineTo(X - w, cy); x.fill();
+        x.fillStyle = 'rgba(34,228,255,.35)';
+        x.beginPath(); x.moveTo(X, cy - 22); x.lineTo(X + w, cy); x.lineTo(X, cy + 22); x.lineTo(X - w, cy); x.fill();
+        x.fillStyle = 'rgba(255,47,179,.35)';
+        x.beginPath(); x.moveTo(X, cy - 16); x.lineTo(X + w * 0.6, cy); x.lineTo(X, cy + 16); x.lineTo(X - w * 0.6, cy); x.fill();
+        for (var k = 0; k < 4; k++) { x.fillStyle = 'rgba(34,228,255,.25)'; x.fillRect(X - 20, cy - 20 + ((t * 30 + k * 11) % 44), 40, 1); }
+        x.globalCompositeOperation = 'source-over';
     }
-    function icono(x, a, X, Y, s) {
-        var im = iconos[a.icono];
+
+    function brillo(x, cx, cy, r, color) {
+        var g = x.createRadialGradient(cx, cy, 0, cx, cy, r);
+        g.addColorStop(0, color); g.addColorStop(1, 'rgba(0,0,0,0)');
+        x.fillStyle = g; x.fillRect(cx - r, cy - r, r * 2, r * 2);
+    }
+    function icono(x, id, X, Y, s) {
+        var im = iconos[id];
         x.fillStyle = C.linea; redondo(x, X - 1, Y - 1, s + 2, s + 2, 4); x.fill();
         if (im && im.complete && im.naturalWidth) {
             x.save(); redondo(x, X, Y, s, s, 3); x.clip();
@@ -1432,207 +1543,172 @@
             x.imageSmoothingEnabled = esc < 1.5;
         }
     }
-    function pared(x) {
-        // Estandartes con el icono de cada app y antorchas entre ellos
-        APPS.forEach(function (a) {
-            var bx = a.cx - 10;
-            x.fillStyle = C.linea; x.fillRect(bx - 1, 3, 22, 34);
-            x.fillStyle = vistos[a.id] ? '#2f5bd8' : '#6a2a8a'; x.fillRect(bx, 4, 20, 30);
-            x.fillStyle = C.oro; x.fillRect(bx, 4, 20, 2); x.fillRect(bx, 32, 20, 2);
-            x.fillStyle = C.linea; x.beginPath(); x.moveTo(bx, 36); x.lineTo(bx + 10, 41); x.lineTo(bx + 20, 36); x.fill();
-            x.fillStyle = vistos[a.id] ? '#2f5bd8' : '#6a2a8a'; x.beginPath(); x.moveTo(bx + 1, 34); x.lineTo(bx + 10, 39); x.lineTo(bx + 19, 34); x.fill();
-            icono(x, a, bx + 3, 10, 14);
-        });
-        [92, 148, 204, 260].forEach(function (tx2, k) {
-            x.fillStyle = C.linea; x.fillRect(tx2 - 2, 22, 4, 12);
-            x.fillStyle = '#7d5330'; x.fillRect(tx2 - 1, 23, 2, 10);
-            var fl = reducido ? 0 : Math.floor(reloj * 10 + k) % 3;
-            x.fillStyle = '#ff7a2f'; x.fillRect(tx2 - 3, 15 - fl, 6, 7 + fl);
-            x.fillStyle = '#ffd36b'; x.fillRect(tx2 - 2, 17 - fl, 4, 5 + fl);
-            x.fillStyle = '#fff3c4'; x.fillRect(tx2 - 1, 19, 2, 2);
-        });
-    }
-    function cofre(x, a) {
-        var X = Math.round(a.cx - 10), Y = Math.round(a.cy - 10), abierto = !!vistos[a.id] || a.abierto;
-        // tarima
-        x.fillStyle = '#6f6a5d'; x.fillRect(X - 4, Y + 12, 28, 6);
-        x.fillStyle = '#a19c8d'; x.fillRect(X - 3, Y + 12, 26, 2);
-        x.fillStyle = 'rgba(0,0,0,.25)'; x.fillRect(X - 1, Y + 16, 22, 2);
-        if (abierto) {
-            x.fillStyle = C.linea; x.fillRect(X, Y - 7, 20, 9);
-            x.fillStyle = '#6b4426'; x.fillRect(X + 1, Y - 6, 18, 7);
-            x.fillStyle = C.oro; x.fillRect(X + 3, Y - 6, 2, 7); x.fillRect(X + 15, Y - 6, 2, 7);
-        }
-        x.fillStyle = C.linea; x.fillRect(X, Y, 20, 16);
-        x.fillStyle = '#8a5a2b'; x.fillRect(X + 1, Y + 1, 18, 14);
-        if (abierto) { x.fillStyle = '#2a1a10'; x.fillRect(X + 2, Y + 1, 16, 3); }
-        else { x.fillStyle = '#a8743f'; x.fillRect(X + 1, Y + 1, 18, 5); x.fillStyle = C.linea; x.fillRect(X + 1, Y + 6, 18, 1); }
-        x.fillStyle = C.oro; x.fillRect(X + 3, Y + 1, 2, 14); x.fillRect(X + 15, Y + 1, 2, 14);
-        x.fillStyle = C.luz; x.fillRect(X + 8, Y + 5, 4, 5);
-        x.fillStyle = C.linea; x.fillRect(X + 9, Y + 7, 2, 2);
-        if (abierto) {
-            x.globalCompositeOperation = 'lighter';
-            brillo(x, a.cx, Y, 14 + (reducido ? 0 : Math.sin(reloj * 4) * 2), 'rgba(255,220,120,.25)');
-            x.globalCompositeOperation = 'source-over';
-        } else if (!reducido && Math.floor(reloj * 2 + a.cx) % 4 === 0) {
-            x.fillStyle = '#ffffff'; x.fillRect(X + 17, Y + 2, 2, 2);
-        }
-    }
-
-    function fuente(x, cx, cy) {
-        // Pilón de piedra, agua y un surtidor con gotas
-        cx = Math.round(cx); cy = Math.round(cy);
-        x.fillStyle = 'rgba(0,0,0,.22)'; x.fillRect(cx - 24, cy + 10, 48, 4);
-        for (var dy = -13; dy <= 13; dy++) {
-            var w = Math.round(24 * Math.sqrt(1 - (dy * dy) / 196));
-            x.fillStyle = C.linea; x.fillRect(cx - w - 1, cy + dy, w * 2 + 2, 1);
-            x.fillStyle = dy > 8 ? '#9a9383' : '#cfc8b6'; x.fillRect(cx - w, cy + dy, w * 2, 1);
-        }
-        for (dy = -9; dy <= 7; dy++) {
-            var w2 = Math.round(19 * Math.sqrt(1 - (dy * dy) / 100));
-            x.fillStyle = dy < -7 ? '#2f6fb3' : C.agua; x.fillRect(cx - w2, cy + dy - 1, w2 * 2, 1);
-        }
-        var f = reducido ? 0 : reloj * 6;
-        x.fillStyle = C.agua2;
-        for (var k = 0; k < 3; k++) { var rr = (f + k * 4) % 12 + 4; x.fillRect(cx - rr, cy - 1, 2, 1); x.fillRect(cx + rr - 2, cy - 1, 2, 1); }
-        x.fillStyle = C.linea; x.fillRect(cx - 4, cy - 18, 8, 17);
-        x.fillStyle = '#ddd6c4'; x.fillRect(cx - 3, cy - 17, 6, 15);
-        x.fillStyle = C.linea; x.fillRect(cx - 7, cy - 21, 14, 4);
-        x.fillStyle = '#e6dfcd'; x.fillRect(cx - 6, cy - 20, 12, 2);
-        x.fillStyle = C.espuma; x.fillRect(cx - 1, cy - 30, 2, 9);
-        for (k = 0; k < 6; k++) {
-            var t = ((reducido ? 0.5 : reloj * 1.6) + k / 6) % 1, lado = k % 2 ? 1 : -1;
-            x.fillStyle = k % 3 ? C.espuma : '#ffffff';
-            x.fillRect(Math.round(cx + lado * (2 + t * 12)), Math.round(cy - 30 + t * 26 + t * t * 6 - 12 * Math.sin(t * Math.PI)), 2, 2);
-        }
-    }
-    function farola(x, cx, cy) {
-        x.fillStyle = 'rgba(0,0,0,.22)'; x.fillRect(cx - 4, cy - 1, 8, 3);
-        x.fillStyle = C.linea; x.fillRect(cx - 2, cy - 26, 4, 26); x.fillRect(cx - 4, cy - 3, 8, 3);
-        x.fillStyle = '#4a5160'; x.fillRect(cx - 1, cy - 25, 2, 24);
-        x.fillStyle = C.linea; x.fillRect(cx - 5, cy - 34, 10, 9);
-        x.fillStyle = oscuro ? C.luz : '#fff3c4'; x.fillRect(cx - 4, cy - 33, 8, 7);
-        x.fillStyle = C.linea; x.fillRect(cx - 3, cy - 36, 6, 2);
-    }
-    function brillo(x, cx, cy, r, color) {
-        var g = x.createRadialGradient(cx, cy, 0, cx, cy, r);
-        g.addColorStop(0, color); g.addColorStop(1, 'rgba(0,0,0,0)');
-        x.fillStyle = g; x.fillRect(cx - r, cy - r, r * 2, r * 2);
-    }
-
-    function extras(x, n) {
-        var t = reloj, top = n.py - n.h, i = n.x, bob = reducido ? 0 : Math.round(Math.sin(t * 2.4 + i) * 2);
-        if (n.tipo === 'oficina') {
-            x.fillStyle = Math.floor(t * 1.5 + i) % 2 ? '#ff5a4a' : '#7a2a24';
-            x.fillRect(n.px - n.w / 2 + 40, top - 1, 2, 2);
-        } else if (n.tipo === 'torre') {
-            var cx = n.px, cy = top - 12, pts = [];
-            for (var k = 0; k < 6; k++) {
-                var a = (reducido ? 0 : t * 0.9) + k * Math.PI / 3;
-                pts.push({ x: cx + Math.cos(a) * 26, y: cy + Math.sin(a) * 9, z: Math.sin(a) });
-            }
-            x.fillStyle = '#86a6ff88';
-            pts.forEach(function (p) { linea(x, cx, cy, p.x, p.y); });
-            pts.filter(function (p) { return p.z < 0; }).forEach(function (p, k2) { agente(x, p, k2, t); });
-            x.fillStyle = C.linea; x.fillRect(cx - 4, cy - 4, 8, 8);
-            x.fillStyle = C.luz; x.fillRect(cx - 3, cy - 3, 6, 6);
-            x.fillStyle = '#fff3c4'; x.fillRect(cx - 2, cy - 2, 2, 2);
-            pts.filter(function (p) { return p.z >= 0; }).forEach(function (p, k2) { agente(x, p, k2 + 3, t); });
-        } else if (n.tipo === 'templo') {
-            var cy2 = top - 8 + bob;
-            x.fillStyle = C.linea;
-            x.beginPath(); x.moveTo(n.px, cy2 - 9); x.lineTo(n.px + 6, cy2); x.lineTo(n.px, cy2 + 9); x.lineTo(n.px - 6, cy2); x.fill();
-            x.fillStyle = '#7fe0ff';
-            x.beginPath(); x.moveTo(n.px, cy2 - 7); x.lineTo(n.px + 4, cy2); x.lineTo(n.px, cy2 + 7); x.lineTo(n.px - 4, cy2); x.fill();
-            x.fillStyle = '#e4fbff'; x.fillRect(n.px - 2, cy2 - 3, 2, 3);
-        } else if (n.tipo === 'castillo') {
-            [n.px - 36, n.px + 36].forEach(function (fx, k) {
-                var on = Math.floor(t * 2 + k) % 2;
-                x.fillStyle = C.linea; x.fillRect(fx, top - 14, 1, 14);
-                x.fillStyle = '#c8463a'; x.fillRect(fx + 1, top - 14 + on, 8, 5);
-            });
-        } else if (n.tipo === 'cartel') {
-            var w = websImgs[Math.floor(t / 3) % websImgs.length];
-            if (w && w.complete && w.naturalWidth) {
-                x.save(); x.beginPath(); x.rect(n.px - n.w / 2 + 7, top + 9, 62, 32); x.clip();
-                x.imageSmoothingEnabled = true;
-                var s = 62 / w.naturalWidth;
-                x.drawImage(w, n.px - n.w / 2 + 7, top + 9, 62, w.naturalHeight * s);
-                x.restore();
-                x.imageSmoothingEnabled = esc < 1.5;
-            }
-        } else if (n.tipo === 'taller') {
-            var gx = n.px + 26, gy = top + 10;
-            x.save(); x.translate(gx, gy); x.rotate(reducido ? 0 : t * 1.2);
-            x.fillStyle = C.linea;
-            for (var d = 0; d < 8; d++) { x.rotate(Math.PI / 4); x.fillRect(-3, -11, 6, 5); }
-            disco(x, 0, 0, 8, C.linea); disco(x, 0, 0, 7, '#c9ced8'); disco(x, 0, 0, 3, '#5d6b7a');
-            x.restore();
-        } else if (n.tipo === 'faro') {
-            if (!reducido && !oscuro) { x.fillStyle = 'rgba(255,240,170,.18)'; haz(x, n.px, top + 13, t * 1.4); }
-            var bx = n.px + 12, byy = top - 16 + bob;
-            x.fillStyle = C.linea; x.fillRect(bx - 1, byy - 1, 26, 15); x.fillRect(bx + 2, byy + 13, 4, 4);
-            x.fillStyle = '#ffffff'; x.fillRect(bx, byy, 24, 13); x.fillRect(bx + 3, byy + 13, 2, 2);
-            for (var pd = 0; pd < 3; pd++) { x.fillStyle = Math.floor(t * 3) % 3 === pd ? C.acento : '#9aa6c7'; x.fillRect(bx + 5 + pd * 6, byy + 5, 3, 3); }
-        } else if (n.tipo === 'buzon') {
-            var arriba = Math.floor(t * 0.8 + i) % 3 !== 0;
-            x.fillStyle = C.linea; x.fillRect(n.px + 12, top + 4, 2, 14);
-            x.fillStyle = '#e4572e'; x.fillRect(n.px + 14, top + (arriba ? 4 : 12), 7, 5);
-        }
-    }
-    function haz(x, lx, ly, ang) {
-        for (var s = 0; s < 2; s++) {
-            var a = ang + s * Math.PI;
-            x.beginPath(); x.moveTo(lx, ly);
-            x.lineTo(lx + Math.cos(a - 0.16) * 150, ly + Math.sin(a - 0.16) * 60);
-            x.lineTo(lx + Math.cos(a + 0.16) * 150, ly + Math.sin(a + 0.16) * 60);
-            x.fill();
-        }
-    }
-    function agente(x, p, k, t) {
-        var on = Math.floor(t * 2 + k) % 3 === 0;
-        x.fillStyle = C.linea; x.fillRect(Math.round(p.x) - 3, Math.round(p.y) - 3, 6, 6);
-        x.fillStyle = on ? C.luz : C.acento2; x.fillRect(Math.round(p.x) - 2, Math.round(p.y) - 2, 4, 4);
-    }
-    function linea(x, ax, ay, bx, by) {
-        var n = Math.ceil(Math.hypot(bx - ax, by - ay) / 2);
-        for (var i = 0; i <= n; i += 2) x.fillRect(Math.round(ax + (bx - ax) * i / n), Math.round(ay + (by - ay) * i / n), 1, 1);
-    }
     function redondo(x, X, Y, w, h, r) {
         x.beginPath();
         x.moveTo(X + r, Y); x.arcTo(X + w, Y, X + w, Y + h, r); x.arcTo(X + w, Y + h, X, Y + h, r);
         x.arcTo(X, Y + h, X, Y, r); x.arcTo(X, Y, X + w, Y, r); x.closePath();
     }
+    function disco(x, cx, cy, r, color) {
+        x.fillStyle = color;
+        for (var dy = -r; dy <= r; dy++) { var w = Math.round(Math.sqrt(r * r - dy * dy)); x.fillRect(cx - w, cy + dy, w * 2, 1); }
+    }
 
+    // Animaciones de cada edificio, encima de su sprite
+    function extras(x, n) {
+        var t = reducido ? 0 : reloj, L = n.px - n.w / 2, top = n.py - n.h, i = n.x;
+        if (n.tipo === 'oficina') {
+            x.fillStyle = Math.floor(t * 1.5 + i) % 2 ? '#ff3b4a' : '#5a1a20';
+            x.fillRect(L + n.w - 18, top, 2, 2);
+        } else if (n.tipo === 'torre') {
+            x.fillStyle = Math.floor(t * 2) % 2 ? '#ff3b4a' : '#5a1a20'; x.fillRect(n.px - 1, top, 2, 2);
+            var cx = n.px, cy = top - 18, pts = [];
+            for (var k = 0; k < 6; k++) {
+                var a = t * 0.9 + k * Math.PI / 3;
+                pts.push({ x: cx + Math.cos(a) * 30, y: cy + Math.sin(a) * 10, z: Math.sin(a) });
+            }
+            x.fillStyle = '#86a6ff88';
+            pts.forEach(function (p) { linea(x, cx, cy, p.x, p.y); });
+            pts.filter(function (p) { return p.z < 0; }).forEach(function (p, k2) { agente(x, p, k2, t); });
+            x.fillStyle = C.linea; x.fillRect(cx - 4, cy - 4, 8, 8);
+            x.fillStyle = C.cian; x.fillRect(cx - 3, cy - 3, 6, 6);
+            pts.filter(function (p) { return p.z >= 0; }).forEach(function (p, k2) { agente(x, p, k2 + 3, t); });
+        } else if (n.tipo === 'lab') {
+            for (var r = 0; r < 3; r++) for (var j = 0; j < 6; j++) for (var l = 0; l < 4; l++) {
+                var on = hash(r * 31 + j * 7 + l, Math.floor(t * 4 + l + j)) > 0.5;
+                x.fillStyle = on ? (l % 2 ? C.verde : C.cian) : '#14304a';
+                x.fillRect(L + 12 + r * 32 + l * 5, top + 50 + j * 6, 2, 2);
+            }
+            var cy2 = top + 6 + Math.round(Math.sin(t * 2.4) * 2), w = Math.max(1, Math.round(Math.abs(Math.cos(t * 1.6)) * 7));
+            x.fillStyle = C.linea;
+            x.beginPath(); x.moveTo(n.px, cy2 - 11); x.lineTo(n.px + w + 2, cy2); x.lineTo(n.px, cy2 + 11); x.lineTo(n.px - w - 2, cy2); x.fill();
+            x.fillStyle = '#7fe0ff';
+            x.beginPath(); x.moveTo(n.px, cy2 - 9); x.lineTo(n.px + w, cy2); x.lineTo(n.px, cy2 + 9); x.lineTo(n.px - w, cy2); x.fill();
+        } else if (n.tipo === 'nucleo') {
+            var by = top - 14 + Math.round(Math.sin(t * 2) * 2);
+            x.globalCompositeOperation = 'lighter';
+            x.fillStyle = 'rgba(34,228,255,.35)'; x.fillRect(n.px - 16, by - 10, 32, 18); x.fillRect(n.px - 10, by + 8, 5, 4);
+            x.globalCompositeOperation = 'source-over';
+            for (var pd = 0; pd < 3; pd++) { x.fillStyle = Math.floor(t * 3) % 3 === pd ? '#ffffff' : '#7fe8ff'; x.fillRect(n.px - 9 + pd * 7, by - 2, 4, 4); }
+        } else if (n.tipo === 'pantallas') {
+            var im = websImgs[Math.floor(t / 3) % websImgs.length];
+            var sx = L + 12, sy = top + 26, sw = n.w - 24, sh = 68;
+            if (im && im.complete && im.naturalWidth) {
+                x.save(); x.beginPath(); x.rect(sx, sy, sw, sh); x.clip();
+                x.imageSmoothingEnabled = true;
+                var s = sw / im.naturalWidth, desp = ((t * 8) % Math.max(1, im.naturalHeight * s - sh));
+                x.drawImage(im, sx, sy - desp, sw, im.naturalHeight * s);
+                x.restore();
+                x.imageSmoothingEnabled = esc < 1.5;
+            }
+            x.fillStyle = 'rgba(0,0,0,.18)'; for (var sl = 0; sl < sh; sl += 3) x.fillRect(sx, sy + sl, sw, 1);
+            [L + 12, L + n.w - 54].forEach(function (bx, q) {
+                for (var bb = 0; bb < 6; bb++) {
+                    var hgt = Math.round(4 + Math.abs(Math.sin(t * 3 + bb + q * 2)) * 20);
+                    x.fillStyle = q ? C.rosa : C.cian; x.fillRect(bx + 2 + bb * 7, top + 134 - hgt, 5, hgt);
+                }
+            });
+        } else if (n.tipo === 'taller') {
+            var gx = L + n.w - 14, gy = top + 12;
+            x.save(); x.translate(gx, gy); x.rotate(t * 1.2);
+            x.fillStyle = C.linea;
+            for (var dd = 0; dd < 8; dd++) { x.rotate(Math.PI / 4); x.fillRect(-3, -11, 6, 5); }
+            disco(x, 0, 0, 8, C.linea); disco(x, 0, 0, 7, '#c9ced8'); disco(x, 0, 0, 3, '#5d6b7a');
+            x.restore();
+            if (!reducido && Math.floor(t * 6) % 3 === 0) for (var sp = 0; sp < 5; sp++) { x.fillStyle = sp % 2 ? '#ffd36b' : '#ffffff'; x.fillRect(n.px - 8 + hash(sp, Math.floor(t * 6)) * 10, n.py - 18 - hash(Math.floor(t * 6), sp) * 8, 1, 1); }
+        } else if (n.tipo === 'cabina') {
+            var on2 = Math.floor(t * 2) % 2;
+            x.fillStyle = on2 ? C.amarillo : '#7a6a2a';
+            x.fillRect(n.px - 6, top + 3, 12, 8);
+            x.fillStyle = C.linea; x.beginPath(); x.moveTo(n.px - 6, top + 3); x.lineTo(n.px, top + 8); x.lineTo(n.px + 6, top + 3); x.lineTo(n.px + 6, top + 4); x.lineTo(n.px, top + 9); x.lineTo(n.px - 6, top + 4); x.fill();
+        } else if (n.tipo === 'club') {
+            icono(x, n.app, L + n.w - 27, top + 2, 18);
+            var bt = (t * 1.3) % 2, bx2 = L + 14 + (bt < 1 ? bt : 2 - bt) * (n.w - 28), by2 = top + 60 - Math.abs(Math.sin(t * 5)) * 16;
+            x.fillStyle = '#e8ff5a'; x.fillRect(Math.round(bx2), Math.round(by2), 3, 3);
+        } else if (n.tipo === 'casita') {
+            icono(x, n.app, L + 6, top + 4, 18);
+            var lu = 0.6 + Math.sin(t * 1.5) * 0.4;
+            x.globalAlpha = lu; disco(x, L + n.w - 14, top + 8, 6, C.amarillo); x.globalAlpha = 1;
+            disco(x, L + n.w - 11, top + 6, 5, '#05040a');
+        } else if (n.tipo === 'bar') {
+            icono(x, n.app, n.px - 11, top + 6, 22);
+            if (!reducido) for (var st2 = 0; st2 < 3; st2++) { var ph = (t * 0.6 + st2 / 3) % 1; x.fillStyle = 'rgba(220,220,240,' + (0.35 * (1 - ph)) + ')'; x.fillRect(L + n.w - 10 + Math.sin(ph * 6) * 2, top + 20 - ph * 18, 3, 3); }
+        } else if (n.tipo === 'hangar') {
+            icono(x, n.app, L + 7, top + 3, 18);
+            for (var rl = 0; rl < 6; rl++) { x.fillStyle = Math.floor(t * 6) % 6 === rl ? '#ffffff' : '#3a5a8a'; x.fillRect(L + 18 + rl * 12, n.py - 2, 3, 2); }
+        } else if (n.tipo === 'cine') {
+            icono(x, n.app, n.px - 12, top + 31, 24);
+            for (var bu = 0; bu < Math.floor((n.w - 16) / 6); bu++) {
+                var onb = (bu + Math.floor(t * 6)) % 3 === 0;
+                x.fillStyle = onb ? '#fff3c4' : '#7a5a2a';
+                x.fillRect(L + 9 + bu * 6, n.py - 56, 2, 2); x.fillRect(L + 9 + bu * 6, n.py - 41, 2, 2);
+            }
+        }
+    }
+    function halosNivel(x, n) {
+        var t = reducido ? 0 : reloj, top = n.py - n.h;
+        if (n.tipo === 'torre') brillo(x, n.px, top - 18, 34, 'rgba(34,228,255,.22)');
+        else if (n.tipo === 'lab') brillo(x, n.px, top + 6, 22, 'rgba(127,224,255,.4)');
+        else if (n.tipo === 'nucleo') brillo(x, n.px, top - 12, 30, 'rgba(34,228,255,.3)');
+        else if (n.tipo === 'pantallas') { x.globalAlpha = 0.25; brillo(x, n.px, top + 60, 80, 'rgba(255,255,255,.3)'); x.globalAlpha = 1; }
+        else if (n.tipo === 'cabina') brillo(x, n.px, top + 7, 16, 'rgba(255,210,63,' + (Math.floor(t * 2) % 2 ? 0.5 : 0.15) + ')');
+        else if (n.tipo === 'casita') brillo(x, n.px + n.w / 2 - 14, top + 8, 16, 'rgba(255,210,63,.35)');
+        else if (n.tipo === 'cine') brillo(x, n.px, n.py - 48, 40, 'rgba(255,210,63,.18)');
+        // Luz de la puerta en la acera
+        brillo(x, n.px, n.py + 4, 20, 'rgba(255,230,180,.12)');
+    }
+    function agente(x, p, k, t) {
+        var on = Math.floor(t * 2 + k) % 3 === 0;
+        x.fillStyle = C.linea; x.fillRect(Math.round(p.x) - 3, Math.round(p.y) - 3, 6, 6);
+        x.fillStyle = on ? C.amarillo : '#86a6ff'; x.fillRect(Math.round(p.x) - 2, Math.round(p.y) - 2, 4, 4);
+    }
+    function linea(x, ax, ay, bx, by) {
+        var n = Math.ceil(Math.hypot(bx - ax, by - ay) / 2);
+        for (var i = 0; i <= n; i += 2) x.fillRect(Math.round(ax + (bx - ax) * i / n), Math.round(ay + (by - ay) * i / n), 1, 1);
+    }
+
+    // Rótulos sobre las puertas, en pantalla, con la gema si falta por ver
     function etiquetas(x, v) {
-        var l = idioma(), fs = Math.round((vistaMapa ? 12 : 12) * dpr);
+        var l = idioma(), fs = Math.round(12 * dpr);
         x.font = fs + 'px Silkscreen, Geist, sans-serif';
         x.textAlign = 'center'; x.textBaseline = 'middle';
-        var cosas = E === mundo ? NIVELES : APPS;
-        cosas.forEach(function (n) {
-            var sx, sy;
-            if (E === mundo) {
-                sx = (n.px - v.l) * esc;
-                sy = vistaMapa ? (n.py - v.t) * esc + 12 * dpr : (n.py - n.h - n.extra - v.t) * esc - 52 * dpr;
-            } else { sx = (n.cx - v.l) * esc; sy = (n.cy + 22 - v.t) * esc + 4 * dpr; }
-            if (sx < -200 || sx > cw + 200 || sy < -50 || sy > ch + 50) return;
+        NIVELES.forEach(function (n) {
+            // Encima del edificio; si el tejado queda fuera de pantalla, lo más arriba posible sin tapar la puerta
+            var sx = (n.px - v.l) * esc, sy = Math.min((n.py - 30 - v.t) * esc - 16 * dpr, Math.max((n.py - n.h - v.t) * esc - 18 * dpr, 150 * dpr));
+            if (vistaMapa) sy = (n.py - v.t) * esc + 14 * dpr;
+            if (sx < -200 || sx > cw + 200 || sy < -60 || sy > ch + 60) return;
             var activo = n === cerca || (!cerca && PANTALLAS[sel] === n);
-            if (E === mundo && !vistaMapa && !activo && Math.hypot(n.px - heroe.x, n.py - heroe.y) > 170) return;
-            if (E === sala && cw < ch && !activo && Math.abs(n.cx - heroe.x) > 40) return;
-            var hecho = n.sala ? appsAbiertas() === APPS.length : vistos[n.id];
-            var num = n.sala ? '' : (pantalla(n.id) + 1) + ' ';
-            var txt = (vistaMapa ? num : '') + n[l] + (n.sala ? ' ' + appsAbiertas() + '/5' : '');
-            var w = x.measureText(txt).width + 18 * dpr + (hecho ? 12 * dpr : 0), h = fs + 12 * dpr;
+            if (!vistaMapa && !activo && Math.hypot(n.px - heroe.x, n.py - heroe.y) > 190 && !camLibre) return;
+            var hecho = vistos[n.id];
+            var txt = (vistaMapa ? (pantalla(n.id) + 1) + ' ' : '') + n[l];
+            var w = x.measureText(txt).width + 20 * dpr + (hecho ? 12 * dpr : 0), h = fs + 12 * dpr;
             var X = Math.round(sx - w / 2), Y = Math.round(sy - h / 2);
-            x.fillStyle = '#121620'; x.fillRect(X - dpr, Y - dpr, w + 2 * dpr, h + 2 * dpr);
-            x.fillStyle = activo ? C.acento : '#232a38'; x.fillRect(X, Y, w, h);
-            x.fillStyle = '#ffffff';
+            x.fillStyle = '#05040a'; x.fillRect(X - 2 * dpr, Y - 2 * dpr, w + 4 * dpr, h + 4 * dpr);
+            x.fillStyle = activo ? C.cian : '#3a3560'; x.fillRect(X - dpr, Y - dpr, w + 2 * dpr, h + 2 * dpr);
+            x.fillStyle = activo ? '#062a33' : '#120f1e'; x.fillRect(X + dpr, Y + dpr, w - 2 * dpr, h - 2 * dpr);
+            x.fillStyle = activo ? '#d9fbff' : '#ffffff';
             x.fillText(txt, sx + (hecho ? 6 * dpr : 0), sy + dpr);
-            if (hecho) gemaEtiqueta(x, X + 9 * dpr, sy, 4 * dpr);
+            if (hecho) gemaEtiqueta(x, X + 10 * dpr, sy, 4 * dpr);
+            else if (!vistaMapa) {
+                var gy = Y - 12 * dpr + (reducido ? 0 : Math.sin(reloj * 3 + n.x) * 2 * dpr), gw = (reducido ? 1 : Math.abs(Math.cos(reloj * 2.2 + n.x))) * 5 * dpr + dpr;
+                x.fillStyle = '#05040a'; x.beginPath(); x.moveTo(sx, gy - 8 * dpr); x.lineTo(sx + gw + 2 * dpr, gy); x.lineTo(sx, gy + 8 * dpr); x.lineTo(sx - gw - 2 * dpr, gy); x.fill();
+                x.fillStyle = C.gema; x.beginPath(); x.moveTo(sx, gy - 6 * dpr); x.lineTo(sx + gw, gy); x.lineTo(sx, gy + 6 * dpr); x.lineTo(sx - gw, gy); x.fill();
+            }
+            if (activo && !vistaMapa) {
+                var ay = Y + h + 6 * dpr + (reducido ? 0 : Math.sin(reloj * 5) * 2 * dpr);
+                x.fillStyle = C.cian; x.beginPath(); x.moveTo(sx - 5 * dpr, ay); x.lineTo(sx + 5 * dpr, ay); x.lineTo(sx, ay + 6 * dpr); x.fill();
+            }
         });
+        if (vistaMapa) {
+            x.font = Math.round(13 * dpr) + 'px Silkscreen, Geist, sans-serif';
+            [[BARRIOS[0], PW / 2, 4 * T], [BARRIOS[2], 14 * T, 23 * T], [BARRIOS[3], PW / 2, 45 * T]].forEach(function (b) {
+                var sx = (b[1] - v.l) * esc, sy = (b[2] - v.t) * esc;
+                x.fillStyle = 'rgba(5,4,10,.7)'; var w = x.measureText(b[0][l]).width + 24 * dpr; x.fillRect(sx - w / 2, sy - 13 * dpr, w, 26 * dpr);
+                x.fillStyle = C.rosa; x.fillText(b[0][l].toUpperCase(), sx, sy + dpr);
+            });
+        }
     }
     function gemaEtiqueta(x, cx, cy, r) {
-        x.fillStyle = '#121620';
+        x.fillStyle = '#05040a';
         x.beginPath(); x.moveTo(cx, cy - r - 1); x.lineTo(cx + r * 0.75 + 1, cy); x.lineTo(cx, cy + r + 1); x.lineTo(cx - r * 0.75 - 1, cy); x.fill();
         x.fillStyle = C.gema;
         x.beginPath(); x.moveTo(cx, cy - r); x.lineTo(cx + r * 0.75, cy); x.lineTo(cx, cy + r); x.lineTo(cx - r * 0.75, cy); x.fill();
@@ -1640,26 +1716,21 @@
 
     function dibujarMini() {
         if (!mini.width || vistaMapa) return;
-        var x = miniCtx, W = mini.width, H = mini.height, sx = W / mundo.pw, sy = H / mundo.ph;
+        var x = miniCtx, W = mini.width, H = mini.height, sx = W / PW, sy = H / PH;
         x.imageSmoothingEnabled = true;
         x.drawImage(miniBase, 0, 0, W, H);
-        if (oscuro) { x.globalCompositeOperation = 'multiply'; x.fillStyle = '#7b86bd'; x.fillRect(0, 0, W, H); x.globalCompositeOperation = 'source-over'; }
         var r = Math.max(2, Math.round(2.5 * dpr));
         NIVELES.forEach(function (n) {
-            var hecho = n.sala ? appsAbiertas() === APPS.length : vistos[n.id];
-            x.fillStyle = C.linea; x.fillRect(n.px * sx - r - 1, (n.py - 12) * sy - r - 1, r * 2 + 2, r * 2 + 2);
-            x.fillStyle = hecho ? C.gema : n.sala ? C.oro : '#ffffff';
-            x.fillRect(n.px * sx - r, (n.py - 12) * sy - r, r * 2, r * 2);
+            x.fillStyle = C.linea; x.fillRect(n.px * sx - r - 1, (n.py - 8) * sy - r - 1, r * 2 + 2, r * 2 + 2);
+            x.fillStyle = vistos[n.id] ? C.gema : n === PANTALLAS[sel] ? C.cian : '#ffffff';
+            x.fillRect(n.px * sx - r, (n.py - 8) * sy - r, r * 2, r * 2);
         });
-        var hx = E === mundo ? heroe.x : nivelPorId('trofeos').px, hy = E === mundo ? heroe.y : nivelPorId('trofeos').py;
-        if (E === mundo) {
-            var v = vistaRect();
-            x.strokeStyle = '#ffffffaa'; x.lineWidth = dpr;
-            x.strokeRect(v.l * sx, v.t * sy, v.w * sx, v.h * sy);
-        }
+        var v = vistaRect();
+        x.strokeStyle = C.rosa; x.lineWidth = dpr;
+        x.strokeRect(v.l * sx, v.t * sy, v.w * sx, Math.min(v.h, PH - v.t) * sy);
         if (Math.floor(reloj * 3) % 2 === 0 || reducido) {
-            x.fillStyle = '#ffffff'; x.fillRect(hx * sx - r - 1, hy * sy - r - 1, r * 2 + 2, r * 2 + 2);
-            x.fillStyle = C.acento; x.fillRect(hx * sx - r, hy * sy - r, r * 2, r * 2);
+            x.fillStyle = '#ffffff'; x.fillRect(heroe.x * sx - r - 1, heroe.y * sy - r - 1, r * 2 + 2, r * 2 + 2);
+            x.fillStyle = C.cian; x.fillRect(heroe.x * sx - r, heroe.y * sy - r, r * 2, r * 2);
         }
     }
 
@@ -1690,7 +1761,7 @@
         juego.querySelector('[data-j-panel-paso="-1"]').hidden = i === 0;
         var sig = juego.querySelector('[data-j-panel-paso="1"]');
         sig.innerHTML = i === PANTALLAS.length - 1
-            ? '<span lang="es">Volver al mapa</span><span lang="en">Back to map</span>'
+            ? '<span lang="es">Volver a la ciudad</span><span lang="en">Back to the city</span>'
             : '<span lang="es">Siguiente<span class="sig-nombre">: ' + PANTALLAS[i + 1].es + '</span></span><span lang="en">Next<span class="sig-nombre">: ' + PANTALLAS[i + 1].en + '</span></span><span aria-hidden="true"> ▶</span>';
         panel.hidden = false;
         juego.querySelector('.panel-caja').scrollTop = 0;
@@ -1712,9 +1783,9 @@
         var p = PANTALLAS[i];
         vaciarPanel();
         abierta = -1;
-        if (p.app) { if (E !== sala) ponerEscena(sala, p.frente.x, p.frente.y, 'arriba'); else { heroe.x = p.frente.x; heroe.y = p.frente.y; } }
-        else { if (E !== mundo) ponerEscena(mundo, p.entrada.x, p.entrada.y + 6, 'abajo'); heroe.x = p.entrada.x; heroe.y = p.entrada.y + 6; }
-        cam.x = heroe.x; cam.y = heroe.y - 16; hada.x = heroe.x + 14; hada.y = heroe.y - 30;
+        heroe.x = p.entrada.x; heroe.y = p.entrada.y + 4;
+        cam.x = heroe.x; cam.y = heroe.y - 16; camLibre = false;
+        hada.x = heroe.x + 14; hada.y = heroe.y - 30;
         recompensas();
         abrir(i);
     }
@@ -1723,9 +1794,9 @@
             if (!p.nueva) return;
             p.nueva = false;
             var n = total();
-            if (n === PANTALLAS.length) decir({ es: '¡Las 15 gemas! Ya conoces a Rodrigo. ¿Le escribes? El buzón está al este, junto al muelle.', en: 'All 15 gems! Now you know Rodrigo. Want to write to him? The mailbox is east, by the pier.' }, true);
+            if (n === PANTALLAS.length) decir({ es: '¡Las 15 gemas! Ya conoces a Rodrigo. ¿Le escribes? La cabina está en la zona creativa.', en: 'All 15 gems! Now you know Rodrigo. Want to write to him? The booth is in the creative quarter.' }, true);
             else decir({ es: '¡Gema conseguida! Llevas ' + n + ' de 15.', en: 'Gem found! That\'s ' + n + ' of 15.' }, true);
-            for (var k = 0; k < 26; k++) particulas.push({ x: heroe.x, y: heroe.y - 20, vx: (Math.random() - 0.5) * 90, vy: -40 - Math.random() * 70, v: 1 + Math.random() * 0.6, c: ['#3ee6a0', '#ffd36b', '#9fdcff', '#ffffff'][k % 4] });
+            for (var k = 0; k < 26; k++) particulas.push({ x: heroe.x, y: heroe.y - 20, vx: (Math.random() - 0.5) * 90, vy: -40 - Math.random() * 70, v: 1 + Math.random() * 0.6, c: [C.gema, C.cian, C.rosa, '#ffffff'][k % 4] });
         });
     }
     function cerrar() {
@@ -1735,8 +1806,7 @@
         panel.classList.remove('abierto');
         panel.hidden = true;
         abierta = -1;
-        if (p.app) { heroe.x = p.frente.x; heroe.y = p.frente.y + 4; }
-        else { heroe.x = p.entrada.x; heroe.y = p.entrada.y + 6; }
+        heroe.x = p.entrada.x; heroe.y = p.entrada.y + 4;
         heroe.dir = 'abajo';
         recompensas();
         pintarHud();
@@ -1749,7 +1819,7 @@
         var k = e.key.toLowerCase();
         if (e.target.closest && e.target.closest('input, textarea, select')) return;
         if (!juego.querySelector('[data-j-titulo]').hidden) {
-            if (k === 'enter') { e.preventDefault(); empezar(); }
+            if (k === 'enter' && !e.target.closest('button')) { e.preventDefault(); empezar(); }
             return;
         }
         if (abierta >= 0) { if (k === 'escape') cerrar(); return; }
@@ -1758,7 +1828,7 @@
         if (vistaMapa && (k === 'escape' || k === 'm')) { e.preventDefault(); cerrarMapa(); return; }
         if (k === 'm') { abrirMapa(); return; }
         if (['w', 'a', 's', 'd', 'arrowup', 'arrowdown', 'arrowleft', 'arrowright'].indexOf(k) >= 0) {
-            e.preventDefault(); teclas[k] = true; arrancar(); return;
+            e.preventDefault(); teclas[k] = true; camLibre = false; arrancar(); return;
         }
         if (k === 'e' || ((k === 'enter' || k === ' ') && !e.target.closest('button'))) { e.preventDefault(); accion(); }
         if (k === 'pageup') { e.preventDefault(); irA(sel - 1, false); }
@@ -1769,41 +1839,42 @@
     function empezar() {
         var t = juego.querySelector('[data-j-titulo]');
         t.classList.add('fuera');
-        setTimeout(function () { t.hidden = true; }, reducido ? 0 : 350);
+        setTimeout(function () { t.hidden = true; t.classList.remove('fuera'); }, reducido ? 0 : 350);
+        raiz.classList.add('en-juego');
         var ya = false;
         try { ya = sessionStorage.getItem('juego-empezado') === '1'; sessionStorage.setItem('juego-empezado', '1'); } catch (e) {}
         if (!ya) frasesIntro().forEach(function (f) { decir(f); });
         arrancar();
     }
-    function entrar() {
+    // preguntar: true al cargar la página (elige entre juego y clásica);
+    // false desde el botón "Modo juego" de la versión clásica.
+    function entrar(preguntar) {
         if (!juego) crear();
         raiz.classList.add('en-juego');
         juego.hidden = false;
-        guardar('modo', 'juego');
-        var empezado = false;
-        try { empezado = sessionStorage.getItem('juego-empezado') === '1'; } catch (e) {}
-        juego.querySelector('[data-j-titulo]').hidden = empezado;
+        juego.querySelector('[data-j-titulo]').hidden = !preguntar;
+        if (!preguntar) empezar();
         medir();
         pintarHud();
         arrancar();
+        if (preguntar) juego.querySelector('[data-j-empezar]').focus({ preventScroll: true });
     }
     function salir() {
         cerrar();
         raiz.classList.remove('en-juego');
         juego.hidden = true;
         enMarcha = false;
-        guardar('modo', 'clasico');
         window.scrollTo(0, 0);
     }
     document.addEventListener('visibilitychange', function () { if (!document.hidden) arrancar(); });
 
     document.querySelectorAll('[data-modo-juego]').forEach(function (b) {
         b.hidden = false;
-        b.addEventListener('click', entrar);
+        b.addEventListener('click', function () { entrar(false); });
     });
 
-    // Se abre en modo juego salvo que el visitante prefiera la clásica
-    // o llegue con un enlace a una sección concreta.
+    // Cada visita pregunta si jugar o leer; un enlace a una sección concreta abre la clásica.
     var hashUrl = location.hash.slice(1);
-    if (hashUrl === 'juego' || (!hashUrl && guardado('modo') !== 'clasico')) entrar();
+    if (hashUrl === 'juego') entrar(false);
+    else if (!hashUrl) entrar(true);
 })();

@@ -1,19 +1,18 @@
 /* rodrigodavila.com · modo juego
-   Mundo en pixel art dibujado en canvas; la interfaz imita los marcos de
-   diálogo de los juegos de aventuras de 16 bits. Es el mismo marco en los
-   dos temas; el mundo se oscurece de noche con el tema oscuro. */
+   Ciudad cyberpunk en pixel art dibujada en canvas. La interfaz va en
+   paneles oscuros con filo de neón; es siempre de noche, en los dos temas. */
 
 .juego {
-    --caja: #141a2a;
-    --caja-2: #222a40;
-    --marco: #e9e2cc;
-    --marco-o: #0b0e16;
-    --texto-j: #f4f1e6;
-    --tenue-j: #b9bfd3;
-    --gema: #3ee6a0;
+    --caja: rgba(9, 8, 18, .9); /* taste-skill-ignore: panel del juego */
+    --caja-2: #1d1a33;
+    --marco: #22e4ff;
+    --marco-2: #ff2fb3;
+    --texto-j: #eef4ff;
+    --tenue-j: #a9b3d6;
+    --gema: #3dffb0;
     --pixel: "Silkscreen", var(--font);
     position: fixed; inset: 0; z-index: 60;
-    background: #3b86d1; color: var(--texto-j); /* taste-skill-ignore: color del agua del mundo */
+    background: #05040a; color: var(--texto-j); /* taste-skill-ignore: noche del juego */
     overflow: hidden; touch-action: none; user-select: none;
     -webkit-tap-highlight-color: transparent;
 }
@@ -21,13 +20,14 @@
 html.en-juego, html.en-juego body { overflow: hidden; }
 html.en-juego .barra, html.en-juego main, html.en-juego .pie, html.en-juego .saltar, html.en-juego .subir { visibility: hidden; }
 
-.juego-lienzo { position: absolute; inset: 0; width: 100%; height: 100%; display: block; image-rendering: pixelated; cursor: crosshair; }
+.juego-lienzo { position: absolute; inset: 0; width: 100%; height: 100%; display: block; image-rendering: pixelated; cursor: grab; }
+.juego.arrastrando .juego-lienzo { cursor: grabbing; }
 
-/* Marco de diálogo: borde claro con contorno oscuro, esquinas casi rectas */
-.marco-j, .hud-marca, .hud-gemas, .hud-boton, .hud-paso, .hud-entrar, .hud-ayuda, .boton-a, .mapa-aviso, .hada-globo, .titulo-caja {
+/* Paneles con filo de neón */
+.hud-marca, .hud-gemas, .hud-boton, .hud-paso, .hud-entrar, .hud-ayuda, .boton-a, .mapa-aviso, .hada-globo, .inventario, .minimapa {
     background: var(--caja); color: var(--texto-j);
-    border: 3px solid var(--marco); border-radius: 6px;
-    outline: 3px solid var(--marco-o);
+    border: 2px solid color-mix(in srgb, var(--marco) 75%, transparent); border-radius: 4px;
+    box-shadow: 0 0 0 2px #05040a, 0 0 16px color-mix(in srgb, var(--marco) 28%, transparent); /* taste-skill-ignore: brillo de neón del HUD */
 }
 
 /* HUD */
@@ -38,7 +38,7 @@ html.en-juego .barra, html.en-juego main, html.en-juego .pie, html.en-juego .sal
     padding: max(14px, env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) 0 max(16px, env(safe-area-inset-left, 0px));
 }
 .hud-marca { display: flex; align-items: center; gap: 10px; height: 44px; padding: 0 14px 0 6px; font-weight: 600; font-size: var(--t-s); }
-.hud-marca .marca-sello { border-radius: 4px; }
+.hud-marca .marca-sello { border-radius: 3px; background: var(--marco-2); color: #fff; } /* taste-skill-ignore */
 .hud-gemas-caja { position: relative; margin-right: auto; }
 .hud-gemas { display: flex; align-items: center; gap: 8px; height: 44px; padding: 0 12px; font-size: var(--t-s); font-weight: 600; transition: transform .15s, background-color .2s; }
 .hud-gemas:hover { background: var(--caja-2); }
@@ -47,14 +47,13 @@ html.en-juego .barra, html.en-juego main, html.en-juego .pie, html.en-juego .sal
     display: block; width: 12px; height: 17px; background: var(--gema);
     clip-path: polygon(50% 0, 100% 30%, 100% 70%, 50% 100%, 0 70%, 0 30%);
 }
-.inv-gema { width: 10px; height: 14px; background: #39415a; transition: background-color .3s; } /* taste-skill-ignore: hueco de gema */
+.inv-gema { width: 10px; height: 14px; background: #2e2b4a; transition: background-color .3s; } /* taste-skill-ignore: hueco de gema */
 .inv-gema.llena { background: var(--gema); }
 .inventario {
     position: absolute; top: calc(100% + 12px); left: 0; z-index: 4; width: min(280px, calc(100vw - 32px));
     max-height: min(60vh, 520px); overflow: auto; padding: 12px;
-    background: var(--caja); border: 3px solid var(--marco); border-radius: 6px; outline: 3px solid var(--marco-o);
 }
-.inventario-titulo { font-family: var(--pixel); font-size: 13px; color: #9fdcff; padding: 2px 6px 8px; } /* taste-skill-ignore */
+.inventario-titulo { font-family: var(--pixel); font-size: 13px; color: var(--marco); padding: 2px 6px 8px; } /* taste-skill-ignore */
 .inventario ol { list-style: none; padding: 0; margin: 0; display: grid; gap: 2px; }
 .inventario button {
     display: flex; align-items: center; gap: 10px; width: 100%; min-height: 40px; padding: 6px 8px; border-radius: 4px;
@@ -63,49 +62,50 @@ html.en-juego .barra, html.en-juego main, html.en-juego .pie, html.en-juego .sal
 }
 .inventario button:hover, .inventario button:focus-visible { background: var(--caja-2); color: var(--texto-j); }
 .inventario li.hecho button { color: var(--texto-j); }
-.inventario .inventario-reinicio {
-    justify-content: center; margin-top: 8px; color: var(--tenue-j); font-size: 13px;
-    background: var(--caja-2);
-}
+.inventario .inventario-reinicio { justify-content: center; margin-top: 8px; color: var(--tenue-j); font-size: 13px; background: var(--caja-2); }
 
 /* Minimapa siempre visible */
 .minimapa {
     position: absolute; z-index: 2; right: max(16px, env(safe-area-inset-right, 0px)); top: calc(max(14px, env(safe-area-inset-top, 0px)) + 62px);
-    width: 200px; height: 121px; cursor: pointer; image-rendering: auto;
-    border: 3px solid var(--marco); border-radius: 6px; outline: 3px solid var(--marco-o); background: #3b86d1; /* taste-skill-ignore: agua */
+    width: 200px; height: 138px; cursor: pointer; image-rendering: auto; padding: 0;
+    border-color: color-mix(in srgb, var(--marco-2) 75%, transparent);
 }
 .juego.en-mapa .minimapa { display: none; }
 
-/* Fundido al cambiar de escena */
-.fundido { position: absolute; inset: 0; z-index: 3; background: #000; opacity: 0; pointer-events: none; transition: opacity .25s; } /* taste-skill-ignore */
-.fundido.negro { opacity: 1; }
-.juego.en-sala { background: #0d0e13; } /* taste-skill-ignore: interior */
-.juego.en-sala [data-j-mapa] { opacity: .45; pointer-events: none; }
+/* Cartel del barrio al entrar en él */
+.barrio-cartel {
+    position: absolute; z-index: 1; left: 50%; top: calc(max(14px, env(safe-area-inset-top, 0px)) + 70px); translate: -50% 0;
+    font-family: var(--pixel); font-size: clamp(1rem, .8rem + 1vw, 1.5rem); color: #ffd6f1; letter-spacing: .08em; text-transform: uppercase; /* taste-skill-ignore */
+    text-shadow: 0 0 8px #ff2fb3, 0 0 22px #ff2fb3; /* taste-skill-ignore: rótulo de neón */
+    white-space: nowrap; pointer-events: none; opacity: 0;
+}
+.barrio-cartel.visible { animation: cartel 3.2s ease both; }
+@keyframes cartel { 0% { opacity: 0; transform: translateY(-8px); } 12%, 70% { opacity: 1; transform: none; } 100% { opacity: 0; } }
+
 .gemas-cuenta { font-family: var(--pixel); font-size: 13px; } /* taste-skill-ignore: marcador del juego */
 .hud-botones { display: flex; align-items: center; gap: 10px; }
 .hud-boton { height: 44px; padding: 0 14px; font-size: var(--t-s); font-weight: 600; transition: transform .15s, background-color .2s; }
 .hud-boton:hover, .hud-paso:hover:not(:disabled) { background: var(--caja-2); }
 .hud-boton:active, .hud-paso:active:not(:disabled), .hud-entrar:active, .boton-a:active { transform: scale(.94); }
-.juego.en-mapa [data-j-mapa] { background: var(--acento); }
-.juego.en-mapa .juego-lienzo { cursor: grab; }
+.juego.en-mapa [data-j-mapa] { background: var(--marco); color: #05040a; } /* taste-skill-ignore */
 
 .hud-niveles {
     position: absolute; left: 50%; bottom: max(18px, env(safe-area-inset-bottom, 0px)); z-index: 2;
     display: flex; align-items: center; gap: 10px; transform: translateX(-50%);
 }
-.hud-paso { display: grid; place-items: center; width: 52px; height: 56px; font-size: 18px; transition: transform .15s, opacity .2s, background-color .2s; }
-.hud-paso:disabled { opacity: .4; cursor: default; }
+.hud-paso { display: grid; place-items: center; width: 52px; height: 56px; font-size: 18px; color: var(--marco); transition: transform .15s, opacity .2s, background-color .2s; }
+.hud-paso:disabled { opacity: .35; cursor: default; }
 .hud-entrar {
     display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-rows: auto auto; align-items: center; column-gap: 16px;
     width: min(380px, calc(100vw - 180px)); height: 56px; padding: 0 6px 0 16px; text-align: left; transition: transform .15s;
 }
-.hud-nivel { grid-column: 1; font-family: var(--pixel); font-size: 12px; color: var(--tenue-j); line-height: 1.1; } /* taste-skill-ignore: marcador del juego */
+.hud-nivel { grid-column: 1; font-family: var(--pixel); font-size: 12px; color: var(--marco); line-height: 1.1; } /* taste-skill-ignore: marcador del juego */
 .hud-entrar strong { grid-column: 1; font-size: var(--t-b); line-height: 1.25; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .hud-accion {
     grid-column: 2; grid-row: 1 / span 2; display: grid; place-items: center; min-width: 64px; height: 40px; padding: 0 14px;
-    border-radius: 4px; background: var(--caja-2); font-family: var(--pixel); font-size: 13px; /* taste-skill-ignore */
+    border-radius: 3px; background: var(--caja-2); font-family: var(--pixel); font-size: 13px; /* taste-skill-ignore */
 }
-.hud-entrar.listo .hud-accion { background: var(--acento); color: #fff; animation: latido 1.2s ease-in-out infinite; } /* taste-skill-ignore */
+.hud-entrar.listo .hud-accion { background: var(--marco-2); color: #fff; animation: latido 1.2s ease-in-out infinite; } /* taste-skill-ignore */
 @keyframes latido { 50% { transform: scale(1.06); } }
 
 .hud-ayuda {
@@ -114,9 +114,9 @@ html.en-juego .barra, html.en-juego main, html.en-juego .pie, html.en-juego .sal
 }
 .hud-ayuda kbd {
     display: inline-grid; place-items: center; min-width: 22px; height: 22px; padding: 0 5px; margin: 0 2px;
-    border-radius: 3px; background: var(--marco); color: var(--marco-o); font-family: var(--pixel); font-size: 11px; /* taste-skill-ignore */
+    border-radius: 3px; background: var(--marco); color: #05040a; font-family: var(--pixel); font-size: 11px; /* taste-skill-ignore */
 }
-@media (max-width: 1180px) { .hud-ayuda { display: none; } }
+@media (max-width: 1240px) { .hud-ayuda { display: none; } }
 
 /* Mando y botón A (pantallas táctiles) */
 .mando, .boton-a { display: none; }
@@ -125,7 +125,7 @@ html.en-juego .barra, html.en-juego main, html.en-juego .pie, html.en-juego .sal
 .mando {
     position: absolute; z-index: 2; left: max(18px, env(safe-area-inset-left, 0px)); bottom: max(22px, env(safe-area-inset-bottom, 0px));
     width: 124px; height: 124px; place-items: center; border-radius: 50%;
-    background: color-mix(in srgb, var(--caja) 70%, transparent); border: 3px solid var(--marco); outline: 3px solid var(--marco-o);
+    background: rgba(9, 8, 18, .7); border: 2px solid var(--marco); /* taste-skill-ignore */
     touch-action: none;
 }
 .mando::before, .mando::after { content: ""; position: absolute; background: color-mix(in srgb, var(--marco) 30%, transparent); }
@@ -133,7 +133,7 @@ html.en-juego .barra, html.en-juego main, html.en-juego .pie, html.en-juego .sal
 .mando::after { width: 4px; height: 70%; }
 .mando-bola {
     position: relative; z-index: 1; width: 52px; height: 52px; border-radius: 50%;
-    background: var(--marco); border: 3px solid var(--marco-o); transition: transform .12s;
+    background: var(--marco); border: 3px solid #05040a; transition: transform .12s;
 }
 .mando.activo .mando-bola { transition: none; background: #fff; } /* taste-skill-ignore */
 .boton-a {
@@ -143,7 +143,7 @@ html.en-juego .barra, html.en-juego main, html.en-juego .pie, html.en-juego .sal
 }
 .boton-a span { font-family: var(--pixel); font-size: 28px; line-height: 1; } /* taste-skill-ignore: botón del mando */
 .boton-a small { font-size: 12px; color: var(--tenue-j); } /* taste-skill-ignore */
-.boton-a.listo { background: var(--acento); animation: latido 1.2s ease-in-out infinite; }
+.boton-a.listo { background: var(--marco-2); animation: latido 1.2s ease-in-out infinite; }
 .boton-a.listo small { color: #fff; } /* taste-skill-ignore */
 
 @media (max-width: 899px) {
@@ -152,14 +152,15 @@ html.en-juego .barra, html.en-juego main, html.en-juego .pie, html.en-juego .sal
     .hud-niveles { bottom: auto; top: calc(max(14px, env(safe-area-inset-top, 0px)) + 60px); }
     .hud-entrar { width: min(300px, calc(100vw - 160px)); height: 50px; }
     .hud-paso { width: 46px; height: 50px; }
-    .minimapa { width: 150px; height: 91px; top: calc(max(14px, env(safe-area-inset-top, 0px)) + 124px); }
+    .minimapa { width: 150px; height: 104px; top: calc(max(14px, env(safe-area-inset-top, 0px)) + 124px); }
+    .barrio-cartel { top: auto; bottom: calc(max(22px, env(safe-area-inset-bottom, 0px)) + 140px); }
 }
 @media (max-width: 520px) {
     .hud-arriba { gap: 8px; }
     .hud-marca { display: none; }
     .gemas-txt { display: none; }
     .hud-boton { padding: 0 10px; }
-    .minimapa { width: 120px; height: 73px; top: calc(max(14px, env(safe-area-inset-top, 0px)) + 124px); }
+    .minimapa { width: 120px; height: 83px; }
     .hud-clasica [lang] { font-size: 0; }
     .hud-clasica [lang]::after { font-size: var(--t-s); }
     .hud-clasica [lang="es"]::after { content: "Clásica"; }
@@ -171,9 +172,9 @@ html.en-juego .barra, html.en-juego main, html.en-juego .pie, html.en-juego .sal
     display: none; padding: 12px 16px; font-size: var(--t-s); white-space: nowrap;
 }
 .juego.en-mapa .mapa-aviso { display: block; }
-.juego.en-mapa .hud-niveles, .juego.en-mapa .mando, .juego.en-mapa .boton-a, .juego.en-mapa .hud-ayuda, .juego.en-mapa .hada-globo { display: none; }
+.juego.en-mapa .hud-niveles, .juego.en-mapa .mando, .juego.en-mapa .boton-a, .juego.en-mapa .hud-ayuda, .juego.en-mapa .hada-globo, .juego.en-mapa .barrio-cartel { display: none; }
 
-/* Bocadillo del hada */
+/* Bocadillo de aRDi */
 .hada-globo {
     position: absolute; left: 0; top: 0; z-index: 1; width: max-content; max-width: min(300px, 70vw);
     padding: 10px 14px 12px; margin: 0; pointer-events: auto; cursor: pointer;
@@ -183,43 +184,54 @@ html.en-juego .barra, html.en-juego main, html.en-juego .pie, html.en-juego .sal
 }
 .hada-globo.visible { opacity: 1; scale: 1; visibility: visible; }
 .hada-globo::after {
-    content: ""; position: absolute; left: 50%; top: -12px; width: 14px; height: 10px; translate: -50% 0;
+    content: ""; position: absolute; left: 50%; top: -11px; width: 14px; height: 9px; translate: -50% 0;
     background: var(--marco); clip-path: polygon(50% 0, 100% 100%, 0 100%);
 }
 .hada-globo.arriba { translate: -50% calc(-100% - 18px); }
-.hada-globo.arriba::after { top: auto; bottom: -12px; clip-path: polygon(0 0, 100% 0, 50% 100%); }
-.hada-nombre { font-family: var(--pixel); font-size: 12px; color: #9fdcff; line-height: 1.2; } /* taste-skill-ignore: nombre del hada */
+.hada-globo.arriba::after { top: auto; bottom: -11px; clip-path: polygon(0 0, 100% 0, 50% 100%); }
+.hada-nombre { font-family: var(--pixel); font-size: 12px; color: var(--marco); line-height: 1.2; } /* taste-skill-ignore: nombre del dron */
 .hada-texto { font-size: 15px; line-height: 1.4; min-height: 1.4em; }
 
-/* Pantalla de título */
+/* Pantalla de entrada: juego o clásica */
 .juego-titulo {
     position: absolute; inset: 0; z-index: 3; display: grid; place-items: center;
     padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
-    background: color-mix(in srgb, #0b0e16 55%, transparent); /* taste-skill-ignore */
+    background: rgba(5, 4, 10, .72); /* taste-skill-ignore */
     transition: opacity .35s var(--curva);
 }
 .juego-titulo.fuera { opacity: 0; }
 .juego-titulo[hidden] { display: none; }
 .titulo-caja {
-    display: grid; gap: 20px; justify-items: center; text-align: center; max-width: 720px;
-    padding: clamp(28px, 5vw, 56px);
+    display: grid; gap: 18px; justify-items: center; text-align: center; max-width: 760px;
     animation: entra-titulo .6s var(--curva) both;
 }
 @keyframes entra-titulo { from { opacity: 0; transform: translateY(24px) scale(.98); } }
-.titulo-pixel { font-family: var(--pixel); font-size: var(--t-s); color: #9fdcff; } /* taste-skill-ignore */
-.titulo-caja h2 { font-size: clamp(2.5rem, 1.4rem + 4.6vw, 4.75rem); letter-spacing: -0.05em; line-height: .95; }
-.titulo-lead { font-size: var(--t-l); color: var(--tenue-j); max-width: 40ch; }
-.titulo-botones { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
-.titulo-botones .boton { min-height: 52px; padding: 0 26px; font-size: var(--t-b); border-radius: 6px; }
-.titulo-botones .boton:not(.boton-lleno) { color: var(--texto-j); border-color: var(--marco); }
-.titulo-botones .boton-lleno { background: var(--acento); color: #fff; animation: latido 1.8s ease-in-out infinite; } /* taste-skill-ignore */
+.titulo-pixel { font-family: var(--pixel); font-size: var(--t-s); color: var(--marco); letter-spacing: .06em; } /* taste-skill-ignore */
+.titulo-caja h2 {
+    font-family: var(--pixel); font-weight: 400; font-size: clamp(2.4rem, 1rem + 6vw, 5.5rem); line-height: 1; letter-spacing: -0.02em;
+    color: #fff0fa; text-shadow: 0 0 10px #ff2fb3, 0 0 34px #ff2fb3; /* taste-skill-ignore: rótulo de neón */
+}
+.titulo-lead { font-size: var(--t-l); color: var(--texto-j); max-width: 42ch; }
+.titulo-opciones { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); gap: 14px; width: 100%; margin-top: 6px; }
+.opcion {
+    display: grid; gap: 6px; padding: 20px 22px; text-align: left; cursor: pointer;
+    background: var(--caja); color: var(--texto-j); border: 2px solid #3a3560; border-radius: 4px; /* taste-skill-ignore */
+    transition: transform .15s, border-color .2s, background-color .2s;
+}
+.opcion strong { font-size: var(--t-l); }
+.opcion small { font-size: var(--t-s); color: var(--tenue-j); }
+.opcion:hover, .opcion:focus-visible { border-color: var(--marco); background: var(--caja-2); }
+.opcion:active { transform: scale(.97); }
+.opcion-juego { border-color: var(--marco); }
+.opcion-juego strong { color: var(--marco); }
 .titulo-ayuda { font-family: var(--pixel); font-size: 13px; color: var(--tenue-j); animation: parpadeo 1.2s steps(2) infinite; } /* taste-skill-ignore */
 @keyframes parpadeo { 50% { opacity: .35; } }
+@media (pointer: coarse) { .titulo-ayuda { display: none; } }
 
 /* Panel de nivel */
 .juego-panel {
     position: absolute; inset: 0; z-index: 4; display: grid; place-items: end center;
-    background: color-mix(in srgb, #0b0e16 55%, transparent); /* taste-skill-ignore */
+    background: rgba(5, 4, 10, .6); /* taste-skill-ignore */
     opacity: 0; transition: opacity .25s var(--curva); touch-action: auto; user-select: text;
 }
 .juego-panel.abierto { opacity: 1; }
@@ -228,7 +240,7 @@ html.en-juego .barra, html.en-juego main, html.en-juego .pie, html.en-juego .sal
 .panel-caja {
     width: 100%; max-width: 1180px; max-height: calc(100% - 12px); overflow-y: auto; overscroll-behavior: contain;
     background: var(--bg); color: var(--ink);
-    border: 3px solid var(--marco); outline: 3px solid var(--marco-o); border-radius: 8px 8px 0 0;
+    border: 2px solid var(--marco); border-radius: 6px 6px 0 0;
     transform: translateY(40px); transition: transform .35s var(--curva);
 }
 @media (min-width: 900px) { .panel-caja { max-height: calc(100vh - 56px); border-radius: 8px; } }
