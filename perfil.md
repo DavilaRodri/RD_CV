@@ -85,10 +85,6 @@ Vigilabebés privado para iPhone y iPad: sin cuentas, sin nube y sin grabaciones
 
 App para quedar a correr en grupo cerca de ti: mapa de quedadas, crear una salida en cuatro pasos (fecha, distancia, ritmo y punto de encuentro, con GPX opcional), apuntarse con aprobación, seguir a otros corredores y recordatorios. Flutter, Firebase (Auth, Firestore, Cloud Functions en TypeScript, Cloud Messaging) y Google Maps. En beta privada; llegando a App Store y Google Play.
 
-### Abecedario hablado (en desarrollo)
-
-App infantil para aprender el abecedario con voz: cada letra, de la A a la Z con la Ñ, con su dibujo y su sonido, además de colores, formas, números, animales y juegos de preguntas, con control parental. Flutter y Dart, para iOS y Android.
-
 ### Mi Filmoteca
 
 Mi primera app en las tiendas (App Store y Google Play desde 2020), rehecha entera en la versión 2. Catálogo personal de películas y series: buscar y descubrir títulos, ver en qué plataforma están, puntuar, escribir reseñas, llevar lo visto y lo pendiente, estadísticas y grupos de familia o amigos para compartir recomendaciones. Flutter, Riverpod, Firebase y la API de TMDB. 4,5 estrellas en App Store y más de 450 instalaciones en Google Play.
@@ -162,7 +158,6 @@ Diseño, programo y publico mis propios productos:
 - **Zapeo**: reproductor de contenidos multimedia, sin cuentas ni registro.
 - **LullCam**: vigilabebés privado para iPhone y iPad, sin nube y cifrado de extremo a extremo. En App Store.
 - **RunClap**: quedadas para correr en grupo. Llegando a las tiendas.
-- **Abecedario hablado**: app infantil para aprender las letras con voz. En desarrollo.
 
 Además hago webs a medida para bodas, restaurantes y comercios.
 
@@ -220,7 +215,6 @@ I design, build and ship my own products:
 - **Zapeo**: a multimedia player with no accounts and no sign-up.
 - **LullCam**: a private baby monitor for iPhone and iPad, no cloud and end-to-end encrypted. On the App Store.
 - **RunClap**: group running meet-ups. Coming to the stores.
-- **Abecedario hablado**: a kids' app to learn the alphabet by voice. In development.
 
 I also build custom websites for weddings, restaurants and shops.
 

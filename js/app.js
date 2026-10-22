@@ -1,6 +1,6 @@
 /* rodrigodavila.com
    - Idioma ES/EN y tema claro/oscuro
-   - Panel de apps con pestañas y demos (capturas que se pasan con un toque)
+   - Apps con sus capturas y vídeo (solo se reproduce mientras se ve)
    - Asistente: preguntas rápidas con respuesta escrita (de perfil.md) y,
      para lo demás, IA en Cloudflare con plan B que busca en perfil.md. */
 
@@ -97,55 +97,6 @@
         aparecen.forEach(function (el) { el.classList.add('visto'); });
     }
 
-    /* ---------- Panel de apps (pestañas) ---------- */
-    var tablero = document.querySelector('[data-tablero]');
-    if (tablero) {
-        var pestanas = tablero.querySelectorAll('[data-pestana]');
-        var abrir = function (id, foco) {
-            pestanas.forEach(function (p) {
-                var si = p.getAttribute('data-pestana') === id;
-                p.setAttribute('aria-selected', si ? 'true' : 'false');
-                p.setAttribute('tabindex', si ? '0' : '-1');
-                var ficha = document.getElementById(p.getAttribute('data-pestana'));
-                ficha.hidden = !si;
-                var v = ficha.querySelector('video');
-                if (v && !si) v.pause();
-                if (si) {
-                    var t = ficha.querySelector('.ficha-texto');
-                    t.classList.remove('entra'); void t.offsetWidth; t.classList.add('entra');
-                    if (foco) p.focus();
-                    // Solo desplaza la lista de pestañas (en móvil), nunca la página.
-                    var lista = p.parentNode;
-                    if (lista.scrollWidth > lista.clientWidth) {
-                        lista.scrollTo({ left: p.offsetLeft - lista.offsetLeft - 16, behavior: foco === undefined ? 'auto' : 'smooth' });
-                    }
-                    if (v && enPantalla(v)) v.play().catch(function () {});
-                }
-            });
-        };
-        pestanas.forEach(function (p, i) {
-            p.id = 'pestana-' + p.getAttribute('data-pestana');
-            document.getElementById(p.getAttribute('data-pestana')).setAttribute('aria-labelledby', p.id);
-            p.addEventListener('click', function (e) { e.preventDefault(); abrir(p.getAttribute('data-pestana'), false); });
-            p.addEventListener('keydown', function (e) {
-                var d = { ArrowDown: 1, ArrowRight: 1, ArrowUp: -1, ArrowLeft: -1 }[e.key];
-                if (!d) return;
-                e.preventDefault();
-                abrir(pestanas[(i + d + pestanas.length) % pestanas.length].getAttribute('data-pestana'), true);
-            });
-        });
-        // Los iconos de la portada abren su pestaña.
-        document.querySelectorAll('[data-abrir]').forEach(function (a) {
-            a.addEventListener('click', function () { abrir(a.getAttribute('data-abrir')); });
-        });
-        var inicial = location.hash.slice(1);
-        abrir(document.getElementById('pestana-' + inicial) ? inicial : pestanas[0].getAttribute('data-pestana'));
-    }
-    function enPantalla(el) {
-        var r = el.getBoundingClientRect();
-        return r.width > 0 && r.bottom > 0 && r.top < window.innerHeight;
-    }
-
     /* ---------- Mapa de capacidades: dónde he usado cada cosa ---------- */
     var mapa = document.querySelector('[data-mapa]');
     var donde = document.querySelector('[data-mapa-donde]');
@@ -170,52 +121,6 @@
             });
         });
     }
-
-    /* ---------- Demos de las apps ---------- */
-    document.querySelectorAll('[data-demo]').forEach(function (demo) {
-        var pantalla = demo.querySelector('.movil-pantalla');
-        var fotos = pantalla.querySelectorAll('img');
-        if (fotos.length < 2) return;
-        var actual = 0;
-
-        var mandos = document.createElement('div');
-        mandos.className = 'movil-mandos';
-        mandos.innerHTML =
-            '<button type="button" data-paso="-1" aria-label="Anterior"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>' +
-            '<div class="movil-puntos" aria-hidden="true"></div>' +
-            '<button type="button" data-paso="1" aria-label="Siguiente"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>';
-        demo.appendChild(mandos);
-        var puntos = mandos.querySelector('.movil-puntos');
-        fotos.forEach(function () { puntos.appendChild(document.createElement('span')); });
-
-        function ir(n) {
-            actual = (n + fotos.length) % fotos.length;
-            fotos.forEach(function (f, i) { f.classList.toggle('visible', i === actual); });
-            puntos.querySelectorAll('span').forEach(function (p, i) { p.classList.toggle('activo', i === actual); });
-            pantalla.setAttribute('aria-label', fotos[actual].alt);
-        }
-        mandos.addEventListener('click', function (e) {
-            var b = e.target.closest('button');
-            if (b) ir(actual + Number(b.getAttribute('data-paso')));
-        });
-        pantalla.setAttribute('role', 'button');
-        pantalla.setAttribute('tabindex', '0');
-        pantalla.addEventListener('click', function () { ir(actual + 1); });
-        pantalla.addEventListener('keydown', function (e) {
-            if (e.key === 'ArrowRight' || e.key === 'Enter' || e.key === ' ') { e.preventDefault(); ir(actual + 1); }
-            if (e.key === 'ArrowLeft') { e.preventDefault(); ir(actual - 1); }
-        });
-        // Deslizar con el dedo
-        var x0 = null;
-        pantalla.addEventListener('touchstart', function (e) { x0 = e.touches[0].clientX; }, { passive: true });
-        pantalla.addEventListener('touchend', function (e) {
-            if (x0 === null) return;
-            var dx = e.changedTouches[0].clientX - x0;
-            if (Math.abs(dx) > 40) ir(actual + (dx < 0 ? 1 : -1));
-            x0 = null;
-        });
-        ir(0);
-    });
 
     // Vídeos: solo se reproducen mientras se ven.
     document.querySelectorAll('video[data-autoplay]').forEach(function (v) {

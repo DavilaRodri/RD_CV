@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Rodrigo Dávila · IA Generativa y producto</title>
-    <meta name="description" content="Rodrigo Dávila, Manager de IA Generativa en Accenture. Diseña sistemas multiagente para banca y construye sus propias apps: UrbaPadel, TuMenu, GodaFly y Zapeo.">
+    <meta name="description" content="Rodrigo Dávila, Manager de IA Generativa en Accenture. Diseña sistemas multiagente para banca y construye sus propias apps: UrbaPadel, LullCam, TuMenu, GodaFly y Mi Filmoteca.">
     <meta name="theme-color" content="#0b0c0e">
     <link rel="canonical" href="https://rodrigodavila.com/">
     <meta property="og:type" content="website">
@@ -44,9 +44,10 @@
                 <span class="marca-nombre">Rodrigo Dávila</span>
             </a>
             <nav class="menu" aria-label="Principal">
-                <a href="#proyectos"><span lang="es">Proyectos</span><span lang="en">Projects</span></a>
-                <a href="#capacidades"><span lang="es">Capacidades</span><span lang="en">Skills</span></a>
+                <a href="#asistente"><span lang="es">Pregúntame</span><span lang="en">Ask me</span></a>
                 <a href="#experiencia"><span lang="es">Experiencia</span><span lang="en">Experience</span></a>
+                <a href="#apps">Apps</a>
+                <a href="#webs">Webs</a>
                 <a href="#contacto"><span lang="es">Contacto</span><span lang="en">Contact</span></a>
             </nav>
             <div class="ajustes">
@@ -61,7 +62,7 @@
 
     <main id="principal">
 
-        <!-- ===== Portada: quién soy y el asistente ===== -->
+        <!-- ===== Portada ===== -->
         <section class="portada" id="inicio" aria-labelledby="nombre">
             <div class="portada-texto">
                 <h1 id="nombre" class="aparece">Rodrigo Dávila</h1>
@@ -69,468 +70,326 @@
                     <span lang="es">Manager de IA Generativa en Accenture. Diseño sistemas multiagente para la banca y construyo mis propias apps, de la idea a la tienda.</span>
                     <span lang="en">Generative AI Manager at Accenture. I design multi-agent systems for banking and build my own apps, from idea to store.</span>
                 </p>
-                <nav class="dock aparece" aria-label="Mis apps">
-                    <a href="#urbapadel" data-abrir="urbapadel"><img src="img/apps/urbapadel-icono.webp" width="96" height="96" alt=""><span>UrbaPadel</span></a>
-                    <a href="#lullcam" data-abrir="lullcam"><img src="img/apps/lullcam-icono.webp" width="96" height="96" alt=""><span>LullCam</span></a>
-                    <a href="#tumenu" data-abrir="tumenu"><img src="img/apps/tumenu-icono.webp" width="96" height="96" alt=""><span>TuMenu</span></a>
-                    <a href="#godafly" data-abrir="godafly"><img src="img/apps/godafly-icono.webp" width="96" height="96" alt=""><span>GodaFly</span></a>
-                    <a href="#mifilmoteca" data-abrir="mifilmoteca"><img src="img/apps/mifilmoteca-icono.webp" width="96" height="96" alt=""><span>Mi Filmoteca</span></a>
-                    <a href="#zapeo" data-abrir="zapeo"><img src="img/apps/zapeo-icono.webp" width="96" height="96" alt=""><span>Zapeo</span></a>
-                    <a href="#taller"><img src="img/apps/runclap-icono.webp" width="96" height="96" alt=""><span>RunClap</span></a>
-                    <a href="#taller"><img src="img/apps/abecedario-icono.webp" width="96" height="96" alt=""><span>Abecedario</span></a>
-                </nav>
                 <div class="acciones aparece">
-                    <a class="boton boton-lleno" href="#proyectos"><span lang="es">Ver proyectos</span><span lang="en">See projects</span></a>
+                    <a class="boton boton-lleno" href="#asistente"><span lang="es">Pregúntale a mi IA</span><span lang="en">Ask my AI</span></a>
                     <a class="boton" href="https://www.linkedin.com/in/rodrigo-d%C3%A1vila-5b675383/" target="_blank" rel="noopener">LinkedIn</a>
                     <a class="boton" href="https://github.com/DavilaRodri" target="_blank" rel="noopener">GitHub</a>
                 </div>
             </div>
+            <nav class="estante aparece" aria-label="Mis apps">
+                <a href="#urbapadel"><img src="img/apps/urbapadel-icono.webp" width="96" height="96" alt=""><span>UrbaPadel</span></a>
+                <a href="#lullcam"><img src="img/apps/lullcam-icono.webp" width="96" height="96" alt=""><span>LullCam</span></a>
+                <a href="#tumenu"><img src="img/apps/tumenu-icono.webp" width="96" height="96" alt=""><span>TuMenu</span></a>
+                <a href="#godafly"><img src="img/apps/godafly-icono.webp" width="96" height="96" alt=""><span>GodaFly</span></a>
+                <a href="#mifilmoteca"><img src="img/apps/mifilmoteca-icono.webp" width="96" height="96" alt=""><span>Mi Filmoteca</span></a>
+                <a href="#zapeo"><img src="img/apps/zapeo-icono.webp" width="96" height="96" alt=""><span>Zapeo</span></a>
+                <a href="#runclap"><img src="img/apps/runclap-icono.webp" width="96" height="96" alt=""><span>RunClap</span></a>
+            </nav>
+        </section>
 
-            <!-- Asistente -->
-            <div class="chat aparece" id="asistente" role="region" aria-labelledby="chat-titulo">
-                <div class="chat-cabeza">
-                    <span class="chat-sello" aria-hidden="true">RD</span>
-                    <div>
-                        <h2 id="chat-titulo"><span lang="es">Pregúntame</span><span lang="en">Ask me</span></h2>
-                        <p><span class="punto" aria-hidden="true"></span><span lang="es">Responde una IA con mi perfil</span><span lang="en">An AI answers from my profile</span></p>
+        <!-- ===== Asistente ===== -->
+        <section class="asistente" id="asistente" aria-labelledby="chat-titulo">
+            <div class="chat aparece">
+                <div class="chat-intro">
+                    <h2 id="chat-titulo"><span lang="es">Pregúntale a mi IA</span><span lang="en">Ask my AI</span></h2>
+                    <p class="chat-sub">
+                        <span lang="es">Conoce mi experiencia, mis proyectos y cómo trabajo. Se ha leído mi perfil entero y responde en español o en inglés.</span>
+                        <span lang="en">Learn about my experience, my projects and how I work. It has read my whole profile and answers in English or Spanish.</span>
+                    </p>
+                    <div class="chat-rapidas" data-chat-rapidas aria-label="Preguntas frecuentes"></div>
+                </div>
+                <div class="chat-ventana">
+                    <div class="chat-cabeza">
+                        <span class="chat-sello" aria-hidden="true">RD</span>
+                        <p><span class="punto" aria-hidden="true"></span><span lang="es">En línea · responde al momento</span><span lang="en">Online · answers instantly</span></p>
                     </div>
-                </div>
-                <div class="chat-registro" data-chat-registro aria-live="polite" tabindex="0">
-                    <div class="msg-yo">
-                        <p lang="es">Hola, soy Rodrigo. Pregúntame lo que quieras sobre mi experiencia, mis proyectos o cómo trabajo.</p>
-                        <p lang="en">Hi, I'm Rodrigo. Ask me anything about my experience, my projects or how I work.</p>
+                    <div class="chat-registro" data-chat-registro aria-live="polite" tabindex="0">
+                        <div class="msg-yo">
+                            <p lang="es">Hola, soy Rodrigo. Pregúntame lo que quieras sobre mi experiencia, mis proyectos o cómo trabajo.</p>
+                            <p lang="en">Hi, I'm Rodrigo. Ask me anything about my experience, my projects or how I work.</p>
+                        </div>
                     </div>
-                </div>
-                <div class="chat-rapidas" data-chat-rapidas aria-label="Preguntas frecuentes"></div>
-                <form class="chat-campo" data-chat-form>
-                    <label class="oculto" for="chat-entrada"><span lang="es">Tu pregunta</span><span lang="en">Your question</span></label>
-                    <input id="chat-entrada" name="pregunta" type="text" autocomplete="off" maxlength="600" required
-                           data-placeholder-es="Escribe tu pregunta" data-placeholder-en="Type your question" placeholder="Escribe tu pregunta">
-                    <button type="submit" data-label-es="Enviar pregunta" data-label-en="Send question" aria-label="Enviar pregunta">
-                        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M12 19V5M6 11l6-6 6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                    </button>
-                </form>
-            </div>
-        </section>
-
-        <!-- ===== Cifras ===== -->
-        <section class="cifras" aria-label="En cifras">
-            <dl>
-                <div class="aparece"><dd data-anios>9</dd><dt><span lang="es">años en tecnología, de programador a manager de IA</span><span lang="en">years in tech, from developer to AI manager</span></dt></div>
-                <div class="aparece"><dd>5</dd><dt><span lang="es">apps mías en App Store, 4 también en Google Play</span><span lang="en">apps of mine on the App Store, 4 also on Google Play</span></dt></div>
-                <div class="aparece"><dd>6 + 1</dd><dt><span lang="es">agentes especializados y un orquestador en el core de BBVA</span><span lang="en">specialised agents and one orchestrator on BBVA&#39;s core</span></dt></div>
-                <div class="aparece"><dd>2020</dd><dt><span lang="es">publicando en las tiendas, desde Mi Filmoteca</span><span lang="en">shipping to the stores, since Mi Filmoteca</span></dt></div>
-            </dl>
-        </section>
-
-        <!-- ===== Clientes ===== -->
-        <section class="clientes" aria-labelledby="clientes-titulo">
-            <h2 id="clientes-titulo" class="aparece"><span lang="es">He trabajado en proyectos para</span><span lang="en">I have worked on projects for</span></h2>
-            <ul class="aparece">
-                <li>BBVA</li>
-                <li>Santander</li>
-                <li><span lang="es">Cruz Roja</span><span lang="en">Red Cross</span></li>
-                <li>Acciona</li>
-                <li>Cepsa</li>
-                <li>BMW</li>
-                <li><span lang="es">Comunidad de Madrid</span><span lang="en">Madrid Regional Government</span></li>
-            </ul>
-        </section>
-
-        <!-- ===== Capacidades ===== -->
-        <section class="capacidades" id="capacidades" aria-labelledby="capacidades-titulo">
-            <div class="cabecera">
-                <h2 id="capacidades-titulo" class="aparece"><span lang="es">Lo que sé hacer</span><span lang="en">What I can do</span></h2>
-                <p class="aparece"><span lang="es">Ordenado por lo que más domino. Pulsa cualquiera para ver dónde lo he usado.</span><span lang="en">Ordered by what I know best. Tap any of them to see where I have used it.</span></p>
-            </div>
-            <div class="mapa" data-mapa>
-                <div class="capa capa-principal aparece">
-                    <div class="capa-titulo"><h3><span lang="es">IA Generativa y agentes</span><span lang="en">Generative AI and agents</span></h3><p><span lang="es">Lo que más domino y a lo que me dedico hoy.</span><span lang="en">What I know best and what I do today.</span></p></div>
-                    <ul class="capa-chips"><li><button type="button" data-donde-es="BBVA · Accenture" data-donde-en="BBVA · Accenture"><span lang="es">Sistemas multiagente</span><span lang="en">Multi-agent systems</span></button></li><li><button type="button" data-donde-es="BBVA · Accenture" data-donde-en="BBVA · Accenture"><span lang="es">Orquestación de agentes</span><span lang="en">Agent orchestration</span></button></li><li><button type="button" data-donde-es="BBVA · Accenture" data-donde-en="BBVA · Accenture">MCP</button></li><li><button type="button" data-donde-es="BBVA · Accenture" data-donde-en="BBVA · Accenture"><span lang="es">Skills de agentes</span><span lang="en">Agent skills</span></button></li><li><button type="button" data-donde-es="BBVA · Accenture" data-donde-en="BBVA · Accenture">Human-in-the-loop</button></li><li><button type="button" data-donde-es="Proyectos de IA Generativa" data-donde-en="Generative AI projects">RAG</button></li><li><button type="button" data-donde-es="Cruz Roja · Deloitte, BBVA · Accenture" data-donde-en="Red Cross · Deloitte, BBVA · Accenture">Prompt engineering</button></li><li><button type="button" data-donde-es="BBVA, TuMenu y mi día a día" data-donde-en="BBVA, TuMenu and my daily work">Claude · GPT · Gemini</button></li><li><button type="button" data-donde-es="Cruz Roja · Deloitte" data-donde-en="Red Cross · Deloitte">AWS Bedrock</button></li><li><button type="button" data-donde-es="Todas mis apps y BBVA" data-donde-en="All my apps and BBVA">Claude Code · Copilot · Cursor</button></li><li><button type="button" data-donde-es="Workshops y demos para miles de profesionales en Accenture" data-donde-en="Workshops and demos for thousands of professionals at Accenture"><span lang="es">Formación y adopción de IA</span><span lang="en">AI training and adoption</span></button></li></ul>
-                </div>
-                <div class="capa aparece">
-                    <div class="capa-titulo"><h3><span lang="es">Producto y apps</span><span lang="en">Product and apps</span></h3><p><span lang="es">De la idea a la tienda, con mis propias manos.</span><span lang="en">From idea to store, built by me.</span></p></div>
-                    <ul class="capa-chips"><li><button type="button" data-donde-es="UrbaPadel, GodaFly, Zapeo, RunClap, Abecedario, Mi Filmoteca" data-donde-en="UrbaPadel, GodaFly, Zapeo, RunClap, Abecedario, Mi Filmoteca">Flutter · Dart</button></li><li><button type="button" data-donde-es="LullCam" data-donde-en="LullCam">Swift · SwiftUI</button></li><li><button type="button" data-donde-es="TuMenu, Cloud Functions de RunClap" data-donde-en="TuMenu, Cloud Functions de RunClap">TypeScript</button></li><li><button type="button" data-donde-es="LullCam: vídeo en directo cifrado" data-donde-en="LullCam: encrypted live video">WebRTC</button></li><li><button type="button" data-donde-es="Todas mis apps y webs" data-donde-en="All my apps and sites"><span lang="es">Diseño de producto y UX</span><span lang="en">Product design and UX</span></button></li><li><button type="button" data-donde-es="Publicación y revisiones de todas mis apps" data-donde-en="Shipping and reviews for all my apps">App Store · Google Play</button></li><li><button type="button" data-donde-es="BMW · Altia" data-donde-en="BMW · Altia">Objective-C</button></li></ul>
-                </div>
-                <div class="capa aparece">
-                    <div class="capa-titulo"><h3><span lang="es">Backend y datos</span><span lang="en">Backend and data</span></h3><p><span lang="es">Donde empecé y donde sigo sintiéndome en casa.</span><span lang="en">Where I started, and still feel at home.</span></p></div>
-                    <ul class="capa-chips"><li><button type="button" data-donde-es="BBVA, Cepsa, Comunidad de Madrid" data-donde-en="BBVA, Cepsa, Comunidad de Madrid">Java · Spring · Hibernate</button></li><li><button type="button" data-donde-es="Automatización e IA" data-donde-en="Automation and AI">Python</button></li><li><button type="button" data-donde-es="Santander · Deloitte" data-donde-en="Santander · Deloitte"><span lang="es">Microservicios y APIs</span><span lang="en">Microservices and APIs</span></button></li><li><button type="button" data-donde-es="Comunidad de Madrid, Supabase en GodaFly" data-donde-en="Community of Madrid, Supabase in GodaFly">SQL · PostgreSQL · MySQL</button></li><li><button type="button" data-donde-es="Proyectos AWS en Deloitte" data-donde-en="AWS projects at Deloitte">DynamoDB · MongoDB</button></li><li><button type="button" data-donde-es="Migración del core de BBVA" data-donde-en="BBVA core migration"><span lang="es">Lectura de COBOL</span><span lang="en">Reading COBOL</span></button></li><li><button type="button" data-donde-es="PUCK · Deloitte" data-donde-en="PUCK · Deloitte">Stripe · Xero</button></li></ul>
-                </div>
-                <div class="capa aparece">
-                    <div class="capa-titulo"><h3><span lang="es">Cloud y plataforma</span><span lang="en">Cloud and platform</span></h3><p><span lang="es">Arquitecturas serverless y cloud-native en producción.</span><span lang="en">Serverless and cloud-native architectures in production.</span></p></div>
-                    <ul class="capa-chips"><li><button type="button" data-donde-es="Santander, Acciona, Cruz Roja" data-donde-en="Santander, Acciona, Red Cross">AWS</button></li><li><button type="button" data-donde-es="TuMenu, LullCam y esta web" data-donde-en="TuMenu, LullCam and this site">Cloudflare Workers</button></li><li><button type="button" data-donde-es="UrbaPadel, RunClap, Mi Filmoteca" data-donde-en="UrbaPadel, RunClap, Mi Filmoteca">Firebase</button></li><li><button type="button" data-donde-es="GodaFly" data-donde-en="GodaFly">Supabase</button></li><li><button type="button" data-donde-es="Proyectos de consultoría" data-donde-en="Consulting projects">Azure · Google Cloud</button></li><li><button type="button" data-donde-es="Despliegues en consultoría y en mis apps" data-donde-en="Deployments in consulting and my apps">Docker · CI/CD · Jenkins</button></li><li><button type="button" data-donde-es="Todos los días" data-donde-en="Every day">Git · Linux</button></li></ul>
-                </div>
-                <div class="capa aparece">
-                    <div class="capa-titulo"><h3><span lang="es">Consultoría y liderazgo</span><span lang="en">Consulting and leadership</span></h3><p><span lang="es">Explicar lo complejo y que el equipo lo lleve a producción.</span><span lang="en">Explaining the complex, and getting the team to ship it.</span></p></div>
-                    <ul class="capa-chips"><li><button type="button" data-donde-es="BBVA, Santander, Acciona, Cruz Roja" data-donde-en="BBVA, Santander, Acciona, Red Cross"><span lang="es">Arquitectura de soluciones</span><span lang="en">Solution architecture</span></button></li><li><button type="button" data-donde-es="Accenture · Deloitte" data-donde-en="Accenture · Deloitte"><span lang="es">Propuestas a cliente</span><span lang="en">Client proposals</span></button></li><li><button type="button" data-donde-es="Dirección de BBVA" data-donde-en="BBVA leadership"><span lang="es">Interlocución con dirección</span><span lang="en">Executive stakeholder management</span></button></li><li><button type="button" data-donde-es="Santander, PUCK, Acciona" data-donde-en="Santander, PUCK, Acciona"><span lang="es">Gestión de proyectos y roadmap</span><span lang="en">Project and roadmap management</span></button></li><li><button type="button" data-donde-es="PSM I (Scrum.org, 2022) y equipos ágiles en Deloitte y Accenture" data-donde-en="PSM I (Scrum.org, 2022) and agile teams at Deloitte and Accenture">Scrum · Agile · Kanban</button></li><li><button type="button" data-donde-es="Deloitte · Altia" data-donde-en="Deloitte · Altia"><span lang="es">Liderazgo de equipos</span><span lang="en">Team leadership</span></button></li><li><button type="button" data-donde-es="Todos los proyectos de consultoría" data-donde-en="Every consulting project">Jira · Confluence</button></li></ul>
+                    <form class="chat-campo" data-chat-form>
+                        <label class="oculto" for="chat-entrada"><span lang="es">Tu pregunta</span><span lang="en">Your question</span></label>
+                        <input id="chat-entrada" name="pregunta" type="text" autocomplete="off" maxlength="600" required
+                               data-placeholder-es="Escribe tu pregunta" data-placeholder-en="Type your question" placeholder="Escribe tu pregunta">
+                        <button type="submit" data-label-es="Enviar pregunta" data-label-en="Send question" aria-label="Enviar pregunta">
+                            <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M12 19V5M6 11l6-6 6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        </button>
+                    </form>
                 </div>
             </div>
-            <p class="mapa-donde" data-mapa-donde aria-live="polite"></p>
         </section>
 
-        <!-- ===== Proyectos: panel con una demo por app ===== -->
-        <section class="proyectos" id="proyectos" aria-labelledby="proyectos-titulo">
-            <div class="cabecera">
-                <h2 id="proyectos-titulo" class="aparece"><span lang="es">Apps que he construido</span><span lang="en">Apps I have built</span></h2>
+        <!-- ===== Experiencia ===== -->
+        <section class="experiencia" id="experiencia" aria-labelledby="experiencia-titulo">
+            <div class="experiencia-lado">
+                <h2 id="experiencia-titulo" class="aparece"><span lang="es">Experiencia</span><span lang="en">Experience</span></h2>
                 <p class="aparece">
-                    <span lang="es">Productos propios, diseñados y programados por mí y publicados con usuarios reales. Toca el móvil para pasar pantallas.</span>
-                    <span lang="en">My own products, designed and built by me and live with real users. Tap the phone to move through the screens.</span>
+                    <span lang="es">De programar Java para BBVA a diseñar sus agentes de IA.</span>
+                    <span lang="en">From writing Java for BBVA to designing its AI agents.</span>
+                </p>
+                <div class="clientes aparece">
+                    <h3><span lang="es">Clientes</span><span lang="en">Clients</span></h3>
+                    <ul>
+                        <li>BBVA</li>
+                        <li>Santander</li>
+                        <li><span lang="es">Cruz Roja</span><span lang="en">Red Cross</span></li>
+                        <li>Acciona</li>
+                        <li>Cepsa</li>
+                        <li>BMW</li>
+                        <li><span lang="es">Comunidad de Madrid</span><span lang="en">Madrid Regional Government</span></li>
+                    </ul>
+                </div>
+                <a class="boton aparece" href="https://www.linkedin.com/in/rodrigo-d%C3%A1vila-5b675383/" target="_blank" rel="noopener"><span lang="es">CV completo en LinkedIn</span><span lang="en">Full CV on LinkedIn</span></a>
+            </div>
+
+            <div class="experiencia-lista">
+                <ol class="puestos">
+                    <li class="puesto puesto-actual aparece">
+                        <p class="puesto-anos">2025 – <span lang="es">hoy</span><span lang="en">now</span></p>
+                        <h3><span lang="es">Manager de IA Generativa</span><span lang="en">Generative AI Manager</span> <span class="empresa">Accenture</span></h3>
+                        <p lang="es">Diseñé desde cero el sistema multiagente que migra el core bancario de BBVA de COBOL a Java: seis agentes especializados, un orquestador, MCP y validación humana. Impulso la adopción de IA en la compañía y presento avances a la dirección del banco.</p>
+                        <p lang="en">I designed from scratch the multi-agent system migrating BBVA's core banking from COBOL to Java: six specialised agents, an orchestrator, MCP and human validation. I drive AI adoption across the company and report progress to the bank's leadership.</p>
+                    </li>
+                    <li class="puesto aparece">
+                        <p class="puesto-anos">2021 – 2025</p>
+                        <h3>Senior Consultant <span class="empresa">Deloitte</span></h3>
+                        <p lang="es">IA Generativa en AWS para Cruz Roja. Migración a AWS de la plataforma global de tarjetas de Santander en Chile y Brasil. Proyectos para Acciona y eCommerce en Reino Unido.</p>
+                        <p lang="en">Generative AI on AWS for the Red Cross. Migration of Santander's global cards platform to AWS in Chile and Brazil. Projects for Acciona and UK eCommerce.</p>
+                    </li>
+                    <li class="puesto aparece">
+                        <p class="puesto-anos">2018 – 2021</p>
+                        <h3><span lang="es">Analista</span><span lang="en">Analyst</span> <span class="empresa">Altia</span></h3>
+                        <p lang="es">Análisis y desarrollo Java para Cepsa y la Comunidad de Madrid, y una app de iPad para eventos de BMW.</p>
+                        <p lang="en">Analysis and Java development for Cepsa and the Community of Madrid, plus an iPad events app for BMW.</p>
+                    </li>
+                    <li class="puesto aparece">
+                        <p class="puesto-anos">2017 – 2018</p>
+                        <h3><span lang="es">Programador</span><span lang="en">Developer</span> <span class="empresa">Accenture</span></h3>
+                        <p lang="es">Procesos batch en Java para el Reporting Engine de BBVA.</p>
+                        <p lang="en">Java batch processes for BBVA's Reporting Engine.</p>
+                    </li>
+                </ol>
+                <ul class="formacion">
+                    <li class="aparece"><span class="formacion-ano">2012 – 2017</span><strong><span lang="es">Grado en Diseño y Desarrollo de Videojuegos</span><span lang="en">BSc in Game Design and Development</span></strong><span>ESNE</span></li>
+                    <li class="aparece"><span class="formacion-ano"><span lang="es">2022 · en Deloitte</span><span lang="en">2022 · at Deloitte</span></span><strong>Professional Scrum Master I</strong><span>Scrum.org</span></li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- ===== Apps ===== -->
+        <section class="apps" id="apps" aria-labelledby="apps-titulo">
+            <div class="cabecera">
+                <h2 id="apps-titulo" class="aparece"><span lang="es">Apps que he construido</span><span lang="en">Apps I have built</span></h2>
+                <p class="aparece">
+                    <span lang="es">Diseñadas y programadas por mí, publicadas en App Store y Google Play y usadas por gente real.</span>
+                    <span lang="en">Designed and built by me, live on the App Store and Google Play and used by real people.</span>
                 </p>
             </div>
 
-            <div class="tablero aparece" data-tablero>
-                <div class="tablero-lista" role="tablist" aria-label="Apps">
-                    <a class="pestana" href="#urbapadel" role="tab" data-pestana="urbapadel">
+            <article class="app" id="urbapadel" style="--tono:#40597b">
+                <div class="app-texto aparece">
+                    <div class="app-cabeza">
                         <img src="img/apps/urbapadel-icono.webp" width="96" height="96" alt="">
-                        <span class="pestana-texto">
-                            <strong>UrbaPadel</strong>
-                            <span><span lang="es">Reservas para urbanizaciones</span><span lang="en">Bookings for residential communities</span></span>
-                        </span>
-                    </a>
-                    <a class="pestana" href="#lullcam" role="tab" data-pestana="lullcam">
-                        <img src="img/apps/lullcam-icono.webp" width="96" height="96" alt="">
-                        <span class="pestana-texto">
-                            <strong>LullCam</strong>
-                            <span><span lang="es">Vigilabebés privado, sin nube</span><span lang="en">Private baby monitor, no cloud</span></span>
-                        </span>
-                    </a>
-                    <a class="pestana" href="#tumenu" role="tab" data-pestana="tumenu">
-                        <img src="img/apps/tumenu-icono.webp" width="96" height="96" alt="">
-                        <span class="pestana-texto">
-                            <strong>TuMenu</strong>
-                            <span><span lang="es">El menú del día por WhatsApp</span><span lang="en">The daily menu over WhatsApp</span></span>
-                        </span>
-                    </a>
-                    <a class="pestana" href="#godafly" role="tab" data-pestana="godafly">
-                        <img src="img/apps/godafly-icono.webp" width="96" height="96" alt="">
-                        <span class="pestana-texto">
-                            <strong>GodaFly</strong>
-                            <span><span lang="es">Viajeros que coinciden en escalas</span><span lang="en">Travellers meeting at layovers</span></span>
-                        </span>
-                    </a>
-                    <a class="pestana" href="#mifilmoteca" role="tab" data-pestana="mifilmoteca">
-                        <img src="img/apps/mifilmoteca-icono.webp" width="96" height="96" alt="">
-                        <span class="pestana-texto">
-                            <strong>Mi Filmoteca</strong>
-                            <span><span lang="es">Tu catálogo de cine y series</span><span lang="en">Your film and series catalogue</span></span>
-                        </span>
-                    </a>
-                    <a class="pestana" href="#zapeo" role="tab" data-pestana="zapeo">
-                        <img src="img/apps/zapeo-icono.webp" width="96" height="96" alt="">
-                        <span class="pestana-texto">
-                            <strong>Zapeo</strong>
-                            <span><span lang="es">Reproductor multimedia</span><span lang="en">Multimedia player</span></span>
-                        </span>
-                    </a>
+                        <div><h3>UrbaPadel</h3><p class="app-meta"><span class="punto" aria-hidden="true"></span>App Store · Google Play</p></div>
+                    </div>
+                    <p class="app-lead"><span lang="es">Las reservas de tu urbanización, sin grupos de WhatsApp ni hojas en el portal.</span><span lang="en">Your community's bookings, without WhatsApp groups or paper on the noticeboard.</span></p>
+                    <p class="app-dato"><span lang="es">Más de 150 vecinos en 4 urbanizaciones.</span><span lang="en">Over 150 residents across 4 communities.</span></p>
+                    <ul class="pila"><li>Flutter</li><li>Firebase</li><li>Cloud Functions</li></ul>
+                    <p class="enlaces">
+                        <a href="https://urbapadel.com" target="_blank" rel="noopener">urbapadel.com</a>
+                        <a href="https://apps.apple.com/es/app/urbapadel/id6743709716" target="_blank" rel="noopener">App Store</a>
+                        <a href="https://play.google.com/store/apps/details?id=com.rd.urbapadel" target="_blank" rel="noopener">Google Play</a>
+                    </p>
                 </div>
+                <div class="app-moviles">
+                    <div class="movil aparece"><div class="movil-pantalla"><img src="img/apps/urbapadel-1.webp" width="560" height="1217" loading="lazy" alt="UrbaPadel: inicio con los accesos a la urbanización y al pádel"></div></div>
+                    <div class="movil aparece"><div class="movil-pantalla"><img src="img/apps/urbapadel-2.webp" width="560" height="1217" loading="lazy" alt="UrbaPadel: reserva de la sala de juntas por franjas"></div></div>
+                    <div class="movil aparece"><div class="movil-pantalla"><img src="img/apps/urbapadel-4.webp" width="560" height="1217" loading="lazy" alt="UrbaPadel: comunicado de la junta a los vecinos"></div></div>
+                </div>
+            </article>
 
-                <article class="ficha" id="urbapadel" role="tabpanel" style="--tono:#40597b">
-                    <div class="ficha-texto">
-                        <h3>UrbaPadel</h3>
-                        <p class="ficha-meta"><span class="punto" aria-hidden="true"></span><span lang="es">En App Store y Google Play · 2025</span><span lang="en">On App Store and Google Play · 2025</span></p>
-                        <p class="ficha-lead">
-                            <span lang="es">Las reservas de tu urbanización, sin grupos de WhatsApp ni hojas en el portal.</span>
-                            <span lang="en">Your community's bookings, without WhatsApp groups or paper on the noticeboard.</span>
-                        </p>
-                        <p>
-                            <span lang="es">Pistas de pádel y salas comunes con los turnos y normas de cada comunidad, incidencias con foto y comunicados de la junta. En la versión 2 (junio de 2026) migré los datos en producción y avisé a más de 150 vecinos el mismo día.</span>
-                            <span lang="en">Padel courts and shared rooms with each community's slots and rules, issue reports with photos and announcements from the board. For version 2 (June 2026) I migrated production data and notified more than 150 residents the same day.</span>
-                        </p>
-                        <dl class="ficha-cifras">
-                            <div><dt><span lang="es">urbanizaciones</span><span lang="en">communities</span></dt><dd>4</dd></div>
-                            <div><dt><span lang="es">vecinos</span><span lang="en">residents</span></dt><dd>150+</dd></div>
-                        </dl>
-                        <ul class="pila"><li>Flutter</li><li>Firebase</li><li>Cloud Functions</li></ul>
-                        <p class="enlaces">
-                            <a href="https://urbapadel.com" target="_blank" rel="noopener">urbapadel.com</a>
-                            <a href="https://apps.apple.com/es/app/urbapadel/id6743709716" target="_blank" rel="noopener">App Store</a>
-                            <a href="https://play.google.com/store/apps/details?id=com.rd.urbapadel" target="_blank" rel="noopener">Google Play</a>
-                        </p>
+            <article class="app" id="lullcam" style="--tono:#3a2f8a">
+                <div class="app-texto aparece">
+                    <div class="app-cabeza">
+                        <img src="img/apps/lullcam-icono.webp" width="96" height="96" alt="">
+                        <div><h3>LullCam</h3><p class="app-meta"><span class="punto" aria-hidden="true"></span>App Store · <span lang="es">iOS nativa</span><span lang="en">native iOS</span></p></div>
                     </div>
-                    <div class="ficha-demo">
-                        <div class="movil" data-demo>
-                            <div class="movil-pantalla">
-                                <img src="img/apps/urbapadel-1.webp" width="560" height="1217" alt="UrbaPadel: inicio con los accesos a la urbanización y al pádel">
-                                <img src="img/apps/urbapadel-2.webp" width="560" height="1217" loading="lazy" alt="UrbaPadel: reserva de la sala de juntas por franjas">
-                                <img src="img/apps/urbapadel-3.webp" width="560" height="1217" loading="lazy" alt="UrbaPadel: incidencias de la comunidad">
-                                <img src="img/apps/urbapadel-4.webp" width="560" height="1217" loading="lazy" alt="UrbaPadel: comunicado de la junta a los vecinos">
-                            </div>
-                        </div>
-                    </div>
-                </article>
+                    <p class="app-lead"><span lang="es">Tu iPhone o iPad, convertido en vigilabebés. Sin cuentas, sin nube y sin grabaciones.</span><span lang="en">Your iPhone or iPad as a baby monitor. No accounts, no cloud, no recordings.</span></p>
+                    <p class="app-dato"><span lang="es">Vídeo cifrado de extremo a extremo, 10 idiomas y más de 146 tests.</span><span lang="en">End-to-end encrypted video, 10 languages and over 146 tests.</span></p>
+                    <ul class="pila"><li>Swift 6</li><li>SwiftUI</li><li>WebRTC</li><li>Cloudflare</li></ul>
+                    <p class="enlaces">
+                        <a href="https://lullcam.com" target="_blank" rel="noopener">lullcam.com</a>
+                        <a href="https://apps.apple.com/es/app/lullcam/id6820272090" target="_blank" rel="noopener">App Store</a>
+                    </p>
+                </div>
+                <div class="app-moviles">
+                    <div class="movil aparece"><div class="movil-pantalla"><img src="img/apps/lullcam-1.webp" width="414" height="900" loading="lazy" alt="LullCam: inicio con usar como cámara o ver y escuchar"></div></div>
+                    <div class="movil aparece"><div class="movil-pantalla"><img src="img/apps/lullcam-2.webp" width="414" height="900" loading="lazy" alt="LullCam: te avisa del llanto, el ruido o si se pierde la conexión"></div></div>
+                    <div class="movil aparece"><div class="movil-pantalla"><img src="img/apps/lullcam-3.webp" width="414" height="900" loading="lazy" alt="LullCam: usa un iPhone o iPad como cámara"></div></div>
+                </div>
+            </article>
 
-                <article class="ficha" id="lullcam" role="tabpanel" style="--tono:#3a2f8a">
-                    <div class="ficha-texto">
-                        <h3>LullCam</h3>
-                        <p class="ficha-meta"><span class="punto" aria-hidden="true"></span><span lang="es">En App Store · iOS nativa · octubre de 2026</span><span lang="en">On the App Store · native iOS · October 2026</span></p>
-                        <p class="ficha-lead">
-                            <span lang="es">Tu iPhone o iPad se convierte en vigilabebés. Sin cuentas, sin nube y sin grabaciones.</span><span lang="en">Your iPhone or iPad becomes a baby monitor. No accounts, no cloud, no recordings.</span>
-                        </p>
-                        <p>
-                            <span lang="es">Un dispositivo hace de cámara y los demás miran, escuchan y reciben avisos de llanto, ruido o movimiento, incluso con la pantalla bloqueada. En casa va en local; desde fuera, cifrado de extremo a extremo a través de un relé que no puede ver nada.</span><span lang="en">One device acts as the camera and the others watch, listen and get alerts for crying, noise or movement, even with the screen locked. At home it runs locally; away from home, end-to-end encrypted through a relay that cannot see anything.</span>
-                        </p>
-                        <dl class="ficha-cifras">
-                            <div><dt><span lang="es">idiomas</span><span lang="en">languages</span></dt><dd>10</dd></div>
-                            <div><dt>tests</dt><dd>146+</dd></div>
-                        </dl>
-                        <ul class="pila"><li>Swift 6</li><li>SwiftUI</li><li>WebRTC</li><li>SoundAnalysis</li><li>Cloudflare</li></ul>
-                        <p class="enlaces">
-                            <a href="https://lullcam.com" target="_blank" rel="noopener">lullcam.com</a>
-                            <a href="https://apps.apple.com/es/app/lullcam/id6820272090" target="_blank" rel="noopener">App Store</a>
-                        </p>
+            <article class="app" id="tumenu" style="--tono:#2b4a73">
+                <div class="app-texto aparece">
+                    <div class="app-cabeza">
+                        <img src="img/apps/tumenu-icono.webp" width="96" height="96" alt="">
+                        <div><h3>TuMenu</h3><p class="app-meta"><span class="punto" aria-hidden="true"></span>App Store · Google Play</p></div>
                     </div>
-                    <div class="ficha-demo">
-                        <div class="movil" data-demo>
-                            <div class="movil-pantalla">
-                                <img src="img/apps/lullcam-1.webp" width="414" height="900" loading="lazy" alt="LullCam: inicio con usar como cámara o ver y escuchar">
-                                <img src="img/apps/lullcam-2.webp" width="414" height="900" loading="lazy" alt="LullCam: te avisa del llanto, el ruido o si se pierde la conexión">
-                                <img src="img/apps/lullcam-3.webp" width="414" height="900" loading="lazy" alt="LullCam: usa un iPhone o iPad como cámara">
-                            </div>
-                        </div>
-                    </div>
-                </article>
+                    <p class="app-lead"><span lang="es">El bar manda su menú por WhatsApp y recibe al momento una imagen profesional.</span><span lang="en">The bar sends its menu over WhatsApp and gets a professional image back at once.</span></p>
+                    <p class="app-dato"><span lang="es">Texto, foto de la pizarra o nota de voz: una IA multimodal lo entiende, lo maqueta y lo publica.</span><span lang="en">Text, a photo of the chalkboard or a voice note: a multimodal AI reads it, lays it out and publishes it.</span></p>
+                    <ul class="pila"><li>TypeScript</li><li>Cloudflare Workers</li><li>WhatsApp API</li><li>Gemini</li></ul>
+                    <p class="enlaces">
+                        <a href="https://tumenu.bar" target="_blank" rel="noopener">tumenu.bar</a>
+                        <a href="https://apps.apple.com/es/app/tumen%C3%BA-bar/id6821579170" target="_blank" rel="noopener">App Store</a>
+                        <a href="https://play.google.com/store/apps/details?id=com.RD.tumenu" target="_blank" rel="noopener">Google Play</a>
+                    </p>
+                </div>
+                <div class="app-moviles app-moviles-uno">
+                    <div class="movil aparece"><div class="movil-pantalla">
+                        <video src="img/apps/tumenu-demo.mp4" poster="img/apps/tumenu-poster.webp" width="540" height="960" muted loop playsinline preload="none" data-autoplay aria-label="Vídeo: un menú enviado por WhatsApp se convierte en una imagen profesional"></video>
+                    </div></div>
+                </div>
+            </article>
 
-                <article class="ficha" id="tumenu" role="tabpanel" style="--tono:#2b4a73">
-                    <div class="ficha-texto">
-                        <h3>TuMenu</h3>
-                        <p class="ficha-meta"><span class="punto" aria-hidden="true"></span><span lang="es">En App Store, Google Play y bares de Madrid · 2026</span><span lang="en">On the App Store, Google Play and in Madrid bars · 2026</span></p>
-                        <p class="ficha-lead">
-                            <span lang="es">El bar manda el menú por WhatsApp y recibe una imagen profesional al momento.</span>
-                            <span lang="en">The restaurant sends its menu over WhatsApp and gets a professional image back at once.</span>
-                        </p>
-                        <p>
-                            <span lang="es">Por texto, foto de la pizarra o nota de voz. Una IA multimodal entiende el menú, lo maqueta con el diseño del local, lo publica en su web y lo deja listo para estados e Instagram. El dueño no tiene que aprender ninguna app.</span>
-                            <span lang="en">As text, a photo of the chalkboard or a voice note. A multimodal AI reads the menu, lays it out in the restaurant's own design, publishes it on its website and leaves it ready for Stories and Instagram. The owner learns no new app.</span>
-                        </p>
-                        <ul class="pila"><li>TypeScript</li><li>Cloudflare Workers</li><li>WhatsApp Cloud API</li><li>Gemini</li></ul>
-                        <p class="enlaces">
-                            <a href="https://tumenu.bar" target="_blank" rel="noopener">tumenu.bar</a>
-                            <a href="https://apps.apple.com/es/app/tumen%C3%BA-bar/id6821579170" target="_blank" rel="noopener">App Store</a>
-                            <a href="https://play.google.com/store/apps/details?id=com.RD.tumenu" target="_blank" rel="noopener">Google Play</a>
-                        </p>
+            <article class="app" id="godafly" style="--tono:#22977a">
+                <div class="app-texto aparece">
+                    <div class="app-cabeza">
+                        <img src="img/apps/godafly-icono.webp" width="96" height="96" alt="">
+                        <div><h3>GodaFly</h3><p class="app-meta"><span class="punto" aria-hidden="true"></span>App Store · Google Play</p></div>
                     </div>
-                    <div class="ficha-demo">
-                        <div class="movil">
-                            <div class="movil-pantalla">
-                                <video src="img/apps/tumenu-demo.mp4" poster="img/apps/tumenu-poster.webp" width="540" height="960" muted loop playsinline preload="none" data-autoplay aria-label="Vídeo: un menú enviado por WhatsApp se convierte en una imagen profesional"></video>
-                            </div>
-                        </div>
-                    </div>
-                </article>
+                    <p class="app-lead"><span lang="es">Para quien viaja solo: encuentra a otros viajeros en tu misma escala.</span><span lang="en">For solo travellers: find other people on your layover.</span></p>
+                    <p class="app-dato"><span lang="es">Un proyecto con amigos; el diseño técnico y el desarrollo son míos de principio a fin.</span><span lang="en">A project with friends; the technical design and development are entirely mine.</span></p>
+                    <ul class="pila"><li>Flutter</li><li>Supabase</li><li>Firebase Messaging</li></ul>
+                    <p class="enlaces">
+                        <a href="https://godafly.com" target="_blank" rel="noopener">godafly.com</a>
+                        <a href="https://apps.apple.com/es/app/godafly/id6758113933" target="_blank" rel="noopener">App Store</a>
+                        <a href="https://play.google.com/store/apps/details?id=com.godafly.godafly" target="_blank" rel="noopener">Google Play</a>
+                    </p>
+                </div>
+                <div class="app-moviles">
+                    <div class="movil aparece"><div class="movil-pantalla"><img src="img/apps/godafly-2.webp" width="375" height="812" loading="lazy" alt="GodaFly: escala guardada en A Coruña con horas de llegada y salida"></div></div>
+                    <div class="movil aparece"><div class="movil-pantalla"><img src="img/apps/godafly-3.webp" width="375" height="812" loading="lazy" alt="GodaFly: viajeros que coinciden en el vuelo de Madrid a Londres"></div></div>
+                    <div class="movil aparece"><div class="movil-pantalla"><img src="img/apps/godafly-1.webp" width="375" height="812" loading="lazy" alt="GodaFly: nueva búsqueda por vuelo o escala"></div></div>
+                </div>
+            </article>
 
-                <article class="ficha" id="godafly" role="tabpanel" style="--tono:#22977a">
-                    <div class="ficha-texto">
-                        <h3>GodaFly</h3>
-                        <p class="ficha-meta"><span class="punto" aria-hidden="true"></span><span lang="es">En App Store y Google Play · 2026</span><span lang="en">On the App Store and Google Play · 2026</span></p>
-                        <p class="ficha-lead">
-                            <span lang="es">Para quien viaja solo: encuentra a otros viajeros en tu misma escala.</span>
-                            <span lang="en">For people travelling alone: find other travellers on your layover.</span>
-                        </p>
-                        <p>
-                            <span lang="es">Guardas tu vuelo o tu escala y la app te enseña quién coincide contigo en el aeropuerto, con perfiles, chat y avisos push. Es un proyecto con amigos; el diseño técnico y el desarrollo son míos de principio a fin.</span>
-                            <span lang="en">Save your flight or layover and the app shows who overlaps with you at the airport, with profiles, chat and push alerts. It is a project with friends; the technical design and development are entirely mine.</span>
-                        </p>
-                        <ul class="pila"><li>Flutter</li><li>Supabase</li><li>Firebase Cloud Messaging</li></ul>
-                        <p class="enlaces">
-                            <a href="https://godafly.com" target="_blank" rel="noopener">godafly.com</a>
-                            <a href="https://apps.apple.com/es/app/godafly/id6758113933" target="_blank" rel="noopener">App Store</a>
-                            <a href="https://play.google.com/store/apps/details?id=com.godafly.godafly" target="_blank" rel="noopener">Google Play</a>
-                        </p>
+            <article class="app" id="mifilmoteca" style="--tono:#8a2a3a">
+                <div class="app-texto aparece">
+                    <div class="app-cabeza">
+                        <img src="img/apps/mifilmoteca-icono.webp" width="96" height="96" alt="">
+                        <div><h3>Mi Filmoteca</h3><p class="app-meta"><span class="punto" aria-hidden="true"></span>App Store · Google Play · <span lang="es">desde 2020</span><span lang="en">since 2020</span></p></div>
                     </div>
-                    <div class="ficha-demo">
-                        <div class="movil" data-demo>
-                            <div class="movil-pantalla">
-                                <img src="img/apps/godafly-2.webp" width="375" height="812" loading="lazy" alt="GodaFly: escala guardada en A Coruña con horas de llegada y salida">
-                                <img src="img/apps/godafly-3.webp" width="375" height="812" loading="lazy" alt="GodaFly: viajeros que coinciden en el vuelo de Madrid a Londres">
-                                <img src="img/apps/godafly-1.webp" width="375" height="812" loading="lazy" alt="GodaFly: nueva búsqueda por vuelo o escala">
-                            </div>
-                        </div>
-                    </div>
-                </article>
-
-                <article class="ficha" id="mifilmoteca" role="tabpanel" style="--tono:#8a2a3a">
-                    <div class="ficha-texto">
-                        <h3>Mi Filmoteca</h3>
-                        <p class="ficha-meta"><span class="punto" aria-hidden="true"></span><span lang="es">En App Store y Google Play desde 2020</span><span lang="en">On the App Store and Google Play since 2020</span></p>
-                        <p class="ficha-lead">
-                            <span lang="es">Tu catálogo de películas y series: qué has visto, qué te falta y dónde verlo.</span><span lang="en">Your catalogue of films and series: what you have watched, what is next and where to watch it.</span>
-                        </p>
-                        <p>
-                            <span lang="es">Buscas y descubres títulos, ves en qué plataforma están, puntúas, escribes reseñas y compartes recomendaciones en grupos de familia o amigos, con tus estadísticas. Mi primera app en las tiendas, rehecha entera en su versión 2.</span><span lang="en">Search and discover titles, see which platform has them, rate them, write reviews and share recommendations in family or friend groups, with your own stats. My first app on the stores, fully rebuilt for version 2.</span>
-                        </p>
-                        <dl class="ficha-cifras">
-                            <div><dt><span lang="es">estrellas en App Store</span><span lang="en">stars on the App Store</span></dt><dd>4,5</dd></div>
-                            <div><dt><span lang="es">instalaciones en Google Play</span><span lang="en">installs on Google Play</span></dt><dd>450+</dd></div>
-                        </dl>
-                        <ul class="pila"><li>Flutter</li><li>Riverpod</li><li>Firebase</li><li>TMDB API</li></ul>
-                        <p class="enlaces">
-                            <a href="https://apps.apple.com/es/app/mifilmoteca/id1508750379" target="_blank" rel="noopener">App Store</a>
-                            <a href="https://play.google.com/store/apps/details?id=com.rodrigodavila.mifilmoteca" target="_blank" rel="noopener">Google Play</a>
-                        </p>
-                    </div>
-                    <div class="ficha-demo">
-                        <div class="movil" data-demo>
-                            <div class="movil-pantalla">
-                                <img src="img/apps/mifilmoteca-1.webp" width="560" height="1212" loading="lazy" alt="Mi Filmoteca: inicio">
-                                <img src="img/apps/mifilmoteca-2.webp" width="560" height="1212" loading="lazy" alt="Mi Filmoteca: descubrir títulos">
-                                <img src="img/apps/mifilmoteca-3.webp" width="560" height="1212" loading="lazy" alt="Mi Filmoteca: ficha de Interstellar">
-                                <img src="img/apps/mifilmoteca-4.webp" width="560" height="1212" loading="lazy" alt="Mi Filmoteca: tu colección">
-                            </div>
-                        </div>
-                    </div>
-                </article>
-
-                <article class="ficha" id="zapeo" role="tabpanel" style="--tono:#8a4a32">
-                    <div class="ficha-texto">
-                        <h3>Zapeo</h3>
-                        <p class="ficha-meta"><span class="punto" aria-hidden="true"></span><span lang="es">Llegando a App Store y Google Play · móvil, tablet, ordenador y TV</span><span lang="en">Coming to the App Store and Google Play · phone, tablet, desktop and TV</span></p>
-                        <p class="ficha-lead">
-                            <span lang="es">Todos tus contenidos multimedia en una app: directo, películas y series, sin cuentas.</span>
-                            <span lang="en">All your multimedia content in one app: live TV, films and series, with no accounts.</span>
-                        </p>
-                        <p>
-                            <span lang="es">Guía de programación, favoritos, seguir viendo, imagen en imagen y audio en segundo plano. Nada sale del dispositivo: sin registro, sin analítica y sin publicidad. Por dentro, un motor de vídeo propio con desentrelazado a 50 fps.</span>
-                            <span lang="en">Programme guide, favourites, continue watching, picture-in-picture and background audio. Nothing leaves the device: no sign-up, no analytics and no ads. Under the hood, its own video engine with 50 fps deinterlacing.</span>
-                        </p>
-                        <ul class="pila"><li>Flutter</li><li>media_kit</li><li>libmpv</li></ul>
-                    </div>
-                    <div class="ficha-demo">
-                        <div class="movil" data-demo>
-                            <div class="movil-pantalla">
-                                <img src="img/apps/zapeo-1.webp" width="560" height="996" loading="lazy" alt="Zapeo: inicio con seguir viendo, favoritos y canales">
-                                <img src="img/apps/zapeo-2.webp" width="560" height="996" loading="lazy" alt="Zapeo: catálogo de películas">
-                                <img src="img/apps/zapeo-3.webp" width="560" height="996" loading="lazy" alt="Zapeo: ficha de un título con el botón de continuar">
-                                <img src="img/apps/zapeo-4.webp" width="560" height="996" loading="lazy" alt="Zapeo: guía de programación por horas">
-                            </div>
-                        </div>
-                    </div>
-                </article>
-            </div>
-        </section>
-
-        <!-- ===== Taller: apps en camino ===== -->
-        <section class="taller" id="taller" aria-labelledby="taller-titulo">
-            <div class="cabecera">
-                <h2 id="taller-titulo" class="aparece"><span lang="es">En el taller</span><span lang="en">On the workbench</span></h2>
-                <p class="aparece"><span lang="es">Lo que estoy terminando ahora mismo.</span><span lang="en">What I am finishing right now.</span></p>
-            </div>
-            <div class="taller-rejilla">
-                <article class="obra aparece">
-                    <div class="obra-cabeza">
-                        <img src="img/apps/runclap-icono.webp" width="96" height="96" alt="">
-                        <div><h3>RunClap</h3><p class="ficha-meta"><span class="punto punto-beta" aria-hidden="true"></span><span lang="es">Subiendo a App Store y Google Play</span><span lang="en">Heading to the App Store and Google Play</span></p></div>
-                    </div>
-                    <p class="ficha-lead"><span lang="es">Quedadas para correr en grupo cerca de ti.</span><span lang="en">Group runs near you.</span></p>
-                    <p><span lang="es">Mapa de quedadas, crear una salida en cuatro pasos con ritmo, distancia y punto de encuentro, apuntarse con aprobación, seguir a otros corredores y recordatorios.</span><span lang="en">A map of meet-ups, create a run in four steps with pace, distance and meeting point, join with approval, follow other runners and get reminders.</span></p>
-                    <ul class="pila"><li>Flutter</li><li>Firebase</li><li>Cloud Functions</li><li>Google Maps</li></ul>
-                </article>
-                <article class="obra obra-abc aparece">
-                    <div class="obra-cabeza">
-                        <img src="img/apps/abecedario-icono.webp" width="96" height="96" alt="">
-                        <div><h3><span lang="es">Abecedario hablado</span><span lang="en">Talking alphabet</span></h3><p class="ficha-meta"><span class="punto punto-beta" aria-hidden="true"></span><span lang="es">En desarrollo · iOS y Android</span><span lang="en">In development · iOS and Android</span></p></div>
-                    </div>
-                    <p class="ficha-lead"><span lang="es">Letras, números, colores y animales para los peques, con voz y juegos.</span><span lang="en">Letters, numbers, colours and animals for little ones, with voice and games.</span></p>
-                    <div class="movil movil-horizontal" data-demo>
-                        <div class="movil-pantalla">
-                            <img src="img/apps/abecedario-1.webp" width="1600" height="740" loading="lazy" alt="Abecedario hablado: inicio con Abecedario, Números, Días, Animales, Colores y Formas">
-                            <img src="img/apps/abecedario-2.webp" width="1600" height="740" loading="lazy" alt="Abecedario hablado: todas las letras de la A a la Z con la Ñ">
-                            <img src="img/apps/abecedario-3.webp" width="1600" height="740" loading="lazy" alt="Abecedario hablado: juegos de preguntas, trazar letras, memoria y ordenar">
-                        </div>
-                    </div>
-                    <ul class="pila"><li>Flutter</li><li>audioplayers</li><li><span lang="es">Control parental</span><span lang="en">Parental gate</span></li><li>In-app purchase</li></ul>
-                </article>
-            </div>
+                    <p class="app-lead"><span lang="es">Tu catálogo de películas y series: qué has visto, qué te falta y dónde verlo.</span><span lang="en">Your catalogue of films and series: what you've watched, what's next and where to watch it.</span></p>
+                    <p class="app-dato"><span lang="es">4,5 estrellas en App Store y más de 450 instalaciones en Google Play.</span><span lang="en">4.5 stars on the App Store and over 450 installs on Google Play.</span></p>
+                    <ul class="pila"><li>Flutter</li><li>Riverpod</li><li>Firebase</li><li>TMDB API</li></ul>
+                    <p class="enlaces">
+                        <a href="https://apps.apple.com/es/app/mifilmoteca/id1508750379" target="_blank" rel="noopener">App Store</a>
+                        <a href="https://play.google.com/store/apps/details?id=com.rodrigodavila.mifilmoteca" target="_blank" rel="noopener">Google Play</a>
+                    </p>
+                </div>
+                <div class="app-moviles">
+                    <div class="movil aparece"><div class="movil-pantalla"><img src="img/apps/mifilmoteca-1.webp" width="560" height="1212" loading="lazy" alt="Mi Filmoteca: inicio"></div></div>
+                    <div class="movil aparece"><div class="movil-pantalla"><img src="img/apps/mifilmoteca-3.webp" width="560" height="1212" loading="lazy" alt="Mi Filmoteca: ficha de Interstellar"></div></div>
+                    <div class="movil aparece"><div class="movil-pantalla"><img src="img/apps/mifilmoteca-4.webp" width="560" height="1212" loading="lazy" alt="Mi Filmoteca: tu colección"></div></div>
+                </div>
+            </article>
         </section>
 
         <!-- ===== Webs ===== -->
         <section class="webs" id="webs" aria-labelledby="webs-titulo">
             <div class="cabecera">
                 <h2 id="webs-titulo" class="aparece"><span lang="es">Webs que diseño y programo</span><span lang="en">Websites I design and build</span></h2>
-                <p class="aparece"><span lang="es">Las de mis productos y webs a medida para bodas, restaurantes y tiendas: diseño, desarrollo, dominio y formularios, sin plantillas.</span><span lang="en">My products&#39; sites, plus custom websites for weddings, restaurants and shops: design, development, domain and forms, no templates.</span></p>
+                <p class="aparece"><span lang="es">Las de mis productos y webs a medida para bodas, restaurantes y tiendas, sin plantillas.</span><span lang="en">My products&#39; sites, plus custom websites for weddings, restaurants and shops, no templates.</span></p>
             </div>
             <div class="webs-rejilla">
                 <a class="web aparece" href="https://urbapadel.com" target="_blank" rel="noopener">
                     <span class="navegador" aria-hidden="true"><span></span><span></span><span></span><em>urbapadel.com</em></span>
                     <img src="img/webs/urbapadel.webp" width="1200" height="750" loading="lazy" alt="Web de UrbaPadel: las reservas de tu urba, en una app">
-                    <span class="web-pie"><strong>UrbaPadel</strong><span><span lang="es">Landing y guía para vecinos y administradores.</span><span lang="en">Landing page and guide for residents and managers.</span></span></span>
                 </a>
                 <a class="web aparece" href="https://lullcam.com" target="_blank" rel="noopener">
                     <span class="navegador" aria-hidden="true"><span></span><span></span><span></span><em>lullcam.com</em></span>
                     <img src="img/webs/lullcam.webp" width="1200" height="750" loading="lazy" alt="Web de LullCam: el vigilabebés privado en tu bolsillo">
-                    <span class="web-pie"><strong>LullCam</strong><span><span lang="es">Web en 10 idiomas con precios y soporte.</span><span lang="en">Site in 10 languages with pricing and support.</span></span></span>
                 </a>
                 <a class="web aparece" href="https://tumenu.bar" target="_blank" rel="noopener">
                     <span class="navegador" aria-hidden="true"><span></span><span></span><span></span><em>tumenu.bar</em></span>
                     <img src="img/webs/tumenu.webp" width="1200" height="750" loading="lazy" alt="Web de TuMenu: mandas un WhatsApp y te llega tu menú listo">
-                    <span class="web-pie"><strong>TuMenu</strong><span><span lang="es">Venta del servicio con la conversación de WhatsApp.</span><span lang="en">Sells the service with the WhatsApp conversation.</span></span></span>
                 </a>
                 <a class="web aparece" href="https://godafly.com" target="_blank" rel="noopener">
                     <span class="navegador" aria-hidden="true"><span></span><span></span><span></span><em>godafly.com</em></span>
                     <img src="img/webs/godafly.webp" width="1200" height="750" loading="lazy" alt="Web de GodaFly: conecta con viajeros como tú">
-                    <span class="web-pie"><strong>GodaFly</strong><span><span lang="es">Presentación de la app y descargas.</span><span lang="en">App showcase and downloads.</span></span></span>
                 </a>
                 <a class="web aparece" href="https://bodapilaryluis.com" target="_blank" rel="noopener">
                     <span class="navegador" aria-hidden="true"><span></span><span></span><span></span><em>bodapilaryluis.com</em></span>
-                    <img src="img/webs/boda-finca.webp" width="1200" height="800" loading="lazy" alt="Acuarela de la finca de la boda de Pilar y Luis">
-                    <span class="web-pie"><strong><span lang="es">Boda de Pilar y Luis</span><span lang="en">Pilar and Luis&#39;s wedding</span></strong><span><span lang="es">Invitación con confirmación de asistencia.</span><span lang="en">Invitation with RSVP.</span></span></span>
+                    <img src="img/webs/boda-finca.webp" width="1200" height="800" loading="lazy" alt="Web de la boda de Pilar y Luis, con la acuarela de la finca">
                 </a>
             </div>
         </section>
 
-        <!-- ===== Experiencia ===== -->
-        <section class="experiencia" id="experiencia" aria-labelledby="experiencia-titulo">
+        <!-- ===== Capacidades ===== -->
+        <section class="capacidades" id="capacidades" aria-labelledby="capacidades-titulo">
             <div class="cabecera">
-                <h2 id="experiencia-titulo" class="aparece"><span lang="es">Experiencia</span><span lang="en">Experience</span></h2>
-                <p class="aparece">
-                    <span lang="es">Empecé programando Java para BBVA y fui subiendo hacia donde se decide: análisis, equipos, arquitectura cloud y, hoy, IA Generativa.</span>
-                    <span lang="en">I started writing Java for BBVA and moved towards where decisions are made: analysis, teams, cloud architecture and, today, Generative AI.</span>
-                </p>
+                <h2 id="capacidades-titulo" class="aparece"><span lang="es">Lo que sé hacer</span><span lang="en">What I can do</span></h2>
+                <p class="aparece"><span lang="es">Pulsa cualquiera para ver dónde lo he usado.</span><span lang="en">Tap any of them to see where I have used it.</span></p>
             </div>
-            <ol class="puestos">
-                <li class="puesto aparece">
-                    <p class="puesto-anos">2025 – <span lang="es">hoy</span><span lang="en">now</span></p>
-                    <div>
-                        <h3><span lang="es">Manager de IA Generativa</span><span lang="en">Generative AI Manager</span> <span class="empresa">Accenture</span></h3>
-                        <p lang="es">Diseñé desde cero un sistema multiagente para migrar el core bancario de BBVA de COBOL a Java, con orquestador, MCP y validación humana. Impulso la adopción de IA en la compañía y presento avances a la dirección del banco.</p>
-                        <p lang="en">I designed from scratch a multi-agent system to migrate BBVA's core banking from COBOL to Java, with an orchestrator, MCP and human validation. I drive AI adoption across the company and report progress to the bank's leadership.</p>
-                        <ul class="pila"><li>BBVA</li><li><span lang="es">Multiagente</span><span lang="en">Multi-agent</span></li><li>MCP</li><li>Claude</li></ul>
-                    </div>
-                </li>
-                <li class="puesto aparece">
-                    <p class="puesto-anos">2021 – 2025</p>
-                    <div>
-                        <h3>Senior Consultant <span class="empresa">Deloitte</span></h3>
-                        <p lang="es">IA Generativa en AWS para Cruz Roja (pro bono). Migración a AWS de la plataforma global de tarjetas de Santander en Chile y Brasil. Gestión de la medida para Acciona. IVA de eCommerce en Reino Unido con Stripe y Xero.</p>
-                        <p lang="en">Generative AI on AWS for the Red Cross (pro bono). Migration of Santander's global cards platform to AWS in Chile and Brazil. Metering management for Acciona. UK eCommerce VAT with Stripe and Xero.</p>
-                        <ul class="pila"><li>Santander</li><li><span lang="es">Cruz Roja</span><span lang="en">Red Cross</span></li><li>Acciona</li><li>AWS</li></ul>
-                    </div>
-                </li>
-                <li class="puesto aparece">
-                    <p class="puesto-anos">2018 – 2021</p>
-                    <div>
-                        <h3><span lang="es">Analista</span><span lang="en">Analyst</span> <span class="empresa">Altia</span></h3>
-                        <p lang="es">Contratos de estaciones de servicio para Cepsa, sanidad mortuoria para la Comunidad de Madrid y una app de iPad para eventos de BMW. Análisis, desarrollo en Java y liderazgo de tareas del equipo.</p>
-                        <p lang="en">Service-station contracts for Cepsa, a mortuary health system for the Community of Madrid and an iPad events app for BMW. Analysis, Java development and leading the team's tasks.</p>
-                        <ul class="pila"><li>Cepsa</li><li>BMW</li><li><span lang="es">Comunidad de Madrid</span><span lang="en">Community of Madrid</span></li><li>Java</li></ul>
-                    </div>
-                </li>
-                <li class="puesto aparece">
-                    <p class="puesto-anos">2017 – 2018</p>
-                    <div>
-                        <h3><span lang="es">Programador junior</span><span lang="en">Junior developer</span> <span class="empresa">Accenture</span></h3>
-                        <p lang="es">Reporting Engine de BBVA: creación y migración de procesos batch en Java y generación de informes.</p>
-                        <p lang="en">BBVA's Reporting Engine: building and migrating Java batch processes and producing reports.</p>
-                        <ul class="pila"><li>BBVA</li><li>Java</li><li>Batch</li></ul>
-                    </div>
-                </li>
-            </ol>
+            <div class="mapa" data-mapa>
+                <div class="capa capa-principal aparece">
+                    <h3><span lang="es">IA Generativa y agentes</span><span lang="en">Generative AI and agents</span></h3>
+                    <ul class="capa-chips"><li><button type="button" data-donde-es="BBVA · Accenture" data-donde-en="BBVA · Accenture"><span lang="es">Sistemas multiagente</span><span lang="en">Multi-agent systems</span></button></li><li><button type="button" data-donde-es="BBVA · Accenture" data-donde-en="BBVA · Accenture"><span lang="es">Orquestación de agentes</span><span lang="en">Agent orchestration</span></button></li><li><button type="button" data-donde-es="BBVA · Accenture" data-donde-en="BBVA · Accenture">MCP</button></li><li><button type="button" data-donde-es="BBVA · Accenture" data-donde-en="BBVA · Accenture"><span lang="es">Skills de agentes</span><span lang="en">Agent skills</span></button></li><li><button type="button" data-donde-es="BBVA · Accenture" data-donde-en="BBVA · Accenture">Human-in-the-loop</button></li><li><button type="button" data-donde-es="Proyectos de IA Generativa" data-donde-en="Generative AI projects">RAG</button></li><li><button type="button" data-donde-es="Cruz Roja · Deloitte, BBVA · Accenture" data-donde-en="Red Cross · Deloitte, BBVA · Accenture">Prompt engineering</button></li><li><button type="button" data-donde-es="BBVA, TuMenu y mi día a día" data-donde-en="BBVA, TuMenu and my daily work">Claude · GPT · Gemini</button></li><li><button type="button" data-donde-es="Cruz Roja · Deloitte" data-donde-en="Red Cross · Deloitte">AWS Bedrock</button></li><li><button type="button" data-donde-es="Todas mis apps y BBVA" data-donde-en="All my apps and BBVA">Claude Code · Copilot · Cursor</button></li><li><button type="button" data-donde-es="Workshops y demos para miles de profesionales en Accenture" data-donde-en="Workshops and demos for thousands of professionals at Accenture"><span lang="es">Formación y adopción de IA</span><span lang="en">AI training and adoption</span></button></li></ul>
+                </div>
+                <div class="capa aparece">
+                    <h3><span lang="es">Producto y apps</span><span lang="en">Product and apps</span></h3>
+                    <ul class="capa-chips"><li><button type="button" data-donde-es="UrbaPadel, GodaFly, Zapeo, RunClap, Mi Filmoteca" data-donde-en="UrbaPadel, GodaFly, Zapeo, RunClap, Mi Filmoteca">Flutter · Dart</button></li><li><button type="button" data-donde-es="LullCam" data-donde-en="LullCam">Swift · SwiftUI</button></li><li><button type="button" data-donde-es="TuMenu, Cloud Functions de RunClap" data-donde-en="TuMenu, RunClap Cloud Functions">TypeScript</button></li><li><button type="button" data-donde-es="LullCam: vídeo en directo cifrado" data-donde-en="LullCam: encrypted live video">WebRTC</button></li><li><button type="button" data-donde-es="Todas mis apps y webs" data-donde-en="All my apps and sites"><span lang="es">Diseño de producto y UX</span><span lang="en">Product design and UX</span></button></li><li><button type="button" data-donde-es="Publicación y revisiones de todas mis apps" data-donde-en="Shipping and reviews for all my apps">App Store · Google Play</button></li><li><button type="button" data-donde-es="BMW · Altia" data-donde-en="BMW · Altia">Objective-C</button></li></ul>
+                </div>
+                <div class="capa aparece">
+                    <h3><span lang="es">Backend y datos</span><span lang="en">Backend and data</span></h3>
+                    <ul class="capa-chips"><li><button type="button" data-donde-es="BBVA, Cepsa, Comunidad de Madrid" data-donde-en="BBVA, Cepsa, Community of Madrid">Java · Spring · Hibernate</button></li><li><button type="button" data-donde-es="Automatización e IA" data-donde-en="Automation and AI">Python</button></li><li><button type="button" data-donde-es="Santander · Deloitte" data-donde-en="Santander · Deloitte"><span lang="es">Microservicios y APIs</span><span lang="en">Microservices and APIs</span></button></li><li><button type="button" data-donde-es="Comunidad de Madrid, Supabase en GodaFly" data-donde-en="Community of Madrid, Supabase in GodaFly">SQL · PostgreSQL · MySQL</button></li><li><button type="button" data-donde-es="Proyectos AWS en Deloitte" data-donde-en="AWS projects at Deloitte">DynamoDB · MongoDB</button></li><li><button type="button" data-donde-es="Migración del core de BBVA" data-donde-en="BBVA core migration"><span lang="es">Lectura de COBOL</span><span lang="en">Reading COBOL</span></button></li><li><button type="button" data-donde-es="eCommerce en Reino Unido · Deloitte" data-donde-en="UK eCommerce · Deloitte">Stripe · Xero</button></li></ul>
+                </div>
+                <div class="capa aparece">
+                    <h3><span lang="es">Cloud y plataforma</span><span lang="en">Cloud and platform</span></h3>
+                    <ul class="capa-chips"><li><button type="button" data-donde-es="Santander, Acciona, Cruz Roja" data-donde-en="Santander, Acciona, Red Cross">AWS</button></li><li><button type="button" data-donde-es="TuMenu, LullCam y esta web" data-donde-en="TuMenu, LullCam and this site">Cloudflare Workers</button></li><li><button type="button" data-donde-es="UrbaPadel, RunClap, Mi Filmoteca" data-donde-en="UrbaPadel, RunClap, Mi Filmoteca">Firebase</button></li><li><button type="button" data-donde-es="GodaFly" data-donde-en="GodaFly">Supabase</button></li><li><button type="button" data-donde-es="Proyectos de consultoría" data-donde-en="Consulting projects">Azure · Google Cloud</button></li><li><button type="button" data-donde-es="Despliegues en consultoría y en mis apps" data-donde-en="Deployments in consulting and my apps">Docker · CI/CD · Jenkins</button></li><li><button type="button" data-donde-es="Todos los días" data-donde-en="Every day">Git · Linux</button></li></ul>
+                </div>
+                <div class="capa aparece">
+                    <h3><span lang="es">Consultoría y liderazgo</span><span lang="en">Consulting and leadership</span></h3>
+                    <ul class="capa-chips"><li><button type="button" data-donde-es="BBVA, Santander, Acciona, Cruz Roja" data-donde-en="BBVA, Santander, Acciona, Red Cross"><span lang="es">Arquitectura de soluciones</span><span lang="en">Solution architecture</span></button></li><li><button type="button" data-donde-es="Accenture · Deloitte" data-donde-en="Accenture · Deloitte"><span lang="es">Propuestas a cliente</span><span lang="en">Client proposals</span></button></li><li><button type="button" data-donde-es="Dirección de BBVA" data-donde-en="BBVA leadership"><span lang="es">Interlocución con dirección</span><span lang="en">Executive stakeholders</span></button></li><li><button type="button" data-donde-es="Santander, Acciona" data-donde-en="Santander, Acciona"><span lang="es">Gestión de proyectos</span><span lang="en">Project management</span></button></li><li><button type="button" data-donde-es="PSM I (Scrum.org, 2022) y equipos ágiles en Deloitte y Accenture" data-donde-en="PSM I (Scrum.org, 2022) and agile teams at Deloitte and Accenture">Scrum · Agile</button></li><li><button type="button" data-donde-es="Deloitte · Altia" data-donde-en="Deloitte · Altia"><span lang="es">Liderazgo de equipos</span><span lang="en">Team leadership</span></button></li></ul>
+                </div>
+            </div>
+            <p class="mapa-donde" data-mapa-donde aria-live="polite"></p>
+        </section>
 
-            <div class="formacion">
-                <h3 class="aparece"><span lang="es">Formación y certificaciones</span><span lang="en">Education and certifications</span></h3>
-                <ul>
-                    <li class="aparece"><span class="formacion-ano">2012 – 2017</span><strong><span lang="es">Grado en Diseño y Desarrollo de Videojuegos</span><span lang="en">BSc in Game Design and Development</span></strong><span>ESNE · <span lang="es">Proyecto final: app educativa con realidad aumentada para iOS y Android.</span><span lang="en">Final project: an educational augmented-reality app for iOS and Android.</span></span></li>
-                    <li class="aparece"><span class="formacion-ano"><span lang="es">Mayo de 2022 · en Deloitte</span><span lang="en">May 2022 · at Deloitte</span></span><strong>Professional Scrum Master I (PSM I)</strong><span>Scrum.org</span></li>
-                </ul>
+        <!-- ===== Taller ===== -->
+        <section class="taller" id="taller" aria-labelledby="taller-titulo">
+            <div class="cabecera">
+                <h2 id="taller-titulo" class="aparece"><span lang="es">En el taller</span><span lang="en">On the workbench</span></h2>
+                <p class="aparece"><span lang="es">Lo que estoy subiendo a las tiendas ahora mismo.</span><span lang="en">What I'm shipping to the stores right now.</span></p>
+            </div>
+            <div class="taller-rejilla">
+                <article class="obra obra-doble aparece" id="zapeo" style="--tono:#8a4a32">
+                    <div class="obra-texto">
+                        <div class="app-cabeza">
+                            <img src="img/apps/zapeo-icono.webp" width="96" height="96" alt="">
+                            <div><h3>Zapeo</h3><p class="app-meta"><span class="punto punto-beta" aria-hidden="true"></span><span lang="es">Llegando a App Store y Google Play</span><span lang="en">Coming to the App Store and Google Play</span></p></div>
+                        </div>
+                        <p class="app-lead"><span lang="es">Todos tus contenidos multimedia en una app, en móvil, tablet, ordenador y TV.</span><span lang="en">All your multimedia content in one app, on phone, tablet, desktop and TV.</span></p>
+                        <ul class="pila"><li>Flutter</li><li>media_kit</li><li>libmpv</li></ul>
+                    </div>
+                    <div class="obra-moviles">
+                        <div class="movil movil-ancho"><div class="movil-pantalla"><img src="img/apps/zapeo-1.webp" width="560" height="996" loading="lazy" alt="Zapeo: inicio con seguir viendo, favoritos y canales"></div></div>
+                        <div class="movil movil-ancho"><div class="movil-pantalla"><img src="img/apps/zapeo-4.webp" width="560" height="996" loading="lazy" alt="Zapeo: guía de programación por horas"></div></div>
+                    </div>
+                </article>
+                <article class="obra aparece" id="runclap" style="--tono:#b8452e">
+                    <div class="obra-texto">
+                        <div class="app-cabeza">
+                            <img src="img/apps/runclap-icono.webp" width="96" height="96" alt="">
+                            <div><h3>RunClap</h3><p class="app-meta"><span class="punto punto-beta" aria-hidden="true"></span><span lang="es">Llegando a App Store y Google Play</span><span lang="en">Coming to the App Store and Google Play</span></p></div>
+                        </div>
+                        <p class="app-lead"><span lang="es">Quedadas para correr en grupo cerca de ti.</span><span lang="en">Group runs near you.</span></p>
+                        <p class="app-dato"><span lang="es">Mapa de quedadas, salidas con ritmo y punto de encuentro, y corredores a los que seguir.</span><span lang="en">A map of meet-ups, runs with pace and meeting point, and runners to follow.</span></p>
+                        <ul class="pila"><li>Flutter</li><li>Firebase</li><li>Google Maps</li></ul>
+                    </div>
+                </article>
             </div>
         </section>
 
@@ -540,8 +399,8 @@
                 <div>
                     <h2 id="contacto-titulo"><span lang="es">¿Hablamos?</span><span lang="en">Let's talk</span></h2>
                     <p>
-                        <span lang="es">Me interesan los proyectos que llevan la IA al centro de una organización, y los productos bien hechos. Respondo en uno o dos días.</span>
-                        <span lang="en">I'm interested in projects that put AI at the heart of an organisation, and in well-made products. I reply within a day or two.</span>
+                        <span lang="es">Proyectos que llevan la IA al centro de una organización, o productos que merezcan hacerse bien. Respondo en uno o dos días.</span>
+                        <span lang="en">Projects that put AI at the heart of an organisation, or products worth doing well. I reply within a day or two.</span>
                     </p>
                 </div>
                 <div class="contacto-acciones">
