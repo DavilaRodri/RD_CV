@@ -1,7 +1,7 @@
 /* rodrigodavila.com · modo juego
    Un mundo en pixel art que se recorre andando, con aRDi, un hada que
    acompaña. Cada edificio es un nivel; las apps esperan en cofres dentro de
-   la sala de los trofeos. Las empresas tienen su propio contenido (todos los
+   el castillo de las apps. Las empresas tienen su propio contenido (todos los
    proyectos); el resto usa el mismo HTML de la versión clásica, que se mueve
    al panel y vuelve a su sitio al cerrarlo. */
 
@@ -28,29 +28,30 @@
     }
 
     /* ---------- Edificios del mundo ---------- */
-    // x, y: casilla de la puerta. El edificio queda encima y la puerta mira al sur.
+    // ang: dónde está la puerta sobre el anillo del pueblo (0 = este, 90 = sur).
+    // El edificio queda encima de su puerta y mira al sur, como en Kakariko.
     var NIVELES = [
-        { id: 'inicio', x: 10, y: 46, tipo: 'casa', es: 'Inicio', en: 'Home', sub: 'Rodrigo Dávila', piezas: ['#inicio .portada-texto'],
+        { id: 'inicio', ang: 150, tipo: 'casa', es: 'Inicio', en: 'Home', sub: 'Rodrigo Dávila', piezas: ['#inicio .portada-texto'],
             hada: { es: 'Esta es la casa de Rodrigo. Entra para saber quién es.', en: 'This is Rodrigo\'s home. Step in to meet him.' } },
-        { id: 'chat', x: 22, y: 34, tipo: 'faro', es: 'Pregúntame', en: 'Ask me', sub: { es: 'Mi IA', en: 'My AI' }, piezas: ['#asistente .chat'],
+        { id: 'chat', ang: 128, tipo: 'faro', es: 'Pregúntame', en: 'Ask me', sub: { es: 'Mi IA', en: 'My AI' }, piezas: ['#asistente .chat'],
             hada: { es: 'En el faro vive la IA de Rodrigo. ¡Pregúntale lo que quieras!', en: 'Rodrigo\'s AI lives in the lighthouse. Ask it anything!' } },
-        { id: 'accenture-2017', x: 32, y: 46, tipo: 'oficina', pisos: 2, logo: 'accenture', es: 'Accenture', en: 'Accenture', sub: '2017 – 2018', carrera: true,
+        { id: 'accenture-2017', ang: 205, tipo: 'oficina', pisos: 2, logo: 'accenture', es: 'Accenture', en: 'Accenture', sub: '2017 – 2018', carrera: true,
             hada: { es: 'Aquí empezó todo, en 2017: su primer código Java para BBVA.', en: 'It all began here in 2017: his first Java code for BBVA.' } },
-        { id: 'altia', x: 42, y: 34, tipo: 'oficina', pisos: 3, logo: 'altia', es: 'Altia', en: 'Altia', sub: '2018 – 2021', carrera: true,
+        { id: 'altia', ang: 236, tipo: 'oficina', pisos: 3, logo: 'altia', es: 'Altia', en: 'Altia', sub: '2018 – 2021', carrera: true,
             hada: { es: 'En Altia trabajó para Cepsa, BMW y la Comunidad de Madrid.', en: 'At Altia he worked for Cepsa, BMW and the Madrid regional government.' } },
-        { id: 'deloitte', x: 54, y: 46, tipo: 'oficina', pisos: 5, logo: 'deloitte', es: 'Deloitte', en: 'Deloitte', sub: '2021 – 2025', carrera: true,
+        { id: 'deloitte', ang: 268, tipo: 'oficina', pisos: 5, logo: 'deloitte', es: 'Deloitte', en: 'Deloitte', sub: '2021 – 2025', carrera: true,
             hada: { es: 'Deloitte: cuatro años y medio liderando proyectos para Santander, Acciona y Cruz Roja.', en: 'Deloitte: four and a half years leading projects for Santander, Acciona and the Red Cross.' } },
-        { id: 'accenture', x: 62, y: 34, tipo: 'torre', es: 'Accenture · BBVA', en: 'Accenture · BBVA', sub: { es: '2025 – hoy', en: '2025 – now' }, carrera: true,
+        { id: 'accenture', ang: 298, tipo: 'torre', es: 'Accenture · BBVA', en: 'Accenture · BBVA', sub: { es: '2025 – hoy', en: '2025 – now' }, carrera: true,
             hada: { es: '¡Mira los agentes dando vueltas! Aquí diseña sistemas multiagente para BBVA.', en: 'Look at those agents spinning! This is where he designs multi-agent systems for BBVA.' } },
-        { id: 'habilidades', x: 46, y: 18, tipo: 'templo', es: 'Lo que sé hacer', en: 'What I can do', sub: { es: 'Habilidades', en: 'Skills' }, piezas: ['#capacidades .mapa', '.formacion'],
+        { id: 'habilidades', ang: 326, tipo: 'templo', es: 'Lo que sé hacer', en: 'What I can do', sub: { es: 'Habilidades', en: 'Skills' }, piezas: ['#capacidades .mapa', '.formacion'],
             hada: { es: 'El templo guarda todo lo que sabe hacer: IA, código, cloud y gestión.', en: 'The temple holds everything he can do: AI, code, cloud and management.' } },
-        { id: 'trofeos', x: 84, y: 26, tipo: 'castillo', es: 'Sala de trofeos', en: 'Trophy hall', sala: true,
-            hada: { es: 'La sala de los trofeos: dentro, cada cofre guarda una app de Rodrigo.', en: 'The trophy hall: inside, every chest holds one of Rodrigo\'s apps.' } },
-        { id: 'webs', x: 78, y: 42, tipo: 'cartel', es: 'Webs', en: 'Websites', sub: { es: 'A medida', en: 'Custom' }, piezas: ['#webs .webs-rejilla'],
+        { id: 'trofeos', ang: 70, tipo: 'castillo', es: 'Apps desarrolladas', en: 'Apps I\'ve built', sala: true,
+            hada: { es: 'El castillo de las apps: dentro, cada cofre guarda una app de Rodrigo.', en: 'The apps castle: inside, every chest holds one of Rodrigo\'s apps.' } },
+        { id: 'webs', ang: 50, tipo: 'cartel', es: 'Webs', en: 'Websites', sub: { es: 'A medida', en: 'Custom' }, piezas: ['#webs .webs-rejilla'],
             hada: { es: 'También hace webs a medida: bodas, restaurantes y comercios.', en: 'He also builds custom websites: weddings, restaurants and shops.' } },
-        { id: 'taller', x: 88, y: 42, tipo: 'taller', es: 'El taller', en: 'Workbench', sub: 'Zapeo · RunClap', piezas: ['#zapeo', '#runclap'],
+        { id: 'taller', ang: 98, tipo: 'taller', es: 'El taller', en: 'Workbench', sub: 'Zapeo · RunClap', piezas: ['#zapeo', '#runclap'],
             hada: { es: 'En el taller hay cosas cociéndose: Zapeo y RunClap.', en: 'Things are cooking in the workshop: Zapeo and RunClap.' } },
-        { id: 'contacto', x: 92, y: 48, tipo: 'buzon', es: 'Contacto', en: 'Contact', sub: { es: '¿Hablamos?', en: 'Let\'s talk' }, piezas: ['#contacto .contacto-caja'],
+        { id: 'contacto', ang: 24, tipo: 'buzon', es: 'Contacto', en: 'Contact', sub: { es: '¿Hablamos?', en: 'Let\'s talk' }, piezas: ['#contacto .contacto-caja'],
             hada: { es: '¿Te ha gustado? Déjale un mensaje en el buzón.', en: 'Enjoyed it? Leave him a message in the mailbox.' } }
     ];
     var APPS = [
@@ -181,17 +182,23 @@
         tronco: '#6b4426', luz: '#ffd36b', acento: '#3a66f0', acento2: '#86a6ff', oro: '#e0b04a', gema: '#3ee6a0'
     };
 
-    /* ---------- Escenas: el mundo y la sala de trofeos ---------- */
+    /* ---------- Escenas: el pueblo y la sala de las apps ---------- */
     var HIERBA = 0, AGUA = 1, CAMINO = 2, ARENA = 3, PUENTE = 4, FLORES = 5, MURO = 6, LOSA = 7, ALFOMBRA = 8, PUERTA = 9;
     function escena(mw, mh) {
         return { mw: mw, mh: mh, pw: mw * T, ph: mh * T, suelo: new Uint8Array(mw * mh), solido: new Uint8Array(mw * mh), objetos: [], img: null };
     }
-    var mundo = escena(100, 64), sala = escena(22, 13), E = mundo;
+    var mundo = escena(86, 52), sala = escena(22, 13), E = mundo;
     function ix(x, y) { return y * E.mw + x; }
     function dentro(x, y) { return x >= 0 && y >= 0 && x < E.mw && y < E.mh; }
-    function costa(y) { return 95 + Math.round(1.5 * Math.sin(y * 0.17) + Math.sin(y * 0.41)); }
-    function rio(y) { return Math.round(70 + 2.5 * Math.sin(y * 0.13)); }
-    var CAMINO_FILA = 50;
+    function costa(y) { return 79 + Math.round(1.5 * Math.sin(y * 0.17) + Math.sin(y * 0.41)); }
+    // El pueblo: un anillo de camino alrededor de una plaza con fuente.
+    var ANILLO = { x: 46, y: 30, rx: 22, ry: 13 }, PLAZA_R = 4.6, PLAZA = 10;
+    var FAROLAS = [[41, 26], [52, 26], [41, 35], [52, 35]];
+    NIVELES.forEach(function (n) {
+        var a = n.ang * Math.PI / 180;
+        n.x = Math.round(ANILLO.x + ANILLO.rx * Math.cos(a));
+        n.y = Math.round(ANILLO.y + ANILLO.ry * Math.sin(a)) - 1;
+    });
 
     var DIM = { casa: [64, 60, 36], torre: [64, 136, 30], templo: [80, 76, 40], castillo: [96, 88, 40], cartel: [76, 68, 14], taller: [68, 60, 36], faro: [36, 116, 24], buzon: [28, 44, 10] };
     NIVELES.forEach(function (n) {
@@ -212,14 +219,15 @@
         E = mundo;
         var x, y, suelo = E.suelo, solido = E.solido, reservado = new Uint8Array(E.mw * E.mh);
         for (y = 0; y < E.mh; y++) {
-            var c = costa(y), r = rio(y);
+            var c = costa(y);
             for (x = 0; x < E.mw; x++) {
                 var t = HIERBA;
                 if (x >= c) t = AGUA;
                 else if (x >= c - 3) t = ARENA;
-                if (x >= r - 1 && x <= r + 1) t = AGUA;
-                var lx = (x - 12) / 6, ly = (y - 30) / 3.6;
+                var lx = (x - 15) / 5.5, ly = (y - 43) / 3.2;
                 if (lx * lx + ly * ly < 1) t = AGUA;
+                var px2 = x - ANILLO.x, py2 = y - ANILLO.y;
+                if (px2 * px2 + py2 * py2 < PLAZA_R * PLAZA_R) t = PLAZA;
                 suelo[ix(x, y)] = t;
             }
         }
@@ -228,6 +236,7 @@
                 var X = x + a, Y = y + b;
                 if (!dentro(X, Y)) continue;
                 var i = ix(X, Y);
+                if (suelo[i] === PLAZA) continue;
                 suelo[i] = suelo[i] === AGUA || suelo[i] === PUENTE ? PUENTE : CAMINO;
             }
         }
@@ -236,11 +245,15 @@
             pinta(X, Y);
             while (X !== x2 || Y !== y2) { if (X !== x2) X += dx; else Y += dy; pinta(X, Y); }
         }
-        // Camino real de este a oeste y un ramal hasta cada puerta
-        linea(6, CAMINO_FILA, costa(CAMINO_FILA) - 2, CAMINO_FILA);
-        NIVELES.forEach(function (n) { linea(n.x, n.y + 1, n.x, CAMINO_FILA); });
+        // Anillo, tres calles hasta la plaza y un muelle hacia el mar
+        for (var ang = 0; ang < Math.PI * 2; ang += 0.01) pinta(Math.round(ANILLO.x + ANILLO.rx * Math.cos(ang)), Math.round(ANILLO.y + ANILLO.ry * Math.sin(ang)));
+        NIVELES.forEach(function (n) { pinta(n.x, n.y + 1); });
+        linea(ANILLO.x - ANILLO.rx, ANILLO.y, ANILLO.x - 4, ANILLO.y);
+        linea(ANILLO.x, ANILLO.y - ANILLO.ry, ANILLO.x, ANILLO.y - 4);
+        linea(ANILLO.x + 4, ANILLO.y, E.mw - 4, ANILLO.y);
         for (y = 0; y < E.mh; y++) for (x = 0; x < E.mw; x++) {
             var s = suelo[ix(x, y)];
+            if (s === PLAZA) { for (var j2 = -1; j2 <= 1; j2++) for (var m2 = -1; m2 <= 1; m2++) if (dentro(x + m2, y + j2)) reservado[ix(x + m2, y + j2)] = 1; continue; }
             if (s !== CAMINO && s !== PUENTE) continue;
             for (var j = -2; j <= 2; j++) for (var m = -2; m <= 2; m++) if (dentro(x + m, y + j)) reservado[ix(x + m, y + j)] = 1;
         }
@@ -252,6 +265,9 @@
             var fy0 = Math.floor((n.py - n.fh) / T), fy1 = Math.floor((n.py - 1) / T);
             for (Y = fy0; Y <= fy1; Y++) for (X = fx0; X <= fx1; X++) if (dentro(X, Y)) { solido[ix(X, Y)] = 1; if (suelo[ix(X, Y)] === CAMINO) suelo[ix(X, Y)] = HIERBA; }
         });
+        // Fuente y farolas de la plaza
+        for (y = ANILLO.y - 1; y <= ANILLO.y + 1; y++) for (x = ANILLO.x - 1; x <= ANILLO.x + 1; x++) solido[ix(x, y)] = 1;
+        FAROLAS.forEach(function (f) { solido[ix(f[0], f[1])] = 1; });
         var r2 = azar(7), arboles = [], matas = [];
         for (y = 0; y < E.mh - 1; y += 2) for (x = 0; x < E.mw - 1; x += 2) {
             var ok = true;
@@ -262,7 +278,8 @@
             if (!ok) continue;
             var borde = Math.min(x, y, E.mh - 2 - y);
             var n = Math.sin(x * 0.23) + Math.sin(y * 0.29 + 1.3) + Math.sin((x + y) * 0.13);
-            var p = borde < 4 ? 0.97 : n > 1.2 ? 0.7 : 0.05;
+            var ex = (x + 1 - ANILLO.x) / (ANILLO.rx + 3), ey = (y + 1 - ANILLO.y) / (ANILLO.ry + 3), dentroPueblo = ex * ex + ey * ey < 1;
+            var p = borde < 3 ? 0.97 : dentroPueblo ? 0.03 : n > 1.2 ? 0.75 : 0.12;
             if (r2() < p) { arboles.push({ x: x, y: y }); solido[ix(x, y + 1)] = 1; solido[ix(x + 1, y + 1)] = 1; }
         }
         for (y = 2; y < E.mh - 2; y++) for (x = 2; x < E.mw - 2; x++) {
@@ -369,6 +386,21 @@
                 for (k = 0; k < T; k += 4) x.fillRect(px + k, py + 1, 1, T - 2);
                 if (es(X, Y - 1) !== PUENTE) { x.fillStyle = C.linea; x.fillRect(px, py, T, 2); }
                 if (es(X, Y + 1) !== PUENTE) { x.fillStyle = C.linea; x.fillRect(px, py + T - 2, T, 2); }
+            } else if (t === PLAZA) {
+                // Adoquines en filas desplazadas
+                x.fillStyle = '#b9b2a2'; x.fillRect(px, py, T, T);
+                for (k = 0; k < 4; k++) {
+                    var off2 = (Y * 4 + k) % 2 ? 4 : 0;
+                    for (var cc2 = -1; cc2 < 2; cc2++) {
+                        var bx2 = px + off2 + cc2 * 8, by2 = py + k * 4;
+                        x.fillStyle = hash(X * 4 + cc2, Y * 4 + k) > 0.5 ? '#cfc8b8' : '#c4bdac';
+                        x.fillRect(Math.max(px, bx2 + 1), by2 + 1, Math.min(px + T, bx2 + 8) - Math.max(px, bx2 + 1), 3);
+                    }
+                }
+                if (verde(es(X, Y - 1))) { x.fillStyle = '#8f8878'; x.fillRect(px, py, T, 1); }
+                if (verde(es(X, Y + 1))) { x.fillStyle = '#8f8878'; x.fillRect(px, py + T - 1, T, 1); }
+                if (verde(es(X - 1, Y))) { x.fillStyle = '#8f8878'; x.fillRect(px, py, 1, T); }
+                if (verde(es(X + 1, Y))) { x.fillStyle = '#8f8878'; x.fillRect(px + T - 1, py, 1, T); }
             } else if (t === MURO) {
                 var lado = X === 0 || X === E.mw - 1 || Y === E.mh - 1;
                 x.fillStyle = lado ? '#3e414d' : '#5a5e6d'; x.fillRect(px, py, T, T);
@@ -606,7 +638,7 @@
     var devueltas = [], cuerpoPanel, panel, globo, globoTexto, cola = [], dicho = {}, quieto = 0, consejo = 0, frase = null;
     var particulas = [], oscuro = true, cw = 0, ch = 0, miniReloj = 0, abriendo = null;
     var vistos = {};
-    try { vistos = JSON.parse(guardado('niveles-vistos') || '{}') || {}; } catch (e) { vistos = {}; }
+    try { vistos = JSON.parse(guardado('gemas') || '{}') || {}; } catch (e) { vistos = {}; }
     var tactil = window.matchMedia('(pointer: coarse)').matches;
     function total() { return PANTALLAS.filter(function (p) { return vistos[p.id]; }).length; }
     function appsAbiertas() { return APPS.filter(function (a) { return vistos[a.id]; }).length; }
@@ -782,6 +814,9 @@
         imgMata = spriteMata();
         gen.arboles.forEach(function (a) { mundo.objetos.push({ img: imgArbol, x: a.x * T, y: a.y * T - 2, base: (a.y + 2) * T - 3, w: 32, h: 34 }); });
         gen.matas.forEach(function (m) { mundo.objetos.push({ img: imgMata, x: m.x * T, y: m.y * T, base: m.y * T + 14, w: 16, h: 16 }); });
+        var fcx = (ANILLO.x + 0.5) * T, fcy = (ANILLO.y + 0.5) * T;
+        mundo.objetos.push({ fuente: true, x: fcx - 26, y: fcy - 34, base: fcy + 14, w: 52, h: 52 });
+        FAROLAS.forEach(function (f) { mundo.objetos.push({ farola: true, x: f[0] * T, y: f[1] * T - 18, base: f[1] * T + 14, w: 16, h: 34, cx: f[0] * T + 8, cy: f[1] * T + 14 }); });
         NIVELES.forEach(function (n, i) {
             var s = spriteEdificio(n, i);
             n.sprite = s;
@@ -808,7 +843,8 @@
             '<div class="hud hud-arriba">' +
                 '<p class="hud-marca"><span class="marca-sello" aria-hidden="true">RD</span><span>Rodrigo Dávila</span></p>' +
                 '<div class="hud-gemas-caja"><button type="button" class="hud-gemas" data-j-gemas aria-expanded="false"><i class="gema-icono" aria-hidden="true"></i><span class="gemas-cuenta" data-j-cuenta></span><span class="gemas-txt"><span lang="es">gemas</span><span lang="en">gems</span></span></button>' +
-                    '<div class="inventario" data-j-inventario hidden><p class="inventario-titulo"><span lang="es">Tus gemas</span><span lang="en">Your gems</span></p><ol>' + inventario + '</ol></div></div>' +
+                    '<div class="inventario" data-j-inventario hidden><p class="inventario-titulo"><span lang="es">Tus gemas</span><span lang="en">Your gems</span></p><ol>' + inventario + '</ol>' +
+                    '<button type="button" class="inventario-reinicio" data-j-reinicio><span lang="es">Empezar de cero</span><span lang="en">Start over</span></button></div></div>' +
                 '<div class="hud-botones">' +
                     '<button type="button" class="hud-boton" data-j-mapa><span lang="es">Mapa</span><span lang="en">Map</span></button>' +
                     '<button type="button" class="hud-boton" data-j-idioma><span lang="es">EN</span><span lang="en">ES</span></button>' +
@@ -938,6 +974,14 @@
         var inv = juego.querySelector('[data-j-inventario]'), botonGemas = juego.querySelector('[data-j-gemas]');
         botonGemas.addEventListener('click', function () { inv.hidden = !inv.hidden; botonGemas.setAttribute('aria-expanded', String(!inv.hidden)); });
         inv.addEventListener('click', function (e) {
+            if (e.target.closest('[data-j-reinicio]')) {
+                vistos = {}; guardar('gemas', '{}');
+                APPS.forEach(function (a) { a.abierto = false; });
+                inv.hidden = true; botonGemas.setAttribute('aria-expanded', 'false');
+                decir({ es: '¡Gemas a cero! A por las 15 otra vez.', en: 'Gems reset! Go get all 15 again.' }, true);
+                pintarHud();
+                return;
+            }
             var b = e.target.closest('[data-j-ir]');
             if (!b) return;
             inv.hidden = true; botonGemas.setAttribute('aria-expanded', 'false');
@@ -968,9 +1012,9 @@
         window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', mirarTema);
         mirarTema();
         // Base del minimapa: el suelo del mundo reducido
-        var mb = lienzo(200, 128);
+        var mb = lienzo(mundo.mw * 2, mundo.mh * 2);
         mb.x.imageSmoothingEnabled = true;
-        mb.x.drawImage(mundo.img, 0, 0, 200, 128);
+        mb.x.drawImage(mundo.img, 0, 0, mundo.mw * 2, mundo.mh * 2);
         miniBase = mb.c;
         medir();
     }
@@ -1035,7 +1079,9 @@
         var vw = cw / esc, vh = ch / esc;
         var l = cam.x - vw / 2, t = cam.y - vh / 2;
         if (vw < E.pw) l = Math.max(0, Math.min(E.pw - vw, l)); else l = (E.pw - vw) / 2;
-        if (vh < E.ph) t = Math.max(0, Math.min(E.ph - vh, t)); else t = (E.ph - vh) / 2;
+        // En móvil la cámara puede pasar del borde de abajo para que los mandos no tapen al personaje
+        var abajo = tactil && E === mundo && !vistaMapa ? 170 * dpr / esc : 0;
+        if (vh < E.ph + abajo) t = Math.max(0, Math.min(E.ph + abajo - vh, t)); else t = (E.ph - vh) / 2;
         return { l: l, t: t, w: vw, h: vh };
     }
     function aMundo(sx, sy) { var v = vistaRect(); return { x: v.l + sx / esc, y: v.t + sy / esc }; }
@@ -1074,7 +1120,7 @@
     function entrarSala() {
         fundido(function () {
             ponerEscena(sala, sala.pw / 2, sala.ph - 10, 'arriba');
-            if (!dicho.sala) { dicho.sala = 1; decir({ es: '¡La sala de los trofeos! Cada cofre guarda una app. Acércate y ábrelos.', en: 'The trophy hall! Every chest holds an app. Walk up and open them.' }, true); }
+            if (!dicho.sala) { dicho.sala = 1; decir({ es: '¡Las apps de Rodrigo! Cada cofre guarda una. Acércate y ábrelos.', en: 'Rodrigo\'s apps! Every chest holds one. Walk up and open them.' }, true); }
             setTimeout(seguirObjetivo, 300);
         });
     }
@@ -1252,7 +1298,10 @@
         var kc = reducido ? 1 : 1 - Math.exp(-dt * 6);
         cam.x += (cx - cam.x) * kc; cam.y += (cy - cam.y) * kc;
         var v = vistaRect();
-        var gx = (heroe.x - v.l) * esc / dpr, gy = (heroe.y + 8 - v.t) * esc / dpr;
+        // El bocadillo va debajo del personaje, salvo si este está en la parte baja de la pantalla
+        var gx = (heroe.x - v.l) * esc / dpr, gy = (heroe.y + 8 - v.t) * esc / dpr, arriba = gy > ch / dpr * 0.62;
+        if (arriba) gy = (heroe.y - 34 - v.t) * esc / dpr;
+        globo.classList.toggle('arriba', arriba);
         globo.style.transform = 'translate(' + Math.round(gx) + 'px,' + Math.round(gy) + 'px)';
     }
 
@@ -1260,7 +1309,7 @@
         var x = ctx, v = vistaRect(), i;
         x.setTransform(1, 0, 0, 1, 0, 0);
         x.imageSmoothingEnabled = esc < 1.5;
-        x.fillStyle = E === sala ? '#0d0e13' : C.agua; x.fillRect(0, 0, cw, ch);
+        x.fillStyle = E === sala ? '#0d0e13' : tactil ? C.copaO : C.agua; x.fillRect(0, 0, cw, ch);
         var ox = Math.round(-v.l * esc), oy = Math.round(-v.t * esc);
         x.setTransform(esc, 0, 0, esc, ox, oy);
         var sl = Math.max(0, Math.floor(v.l)), st = Math.max(0, Math.floor(v.t));
@@ -1297,6 +1346,8 @@
                 return;
             }
             if (o.cofre) { cofre(x, o.cofre); return; }
+            if (o.fuente) { fuente(x, o.x + 26, o.base - 14); return; }
+            if (o.farola) { farola(x, o.cx, o.cy); return; }
             x.drawImage(o.img, Math.round(o.x), Math.round(o.y));
             if (o.nivel) extras(x, o.nivel);
         });
@@ -1331,6 +1382,7 @@
             });
             x.globalCompositeOperation = 'lighter';
             NIVELES.forEach(function (n) { brillo(x, n.px, n.py - 6, 26, 'rgba(255,190,90,.16)'); });
+            FAROLAS.forEach(function (f) { brillo(x, f[0] * T + 8, f[1] * T - 15, 30, 'rgba(255,200,110,.3)'); brillo(x, f[0] * T + 8, f[1] * T + 12, 26, 'rgba(255,190,90,.14)'); });
             var f = nivelPorId('chat');
             if (!reducido) { x.fillStyle = 'rgba(255,230,150,.16)'; haz(x, f.px, f.py - f.h + 13, reloj * 1.4); }
             x.globalCompositeOperation = 'source-over';
@@ -1427,6 +1479,41 @@
         }
     }
 
+    function fuente(x, cx, cy) {
+        // Pilón de piedra, agua y un surtidor con gotas
+        cx = Math.round(cx); cy = Math.round(cy);
+        x.fillStyle = 'rgba(0,0,0,.22)'; x.fillRect(cx - 24, cy + 10, 48, 4);
+        for (var dy = -13; dy <= 13; dy++) {
+            var w = Math.round(24 * Math.sqrt(1 - (dy * dy) / 196));
+            x.fillStyle = C.linea; x.fillRect(cx - w - 1, cy + dy, w * 2 + 2, 1);
+            x.fillStyle = dy > 8 ? '#9a9383' : '#cfc8b6'; x.fillRect(cx - w, cy + dy, w * 2, 1);
+        }
+        for (dy = -9; dy <= 7; dy++) {
+            var w2 = Math.round(19 * Math.sqrt(1 - (dy * dy) / 100));
+            x.fillStyle = dy < -7 ? '#2f6fb3' : C.agua; x.fillRect(cx - w2, cy + dy - 1, w2 * 2, 1);
+        }
+        var f = reducido ? 0 : reloj * 6;
+        x.fillStyle = C.agua2;
+        for (var k = 0; k < 3; k++) { var rr = (f + k * 4) % 12 + 4; x.fillRect(cx - rr, cy - 1, 2, 1); x.fillRect(cx + rr - 2, cy - 1, 2, 1); }
+        x.fillStyle = C.linea; x.fillRect(cx - 4, cy - 18, 8, 17);
+        x.fillStyle = '#ddd6c4'; x.fillRect(cx - 3, cy - 17, 6, 15);
+        x.fillStyle = C.linea; x.fillRect(cx - 7, cy - 21, 14, 4);
+        x.fillStyle = '#e6dfcd'; x.fillRect(cx - 6, cy - 20, 12, 2);
+        x.fillStyle = C.espuma; x.fillRect(cx - 1, cy - 30, 2, 9);
+        for (k = 0; k < 6; k++) {
+            var t = ((reducido ? 0.5 : reloj * 1.6) + k / 6) % 1, lado = k % 2 ? 1 : -1;
+            x.fillStyle = k % 3 ? C.espuma : '#ffffff';
+            x.fillRect(Math.round(cx + lado * (2 + t * 12)), Math.round(cy - 30 + t * 26 + t * t * 6 - 12 * Math.sin(t * Math.PI)), 2, 2);
+        }
+    }
+    function farola(x, cx, cy) {
+        x.fillStyle = 'rgba(0,0,0,.22)'; x.fillRect(cx - 4, cy - 1, 8, 3);
+        x.fillStyle = C.linea; x.fillRect(cx - 2, cy - 26, 4, 26); x.fillRect(cx - 4, cy - 3, 8, 3);
+        x.fillStyle = '#4a5160'; x.fillRect(cx - 1, cy - 25, 2, 24);
+        x.fillStyle = C.linea; x.fillRect(cx - 5, cy - 34, 10, 9);
+        x.fillStyle = oscuro ? C.luz : '#fff3c4'; x.fillRect(cx - 4, cy - 33, 8, 7);
+        x.fillStyle = C.linea; x.fillRect(cx - 3, cy - 36, 6, 2);
+    }
     function brillo(x, cx, cy, r, color) {
         var g = x.createRadialGradient(cx, cy, 0, cx, cy, r);
         g.addColorStop(0, color); g.addColorStop(1, 'rgba(0,0,0,0)');
@@ -1610,7 +1697,7 @@
         requestAnimationFrame(function () { panel.classList.add('abierto'); });
         juego.querySelector('[data-j-panel-titulo]').focus({ preventScroll: true });
         cuerpoPanel.querySelectorAll('video').forEach(function (v) { v.preload = 'auto'; if (!reducido) v.play().catch(function () {}); });
-        if (!vistos[n.id]) { vistos[n.id] = 1; guardar('niveles-vistos', JSON.stringify(vistos)); n.nueva = true; }
+        if (!vistos[n.id]) { vistos[n.id] = 1; guardar('gemas', JSON.stringify(vistos)); n.nueva = true; }
         enMarcha = false;
         pintarHud();
     }
@@ -1636,7 +1723,7 @@
             if (!p.nueva) return;
             p.nueva = false;
             var n = total();
-            if (n === PANTALLAS.length) decir({ es: '¡Las 15 gemas! Ya conoces a Rodrigo. ¿Le escribes? El buzón está junto a la playa.', en: 'All 15 gems! Now you know Rodrigo. Want to write to him? The mailbox is by the beach.' }, true);
+            if (n === PANTALLAS.length) decir({ es: '¡Las 15 gemas! Ya conoces a Rodrigo. ¿Le escribes? El buzón está al este, junto al muelle.', en: 'All 15 gems! Now you know Rodrigo. Want to write to him? The mailbox is east, by the pier.' }, true);
             else decir({ es: '¡Gema conseguida! Llevas ' + n + ' de 15.', en: 'Gem found! That\'s ' + n + ' of 15.' }, true);
             for (var k = 0; k < 26; k++) particulas.push({ x: heroe.x, y: heroe.y - 20, vx: (Math.random() - 0.5) * 90, vy: -40 - Math.random() * 70, v: 1 + Math.random() * 0.6, c: ['#3ee6a0', '#ffd36b', '#9fdcff', '#ffffff'][k % 4] });
         });

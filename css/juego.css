@@ -63,11 +63,15 @@ html.en-juego .barra, html.en-juego main, html.en-juego .pie, html.en-juego .sal
 }
 .inventario button:hover, .inventario button:focus-visible { background: var(--caja-2); color: var(--texto-j); }
 .inventario li.hecho button { color: var(--texto-j); }
+.inventario .inventario-reinicio {
+    justify-content: center; margin-top: 8px; color: var(--tenue-j); font-size: 13px;
+    background: var(--caja-2);
+}
 
 /* Minimapa siempre visible */
 .minimapa {
     position: absolute; z-index: 2; right: max(16px, env(safe-area-inset-right, 0px)); top: calc(max(14px, env(safe-area-inset-top, 0px)) + 62px);
-    width: 200px; height: 128px; cursor: pointer; image-rendering: auto;
+    width: 200px; height: 121px; cursor: pointer; image-rendering: auto;
     border: 3px solid var(--marco); border-radius: 6px; outline: 3px solid var(--marco-o); background: #3b86d1; /* taste-skill-ignore: agua */
 }
 .juego.en-mapa .minimapa { display: none; }
@@ -148,14 +152,14 @@ html.en-juego .barra, html.en-juego main, html.en-juego .pie, html.en-juego .sal
     .hud-niveles { bottom: auto; top: calc(max(14px, env(safe-area-inset-top, 0px)) + 60px); }
     .hud-entrar { width: min(300px, calc(100vw - 160px)); height: 50px; }
     .hud-paso { width: 46px; height: 50px; }
-    .minimapa { width: 150px; height: 96px; top: calc(max(14px, env(safe-area-inset-top, 0px)) + 124px); }
+    .minimapa { width: 150px; height: 91px; top: calc(max(14px, env(safe-area-inset-top, 0px)) + 124px); }
 }
 @media (max-width: 520px) {
     .hud-arriba { gap: 8px; }
     .hud-marca { display: none; }
     .gemas-txt { display: none; }
     .hud-boton { padding: 0 10px; }
-    .minimapa { width: 120px; height: 77px; top: calc(max(14px, env(safe-area-inset-top, 0px)) + 124px); }
+    .minimapa { width: 120px; height: 73px; top: calc(max(14px, env(safe-area-inset-top, 0px)) + 124px); }
     .hud-clasica [lang] { font-size: 0; }
     .hud-clasica [lang]::after { font-size: var(--t-s); }
     .hud-clasica [lang="es"]::after { content: "Clásica"; }
@@ -182,6 +186,8 @@ html.en-juego .barra, html.en-juego main, html.en-juego .pie, html.en-juego .sal
     content: ""; position: absolute; left: 50%; top: -12px; width: 14px; height: 10px; translate: -50% 0;
     background: var(--marco); clip-path: polygon(50% 0, 100% 100%, 0 100%);
 }
+.hada-globo.arriba { translate: -50% calc(-100% - 18px); }
+.hada-globo.arriba::after { top: auto; bottom: -12px; clip-path: polygon(0 0, 100% 0, 50% 100%); }
 .hada-nombre { font-family: var(--pixel); font-size: 12px; color: #9fdcff; line-height: 1.2; } /* taste-skill-ignore: nombre del hada */
 .hada-texto { font-size: 15px; line-height: 1.4; min-height: 1.4em; }
 
