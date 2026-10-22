@@ -68,11 +68,15 @@
                     <span lang="es">Manager de IA Generativa en Accenture. Diseño sistemas multiagente para la banca y construyo mis propias apps, de la idea a la tienda.</span>
                     <span lang="en">Generative AI Manager at Accenture. I design multi-agent systems for banking and build my own apps, from idea to store.</span>
                 </p>
-                <ul class="portada-datos aparece">
-                    <li><strong data-anios>9</strong> <span lang="es">años en tecnología</span><span lang="en">years in tech</span></li>
-                    <li><strong>4</strong> <span lang="es">apps publicadas</span><span lang="en">apps shipped</span></li>
-                    <li><span lang="es">Madrid · Español e inglés</span><span lang="en">Madrid · Spanish and English</span></li>
-                </ul>
+                <nav class="dock aparece" aria-label="Mis apps">
+                    <a href="#urbapadel" data-abrir="urbapadel"><img src="img/apps/urbapadel-icono.webp" width="96" height="96" alt=""><span>UrbaPadel</span></a>
+                    <a href="#lullcam" data-abrir="lullcam"><img src="img/apps/lullcam-icono.webp" width="96" height="96" alt=""><span>LullCam</span></a>
+                    <a href="#tumenu" data-abrir="tumenu"><img src="img/apps/tumenu-icono.webp" width="96" height="96" alt=""><span>TuMenu</span></a>
+                    <a href="#godafly" data-abrir="godafly"><img src="img/apps/godafly-icono.webp" width="96" height="96" alt=""><span>GodaFly</span></a>
+                    <a href="#zapeo" data-abrir="zapeo"><img src="img/apps/zapeo-icono.webp" width="96" height="96" alt=""><span>Zapeo</span></a>
+                    <a href="#taller"><img src="img/apps/runclap-icono.webp" width="96" height="96" alt=""><span>RunClap</span></a>
+                    <a href="#taller"><img src="img/apps/abecedario-icono.webp" width="96" height="96" alt=""><span>Abecedario</span></a>
+                </nav>
                 <div class="acciones aparece">
                     <a class="boton boton-lleno" href="#proyectos"><span lang="es">Ver proyectos</span><span lang="en">See projects</span></a>
                     <a class="boton" href="https://www.linkedin.com/in/rodrigo-d%C3%A1vila-5b675383/" target="_blank" rel="noopener">LinkedIn</a>
@@ -107,6 +111,16 @@
             </div>
         </section>
 
+        <!-- ===== Cifras ===== -->
+        <section class="cifras" aria-label="En cifras">
+            <dl>
+                <div class="aparece"><dd data-anios>9</dd><dt><span lang="es">años diseñando y construyendo software</span><span lang="en">years designing and building software</span></dt></div>
+                <div class="aparece"><dd>7</dd><dt><span lang="es">apps propias, 3 de ellas en App Store</span><span lang="en">apps of my own, 3 of them on the App Store</span></dt></div>
+                <div class="aparece"><dd>150+</dd><dt><span lang="es">vecinos usan UrbaPadel en sus urbanizaciones</span><span lang="en">residents use UrbaPadel in their communities</span></dt></div>
+                <div class="aparece"><dd>COBOL → Java</dd><dt><span lang="es">migración de un core bancario con agentes de IA</span><span lang="en">core banking migration with AI agents</span></dt></div>
+            </dl>
+        </section>
+
         <!-- ===== Clientes ===== -->
         <section class="clientes" aria-labelledby="clientes-titulo">
             <h2 id="clientes-titulo" class="aparece"><span lang="es">He trabajado en proyectos para</span><span lang="en">I have worked on projects for</span></h2>
@@ -138,6 +152,13 @@
                         <span class="pestana-texto">
                             <strong>UrbaPadel</strong>
                             <span><span lang="es">Reservas para urbanizaciones</span><span lang="en">Bookings for residential communities</span></span>
+                        </span>
+                    </a>
+                    <a class="pestana" href="#lullcam" role="tab" data-pestana="lullcam">
+                        <img src="img/apps/lullcam-icono.webp" width="96" height="96" alt="">
+                        <span class="pestana-texto">
+                            <strong>LullCam</strong>
+                            <span><span lang="es">Vigilabebés privado, sin nube</span><span lang="en">Private baby monitor, no cloud</span></span>
                         </span>
                     </a>
                     <a class="pestana" href="#tumenu" role="tab" data-pestana="tumenu">
@@ -193,6 +214,37 @@
                                 <img src="img/apps/urbapadel-2.webp" width="560" height="1217" loading="lazy" alt="UrbaPadel: reserva de la sala de juntas por franjas">
                                 <img src="img/apps/urbapadel-3.webp" width="560" height="1217" loading="lazy" alt="UrbaPadel: incidencias de la comunidad">
                                 <img src="img/apps/urbapadel-4.webp" width="560" height="1217" loading="lazy" alt="UrbaPadel: comunicado de la junta a los vecinos">
+                            </div>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="ficha" id="lullcam" role="tabpanel" style="--tono:#3a2f8a">
+                    <div class="ficha-texto">
+                        <h3>LullCam</h3>
+                        <p class="ficha-meta"><span class="punto" aria-hidden="true"></span><span lang="es">En App Store · octubre de 2026</span><span lang="en">On the App Store · October 2026</span></p>
+                        <p class="ficha-lead">
+                            <span lang="es">Tu iPhone o iPad se convierte en vigilabebés. Sin cuentas, sin nube y sin grabaciones.</span><span lang="en">Your iPhone or iPad becomes a baby monitor. No accounts, no cloud, no recordings.</span>
+                        </p>
+                        <p>
+                            <span lang="es">Un dispositivo hace de cámara y los demás miran, escuchan y reciben avisos de llanto, ruido o movimiento, incluso con la pantalla bloqueada. En casa va en local; desde fuera, cifrado de extremo a extremo a través de un relé que no puede ver nada.</span><span lang="en">One device acts as the camera and the others watch, listen and get alerts for crying, noise or movement, even with the screen locked. At home it runs locally; away from home, end-to-end encrypted through a relay that cannot see anything.</span>
+                        </p>
+                        <dl class="ficha-cifras">
+                            <div><dt><span lang="es">idiomas</span><span lang="en">languages</span></dt><dd>10</dd></div>
+                            <div><dt>tests</dt><dd>146+</dd></div>
+                        </dl>
+                        <ul class="pila"><li>Swift 6</li><li>SwiftUI</li><li>WebRTC</li><li>SoundAnalysis</li><li>Cloudflare</li></ul>
+                        <p class="enlaces">
+                            <a href="https://lullcam.com" target="_blank" rel="noopener">lullcam.com</a>
+                            <a href="https://apps.apple.com/es/app/lullcam/id6820272090" target="_blank" rel="noopener">App Store</a>
+                        </p>
+                    </div>
+                    <div class="ficha-demo">
+                        <div class="movil" data-demo>
+                            <div class="movil-pantalla">
+                                <img src="img/apps/lullcam-1.webp" width="414" height="900" loading="lazy" alt="LullCam: inicio con usar como cámara o ver y escuchar">
+                                <img src="img/apps/lullcam-2.webp" width="414" height="900" loading="lazy" alt="LullCam: te avisa del llanto, el ruido o si se pierde la conexión">
+                                <img src="img/apps/lullcam-3.webp" width="414" height="900" loading="lazy" alt="LullCam: usa un iPhone o iPad como cámara">
                             </div>
                         </div>
                     </div>
@@ -281,32 +333,66 @@
             </div>
         </section>
 
-        <!-- ===== Webs a medida ===== -->
+        <!-- ===== Taller: apps en camino ===== -->
+        <section class="taller" id="taller" aria-labelledby="taller-titulo">
+            <div class="cabecera">
+                <h2 id="taller-titulo" class="aparece"><span lang="es">En el taller</span><span lang="en">On the workbench</span></h2>
+                <p class="aparece"><span lang="es">Lo que estoy terminando ahora mismo.</span><span lang="en">What I am finishing right now.</span></p>
+            </div>
+            <div class="taller-rejilla">
+                <article class="obra aparece">
+                    <div class="obra-cabeza">
+                        <img src="img/apps/runclap-icono.webp" width="96" height="96" alt="">
+                        <div><h3>RunClap</h3><p class="ficha-meta"><span class="punto punto-beta" aria-hidden="true"></span><span lang="es">Beta privada en TestFlight</span><span lang="en">Private beta on TestFlight</span></p></div>
+                    </div>
+                    <p class="ficha-lead"><span lang="es">Quedadas para correr en grupo cerca de ti.</span><span lang="en">Group runs near you.</span></p>
+                    <p><span lang="es">Mapa de quedadas, crear una salida en cuatro pasos con ritmo, distancia y punto de encuentro, apuntarse con aprobación, seguir a otros corredores y recordatorios.</span><span lang="en">A map of meet-ups, create a run in four steps with pace, distance and meeting point, join with approval, follow other runners and get reminders.</span></p>
+                    <ul class="pila"><li>Flutter</li><li>Firebase</li><li>Cloud Functions</li><li>Google Maps</li></ul>
+                </article>
+                <article class="obra obra-abc aparece">
+                    <div class="obra-cabeza">
+                        <img src="img/apps/abecedario-icono.webp" width="96" height="96" alt="">
+                        <div><h3><span lang="es">Abecedario hablado</span><span lang="en">Talking alphabet</span></h3><p class="ficha-meta"><span class="punto punto-beta" aria-hidden="true"></span><span lang="es">En desarrollo · iOS y Android</span><span lang="en">In development · iOS and Android</span></p></div>
+                    </div>
+                    <p class="ficha-lead"><span lang="es">Para que los peques aprendan las letras oyéndolas. Pulsa una:</span><span lang="en">So little ones learn letters by hearing them. Tap one:</span></p>
+                    <div class="abc" data-abc aria-label="Abecedario"></div>
+                    <ul class="pila"><li>Flutter</li><li>Dart</li><li>audioplayers</li></ul>
+                </article>
+            </div>
+        </section>
+
+        <!-- ===== Webs ===== -->
         <section class="webs" id="webs" aria-labelledby="webs-titulo">
             <div class="cabecera">
-                <h2 id="webs-titulo" class="aparece"><span lang="es">Webs a medida</span><span lang="en">Custom websites</span></h2>
-                <p class="aparece">
-                    <span lang="es">Para bodas, restaurantes y comercios: diseño, desarrollo, dominio y formularios, sin plantillas.</span>
-                    <span lang="en">For weddings, restaurants and shops: design, development, domain and forms, no templates.</span>
-                </p>
+                <h2 id="webs-titulo" class="aparece"><span lang="es">Webs que diseño y programo</span><span lang="en">Websites I design and build</span></h2>
+                <p class="aparece"><span lang="es">Las de mis productos y webs a medida para bodas, restaurantes y tiendas: diseño, desarrollo, dominio y formularios, sin plantillas.</span><span lang="en">My products&#39; sites, plus custom websites for weddings, restaurants and shops: design, development, domain and forms, no templates.</span></p>
             </div>
             <div class="webs-rejilla">
+                <a class="web aparece" href="https://urbapadel.com" target="_blank" rel="noopener">
+                    <span class="navegador" aria-hidden="true"><span></span><span></span><span></span><em>urbapadel.com</em></span>
+                    <img src="img/webs/urbapadel.webp" width="1200" height="750" loading="lazy" alt="Web de UrbaPadel: las reservas de tu urba, en una app">
+                    <span class="web-pie"><strong>UrbaPadel</strong><span><span lang="es">Landing y guía para vecinos y administradores.</span><span lang="en">Landing page and guide for residents and managers.</span></span></span>
+                </a>
+                <a class="web aparece" href="https://lullcam.com" target="_blank" rel="noopener">
+                    <span class="navegador" aria-hidden="true"><span></span><span></span><span></span><em>lullcam.com</em></span>
+                    <img src="img/webs/lullcam.webp" width="1200" height="750" loading="lazy" alt="Web de LullCam: el vigilabebés privado en tu bolsillo">
+                    <span class="web-pie"><strong>LullCam</strong><span><span lang="es">Web en 10 idiomas con precios y soporte.</span><span lang="en">Site in 10 languages with pricing and support.</span></span></span>
+                </a>
+                <a class="web aparece" href="https://tumenu.bar" target="_blank" rel="noopener">
+                    <span class="navegador" aria-hidden="true"><span></span><span></span><span></span><em>tumenu.bar</em></span>
+                    <img src="img/webs/tumenu.webp" width="1200" height="750" loading="lazy" alt="Web de TuMenu: mandas un WhatsApp y te llega tu menú listo">
+                    <span class="web-pie"><strong>TuMenu</strong><span><span lang="es">Venta del servicio con la conversación de WhatsApp.</span><span lang="en">Sells the service with the WhatsApp conversation.</span></span></span>
+                </a>
+                <a class="web aparece" href="https://godafly.com" target="_blank" rel="noopener">
+                    <span class="navegador" aria-hidden="true"><span></span><span></span><span></span><em>godafly.com</em></span>
+                    <img src="img/webs/godafly.webp" width="1200" height="750" loading="lazy" alt="Web de GodaFly: conecta con viajeros como tú">
+                    <span class="web-pie"><strong>GodaFly</strong><span><span lang="es">Presentación de la app y descargas.</span><span lang="en">App showcase and downloads.</span></span></span>
+                </a>
                 <a class="web aparece" href="https://bodapilaryluis.com" target="_blank" rel="noopener">
                     <span class="navegador" aria-hidden="true"><span></span><span></span><span></span><em>bodapilaryluis.com</em></span>
                     <img src="img/webs/boda-finca.webp" width="1200" height="800" loading="lazy" alt="Acuarela de la finca de la boda de Pilar y Luis">
-                    <span class="web-pie">
-                        <strong><span lang="es">Boda de Pilar y Luis</span><span lang="en">Pilar and Luis's wedding</span></strong>
-                        <span><span lang="es">Invitación con confirmación de asistencia y lista privada para los novios.</span><span lang="en">Invitation with RSVP and a private guest list for the couple.</span></span>
-                    </span>
+                    <span class="web-pie"><strong><span lang="es">Boda de Pilar y Luis</span><span lang="en">Pilar and Luis&#39;s wedding</span></strong><span><span lang="es">Invitación con confirmación de asistencia.</span><span lang="en">Invitation with RSVP.</span></span></span>
                 </a>
-                <div class="web aparece">
-                    <span class="navegador" aria-hidden="true"><span></span><span></span><span></span><em>La Rufeta · Las Tablas</em></span>
-                    <img src="img/apps/tumenu-menu-2.webp" width="753" height="1065" loading="lazy" alt="Menú del día del bar-restaurante La Rufeta, generado con TuMenu">
-                    <span class="web-pie">
-                        <strong><span lang="es">Bar-restaurante La Rufeta</span><span lang="en">La Rufeta restaurant</span></strong>
-                        <span><span lang="es">Web del local con el menú del día, que se actualiza solo con TuMenu.</span><span lang="en">The restaurant's site, with a daily menu that updates itself through TuMenu.</span></span>
-                    </span>
-                </div>
             </div>
         </section>
 

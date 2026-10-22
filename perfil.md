@@ -77,13 +77,21 @@ App para conectar a personas que viajan solas y quedar con otros viajeros en aer
 
 Reproductor de contenidos multimedia: televisión en directo, películas y series de tus propias listas, con guía de programación, favoritos y "seguir viendo". Sin cuentas ni registro: todo se queda en el dispositivo. Flutter con un motor de vídeo propio, para móvil, tablet, ordenador y TV.
 
-### LullCam (en desarrollo)
+### LullCam
 
-Vigilabebés privado para iPhone y iPad: sin cuentas, sin nube y sin grabaciones. Un dispositivo hace de cámara y los demás miran, escuchan y reciben avisos de llanto, ruido o movimiento. Swift, SwiftUI y WebRTC, con conexión remota cifrada de extremo a extremo.
+Vigilabebés privado para iPhone y iPad: sin cuentas, sin nube y sin grabaciones. Un dispositivo hace de cámara en el cuarto del bebé y los demás miran, escuchan y reciben avisos de llanto, ruido, movimiento o conexión perdida, incluso con la pantalla bloqueada. Imagen en imagen, hablar al bebé, nanas y ruido blanco. En la misma wifi funciona en local; desde fuera, con cifrado de extremo a extremo a través de un relé en Cloudflare que no puede ver el contenido. Swift 6, SwiftUI, WebRTC, detección de llanto con SoundAnalysis, CryptoKit y StoreKit 2. Publicada en App Store en octubre de 2026, en 10 idiomas. Web: https://lullcam.com
+
+### RunClap (en beta privada)
+
+App para quedar a correr en grupo cerca de ti: mapa de quedadas, crear una salida en cuatro pasos (fecha, distancia, ritmo y punto de encuentro, con GPX opcional), apuntarse con aprobación, seguir a otros corredores y recordatorios. Flutter, Firebase (Auth, Firestore, Cloud Functions en TypeScript, Cloud Messaging) y Google Maps. En beta privada con TestFlight.
+
+### Abecedario hablado (en desarrollo)
+
+App infantil para aprender el abecedario con voz: cada letra, de la A a la Z con la Ñ, con su dibujo y su sonido, además de colores, formas, números, animales y juegos de preguntas, con control parental. Flutter y Dart, para iOS y Android.
 
 ### Webs a medida
 
-Diseño y programo webs a medida: bodas, restaurantes y comercios. Por ejemplo, la web de la boda de Pilar y Luis (con confirmación de asistencia) y la web del bar-restaurante La Rufeta en Las Tablas, Madrid.
+Diseño y programo webs a medida: bodas, restaurantes y comercios. También las webs de mis apps: urbapadel.com, godafly.com, tumenu.bar y lullcam.com. Por ejemplo, la web de la boda de Pilar y Luis (https://bodapilaryluis.com), con confirmación de asistencia y lista privada para los novios.
 
 ### Esta web
 
@@ -147,6 +155,9 @@ Diseño, programo y publico mis propios productos:
 - **TuMenu**: el bar manda el menú por WhatsApp y la IA genera la imagen y actualiza su web. En producción.
 - **GodaFly**: conecta a personas que viajan solas en aeropuertos y escalas. En App Store.
 - **Zapeo**: reproductor de contenidos multimedia, sin cuentas ni registro.
+- **LullCam**: vigilabebés privado para iPhone y iPad, sin nube y cifrado de extremo a extremo. En App Store.
+- **RunClap**: quedadas para correr en grupo. En beta privada.
+- **Abecedario hablado**: app infantil para aprender las letras con voz. En desarrollo.
 
 Además hago webs a medida para bodas, restaurantes y comercios.
 
@@ -201,6 +212,9 @@ I design, build and ship my own products:
 - **TuMenu**: restaurants send their daily menu over WhatsApp and AI produces the menu image and updates their website. In production.
 - **GodaFly**: connects people travelling alone at airports and layovers. On the App Store.
 - **Zapeo**: a multimedia player with no accounts and no sign-up.
+- **LullCam**: a private baby monitor for iPhone and iPad, no cloud and end-to-end encrypted. On the App Store.
+- **RunClap**: group running meet-ups. In private beta.
+- **Abecedario hablado**: a kids' app to learn the alphabet by voice. In development.
 
 I also build custom websites for weddings, restaurants and shops.
 

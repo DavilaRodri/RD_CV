@@ -133,12 +133,41 @@
                 abrir(pestanas[(i + d + pestanas.length) % pestanas.length].getAttribute('data-pestana'), true);
             });
         });
+        // Los iconos de la portada abren su pestaña.
+        document.querySelectorAll('[data-abrir]').forEach(function (a) {
+            a.addEventListener('click', function () { abrir(a.getAttribute('data-abrir')); });
+        });
         var inicial = location.hash.slice(1);
         abrir(document.getElementById('pestana-' + inicial) ? inicial : pestanas[0].getAttribute('data-pestana'));
     }
     function enPantalla(el) {
         var r = el.getBoundingClientRect();
         return r.width > 0 && r.bottom > 0 && r.top < window.innerHeight;
+    }
+
+    /* ---------- Abecedario hablado: pulsa una letra y suena ---------- */
+    var abc = document.querySelector('[data-abc]');
+    if (abc) {
+        var LETRAS = [['A','#FF6B6B'],['B','#4ECDC4'],['C','#FDB462'],['D','#7FDBDA'],['E','#DDA0DD'],
+            ['F','#85DCB8'],['G','#F7DC6F'],['H','#BB8FCE'],['I','#85C1E9'],['J','#F8C471'],
+            ['K','#E97373'],['L','#58D68D'],['M','#AF7AC5'],['N','#5DADE2'],['Ñ','#EB984E'],
+            ['O','#45B39D'],['P','#F1948A'],['Q','#7FB3D5'],['R','#E59866'],['S','#82E0AA'],
+            ['T','#D7BDE2'],['U','#76D7C4'],['V','#F7DC6F'],['W','#73C6B6'],['X','#E6B0AA'],
+            ['Y','#AED6F1'],['Z','#D2B4DE']];
+        var voz = new Audio();
+        LETRAS.forEach(function (l) {
+            var b = document.createElement('button');
+            b.type = 'button';
+            b.style.setProperty('--c', l[1]);
+            b.setAttribute('aria-label', l[0]);
+            b.textContent = l[0];
+            b.addEventListener('click', function () {
+                voz.src = 'img/abc/' + (l[0] === 'Ñ' ? 'nn' : l[0].toLowerCase()) + '.mp3';
+                voz.play().catch(function () {});
+                b.classList.remove('suena'); void b.offsetWidth; b.classList.add('suena');
+            });
+            abc.appendChild(b);
+        });
     }
 
     /* ---------- Demos de las apps ---------- */
