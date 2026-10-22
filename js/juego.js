@@ -633,7 +633,10 @@
     var devueltas = [], cuerpoPanel, panel, globo, globoTexto, cola = [], dicho = {}, quieto = 0, consejo = 0, frase = null;
     var particulas = [], cw = 0, ch = 0, miniReloj = 0, barrio = null;
     var vistos = {};
-    try { vistos = JSON.parse(guardado('gemas') || '{}') || {}; } catch (e) { vistos = {}; }
+    // Las gemas son de cada visita: empiezan en 0 y solo suman al entrar en un edificio
+    function gemasGuardadas() { try { return JSON.parse(sessionStorage.getItem('gemas') || '{}') || {}; } catch (e) { return {}; } }
+    function guardarGemas() { try { sessionStorage.setItem('gemas', JSON.stringify(vistos)); } catch (e) {} }
+    vistos = gemasGuardadas();
     var tactil = window.matchMedia('(pointer: coarse)').matches;
     var movil = false, libreT = 0, rotulos = [], guia = { puntos: [], t: 0, destino: -1 };   // movil: teléfono en horizontal, con HUD mínimo y cámara cerca
     function total() { return PANTALLAS.filter(function (p) { return vistos[p.id]; }).length; }
@@ -974,7 +977,7 @@
         botonGemas.addEventListener('click', function () { inv.hidden = !inv.hidden; botonGemas.setAttribute('aria-expanded', String(!inv.hidden)); });
         inv.addEventListener('click', function (e) {
             if (e.target.closest('[data-j-reinicio]')) {
-                vistos = {}; guardar('gemas', '{}');
+                vistos = {}; guardarGemas();
                 inv.hidden = true; botonGemas.setAttribute('aria-expanded', 'false');
                 decir({ es: '¡Gemas a cero! A por las 15 otra vez.', en: 'Gems reset! Go get all 15 again.' }, true);
                 pintarHud();
@@ -1285,24 +1288,23 @@
     }
 
     /* ---------- HUD ---------- */
+    // El siguiente nivel en orden: el primero que aún no tiene gema
     function siguientePendiente() {
-        for (var k = 1; k <= PANTALLAS.length; k++) {
-            var j = (sel + k) % PANTALLAS.length;
-            if (!vistos[PANTALLAS[j].id]) return j;
-        }
-        return (sel + 1) % PANTALLAS.length;
+        for (var j = 0; j < PANTALLAS.length; j++) if (!vistos[PANTALLAS[j].id]) return j;
+        return -1;
     }
     function pintarHud() {
         if (!juego) return;
         var l = idioma();
         var accion = cerca ? (l === 'es' ? 'Entrar' : 'Enter') : (l === 'es' ? 'Ir' : 'Go');
         // En el móvil, el botón A lleva al siguiente edificio que te falta por ver
-        if (movil && !cerca && vistos[PANTALLAS[sel].id]) sel = siguientePendiente();
+        // En el móvil siempre; en el PC solo cuando el elegido ya está visto (allí se elige con las flechas)
+        if (!cerca && (movil || vistos[PANTALLAS[sel].id])) { var sp = siguientePendiente(); if (sp >= 0) sel = sp; }
         var p = cerca || PANTALLAS[sel];
         juego.querySelector('[data-j-num]').textContent = (l === 'es' ? 'Nivel ' : 'Level ') + (pantalla(p.id) + 1) + ' / ' + PANTALLAS.length;
         juego.querySelector('[data-j-nombre]').textContent = p[l];
         juego.querySelector('[data-j-accion]').textContent = accion;
-        juego.querySelector('[data-j-a-texto]').textContent = accion;
+        juego.querySelector('[data-j-a-texto]').textContent = cerca ? accion : (l === 'es' ? 'Ir al ' : 'Go to ') + (sel + 1);
         juego.querySelector('[data-j-a]').classList.toggle('listo', !!cerca);
         juego.querySelector('[data-j-entrar]').classList.toggle('listo', !!cerca);
         juego.classList.toggle('cerca', !!cerca);
@@ -1871,7 +1873,8 @@
 
     /* ---------- Panel ---------- */
     function sub(n) { return typeof n.sub === 'string' ? { es: n.sub, en: n.sub } : n.sub; }
-    function abrir(i) {
+    // porSalto: se llega con Anterior/Siguiente desde otro panel; eso no da gema
+    function abrir(i, porSalto) {
         if (abierta >= 0 || i < 0) return;
         var n = PANTALLAS[i];
         abierta = i; sel = i;
@@ -1903,7 +1906,7 @@
         requestAnimationFrame(function () { panel.classList.add('abierto'); });
         juego.querySelector('[data-j-panel-titulo]').focus({ preventScroll: true });
         cuerpoPanel.querySelectorAll('video').forEach(function (v) { v.preload = 'auto'; if (!reducido) v.play().catch(function () {}); });
-        if (!vistos[n.id]) { vistos[n.id] = 1; guardar('gemas', JSON.stringify(vistos)); n.nueva = true; }
+        if (!porSalto && !vistos[n.id]) { vistos[n.id] = 1; guardarGemas(); n.nueva = true; }
         enMarcha = false;
         pintarHud();
     }
@@ -1922,7 +1925,7 @@
         cam.x = heroe.x; cam.y = heroe.y - 16; camLibre = false;
         hada.x = heroe.x + 14; hada.y = heroe.y - 30;
         recompensas();
-        abrir(i);
+        abrir(i, true);
     }
     function recompensas() {
         PANTALLAS.forEach(function (p) {
