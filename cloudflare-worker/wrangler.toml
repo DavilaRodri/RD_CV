@@ -1,0 +1,9 @@
+# Asistente de rodrigodavila.com en Cloudflare Workers AI (plan gratuito).
+# Mismo nombre que el Worker que ya existía, así la URL no cambia.
+# Despliegue: npx wrangler deploy
+name = "steep-shadow-ce98"
+main = "worker.js"
+compatibility_date = "2026-01-01"
+
+[ai]
+binding = "AI"

@@ -1,3 +1,8 @@
 # Datos personales / CV en bruto — NO publicar en el repo público
 cv-raw.md
 image.png
+_tmp/
+.taste-skill/
+.claude/
+.wrangler/
+node_modules/
