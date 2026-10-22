@@ -1812,9 +1812,15 @@
             // Encima del edificio; si el tejado queda fuera de pantalla, lo más arriba posible sin tapar la puerta
             var sx = (n.px - v.l) * esc, sy = Math.min((n.py - 30 - v.t) * esc - 16 * dpr, Math.max((n.py - n.h - v.t) * esc - 18 * dpr, 150 * dpr));
             if (vistaMapa) sy = (n.py - v.t) * esc + 14 * dpr;
+            // En el móvil, si el edificio queda por encima de la pantalla, su nombre se queda arriba con una flecha
+            var fuera = false;
+            if (movil && !vistaMapa && sy < 84 * dpr) {
+                if ((n.py - v.t) * esc < -320 * dpr) return;
+                sy = 84 * dpr; fuera = true;
+            }
             if (sx < -200 || sx > cw + 200 || sy < -60 || sy > ch + 60) return;
             var activo = n === cerca || (!cerca && PANTALLAS[sel] === n);
-            if (!vistaMapa && !activo && Math.hypot(n.px - heroe.x, n.py - heroe.y) > 190 && !camLibre) return;
+            if (!vistaMapa && !activo && !movil && Math.hypot(n.px - heroe.x, n.py - heroe.y) > 190 && !camLibre) return;
             var hecho = vistos[n.id];
             var txt = (vistaMapa ? (pantalla(n.id) + 1) + ' ' : '') + n[l];
             var w = x.measureText(txt).width + 20 * dpr + (hecho ? 12 * dpr : 0), h = fs + 12 * dpr;
@@ -1833,10 +1839,14 @@
             x.fillStyle = activo ? '#d9fbff' : '#ffffff';
             x.fillText(txt, sx + (hecho ? 6 * dpr : 0), sy + dpr);
             if (hecho) gemaEtiqueta(x, X + 10 * dpr, sy, 4 * dpr);
-            else if (!vistaMapa) {
+            else if (!vistaMapa && !fuera) {
                 var gy = Y - 12 * dpr + (reducido ? 0 : Math.sin(reloj * 3 + n.x) * 2 * dpr), gw = (reducido ? 1 : Math.abs(Math.cos(reloj * 2.2 + n.x))) * 5 * dpr + dpr;
                 x.fillStyle = '#05040a'; x.beginPath(); x.moveTo(sx, gy - 8 * dpr); x.lineTo(sx + gw + 2 * dpr, gy); x.lineTo(sx, gy + 8 * dpr); x.lineTo(sx - gw - 2 * dpr, gy); x.fill();
                 x.fillStyle = C.gema; x.beginPath(); x.moveTo(sx, gy - 6 * dpr); x.lineTo(sx + gw, gy); x.lineTo(sx, gy + 6 * dpr); x.lineTo(sx - gw, gy); x.fill();
+            }
+            if (fuera) {
+                x.fillStyle = activo ? C.cian : '#ffffff';
+                x.beginPath(); x.moveTo(X - 12 * dpr, sy - 5 * dpr); x.lineTo(X - 6 * dpr, sy - 5 * dpr); x.lineTo(X - 9 * dpr, sy - 10 * dpr); x.fill();
             }
             if (activo && !vistaMapa) {
                 var ay = Y + h + 6 * dpr + (reducido ? 0 : Math.sin(reloj * 5) * 2 * dpr);
