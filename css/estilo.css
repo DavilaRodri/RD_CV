@@ -12,9 +12,10 @@
     --ok: #3ecf8e;
     --boton-bg: #ededef;
     --boton-ink: #0b0c0e;
-    --acento: #d4ff3a;
-    --acento-ink: #0b0c0e;
-    --acento-texto: #d4ff3a;
+    --acento: #4c7dff;
+    --acento-ink: #ffffff;
+    --acento-texto: #86a6ff;
+    --acento-suave: #4c7dff24;
     color-scheme: dark;
 
     --t-s: 0.875rem;
@@ -40,7 +41,8 @@
         --ok: #12a26a;
         --boton-bg: #111215;
         --boton-ink: #ffffff;
-        --acento-texto: #4a6b00;
+        --acento-texto: #2b5ae6;
+        --acento-suave: #4c7dff1a;
         color-scheme: light;
     }
 }
@@ -55,7 +57,8 @@
     --ok: #12a26a;
     --boton-bg: #111215;
     --boton-ink: #ffffff;
-    --acento-texto: #4a6b00;
+    --acento-texto: #2b5ae6;
+    --acento-suave: #4c7dff1a;
     color-scheme: light;
 }
 
@@ -318,7 +321,7 @@ main > .clientes { padding-block: 8px 0; }
 .pestana[aria-selected="true"]::before { transform: none; }
 .pestana-texto strong { color: var(--ink); }
 @media (max-width: 999px) {
-    .tablero-lista { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; }
+    .tablero-lista { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
     .pestana { flex-direction: column; gap: 6px; padding: 10px 4px; text-align: center; }
     .pestana::before { left: 30%; right: 30%; top: auto; bottom: 0; width: auto; height: 3px; transform: scaleX(0); }
     .pestana img { width: 44px; height: 44px; }
@@ -446,17 +449,6 @@ a.web:hover { background: var(--surface-2); transform: translateY(-3px); }
 .empresa { color: var(--muted); font-weight: 500; }
 .empresa::before { content: "· "; }
 
-.habilidades { margin-top: 64px; display: grid; gap: 24px; }
-.habilidades h3 { font-size: var(--t-l); }
-.habilidades dl { display: grid; gap: 16px; grid-template-columns: minmax(0, 1fr); }
-@media (min-width: 640px) { .habilidades dl { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-@media (min-width: 1000px) { .habilidades dl { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
-.habilidades dl > div {
-    display: grid; gap: 8px; align-content: start; padding: 22px;
-    border-radius: 16px; background: var(--surface);
-}
-.habilidades dt { font-weight: 600; }
-.habilidades dd { font-size: var(--t-s); }
 
 /* ---------- Contacto ---------- */
 .contacto-caja {
@@ -516,17 +508,59 @@ main > .cifras { padding-block: 16px 40px; }
 .obra-cabeza > div { display: grid; gap: 4px; }
 .obra h3 { font-size: var(--t-l); }
 .punto-beta { background: #f5a524; } /* taste-skill-ignore: estado en pruebas */
-.abc { display: grid; grid-template-columns: repeat(auto-fill, minmax(46px, 1fr)); gap: 6px; }
-.abc button {
-    display: grid; place-items: center; aspect-ratio: 1; border: 0; border-radius: 12px;
-    background: var(--c); color: #1d1d1f; font-size: var(--t-l); font-weight: 700; line-height: 1; /* taste-skill-ignore: colores de la app */
-    transition: transform .15s var(--curva);
-}
-.abc button:hover { transform: translateY(-2px); }
-.abc button.suena { animation: rebote .5s var(--curva); }
-@keyframes rebote { 30% { transform: scale(1.18) rotate(-4deg); } 60% { transform: scale(.96); } }
 @media (max-width: 759px) {
     .ficha-demo { order: -1; padding-block: 20px 72px; }
     .movil { width: min(100%, 210px); }
     .pestana-texto strong { font-size: 12px; } /* taste-skill-ignore: etiqueta de icono */
 }
+
+/* ---------- Capacidades ---------- */
+.mapa { display: grid; gap: 10px; }
+.capa {
+    display: grid; gap: 16px 40px; grid-template-columns: minmax(0, 1fr);
+    padding: clamp(20px, 3vw, 32px); border-radius: var(--radio); background: var(--surface);
+}
+@media (min-width: 900px) { .capa { grid-template-columns: 300px minmax(0, 1fr); align-items: center; } }
+.capa-principal { background: var(--acento-suave); padding-block: clamp(28px, 4vw, 44px); }
+.capa-titulo { display: grid; gap: 4px; }
+.capa h3 { font-size: var(--t-l); }
+.capa-principal h3 { font-size: var(--t-h); }
+.capa-titulo p { font-size: var(--t-s); color: var(--muted); }
+.capa-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.capa-chips button {
+    padding: 8px 14px; border: 0; border-radius: 999px; background: var(--surface-2);
+    font-size: var(--t-s); font-weight: 500; color: var(--ink);
+    transition: background-color .2s, color .2s, transform .15s var(--curva);
+}
+.capa-principal .capa-chips button { background: var(--bg); padding: 10px 16px; font-size: var(--t-b); }
+.capa-chips button:hover { background: var(--line-strong); }
+.capa-chips button:active { transform: scale(.96); }
+.capa-chips button[aria-pressed="true"] { background: var(--acento); color: var(--acento-ink); }
+.mapa-donde {
+    position: fixed; left: 50%; bottom: max(20px, env(safe-area-inset-bottom, 0px)); z-index: 25;
+    width: max-content; max-width: calc(100% - 32px); padding: 14px 20px; border-radius: 14px;
+    background: var(--boton-bg); color: var(--boton-ink); font-size: var(--t-s);
+    transform: translate(-50%, 16px); opacity: 0; pointer-events: none;
+    transition: opacity .3s var(--curva), transform .3s var(--curva);
+}
+.mapa-donde.visible { opacity: 1; transform: translate(-50%, 0); }
+.mapa-donde strong { font-weight: 600; }
+
+/* ---------- Formación ---------- */
+.formacion { margin-top: 56px; display: grid; gap: 20px; }
+.formacion h3 { font-size: var(--t-l); }
+.formacion ul { display: grid; gap: 10px; grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 760px) { .formacion ul { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.formacion li { display: grid; gap: 4px; padding: 22px 24px; border-radius: 16px; background: var(--surface); }
+.formacion-ano { font-size: var(--t-s); color: var(--muted); }
+.formacion li > span:last-child { font-size: var(--t-s); color: var(--muted); }
+
+/* Móvil en horizontal (Abecedario hablado) */
+.movil-horizontal { width: 100%; max-width: 560px; border-radius: 30px; justify-self: center; margin-bottom: 52px; }
+.movil-horizontal .movil-pantalla { aspect-ratio: 1600 / 740; border-radius: 24px; }
+.movil-horizontal .movil-pantalla img { object-position: center; }
+.movil-horizontal .movil-mandos { bottom: -50px; }
+.movil-horizontal .movil-mandos button { background: var(--surface-2); color: var(--ink); }
+.movil-horizontal .movil-puntos span { background: var(--line-strong); }
+.movil-horizontal .movil-puntos span.activo { background: var(--ink); }
+@media (min-width: 900px) { .taller-rejilla { grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); } }

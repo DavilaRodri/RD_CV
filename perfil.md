@@ -55,7 +55,7 @@ Los últimos años me he especializado en IA Generativa, sobre todo en sistemas 
 ## Formación
 
 - Grado en Diseño y Desarrollo de Videojuegos, ESNE (2012 – 2017). Proyecto de fin de grado: aplicación educativa con realidad aumentada para iOS y Android.
-- Certificación Scrum Master (Agile).
+- Professional Scrum Master I (PSM I), Scrum.org, mayo de 2022, obtenida durante mi etapa en Deloitte.
 
 ## Proyectos propios
 
@@ -67,15 +67,15 @@ App para urbanizaciones: reservas de pistas de pádel y salas comunes, incidenci
 
 ### TuMenu
 
-Servicio para bares y restaurantes: el dueño manda el menú del día por WhatsApp, por texto, foto o nota de voz, y una IA lo entiende, genera una imagen profesional del menú y actualiza la web del local. TypeScript sobre Cloudflare Workers, WhatsApp Cloud API e IA multimodal. En producción con restaurantes reales en Madrid. Web: https://tumenu.bar
+Servicio y app para bares y restaurantes (en App Store y Google Play): el dueño manda el menú del día por WhatsApp, por texto, foto o nota de voz, y una IA lo entiende, genera una imagen profesional del menú y actualiza la web del local. TypeScript sobre Cloudflare Workers, WhatsApp Cloud API e IA multimodal. En producción con restaurantes reales en Madrid. Web: https://tumenu.bar
 
 ### GodaFly
 
-App para conectar a personas que viajan solas y quedar con otros viajeros en aeropuertos y escalas. Flutter, Supabase y notificaciones push. Publicada en App Store. Es un proyecto con amigos; el desarrollo es 100 % mío. Web: https://godafly.com
+App para conectar a personas que viajan solas y quedar con otros viajeros en aeropuertos y escalas. Flutter, Supabase y notificaciones push. Publicada en App Store y Google Play. Es un proyecto con amigos; el desarrollo es 100 % mío. Web: https://godafly.com
 
 ### Zapeo
 
-Reproductor de contenidos multimedia: televisión en directo, películas y series de tus propias listas, con guía de programación, favoritos y "seguir viendo". Sin cuentas ni registro: todo se queda en el dispositivo. Flutter con un motor de vídeo propio, para móvil, tablet, ordenador y TV.
+Reproductor de contenidos multimedia: televisión en directo, películas y series de tus propias listas, con guía de programación, favoritos y "seguir viendo". Sin cuentas ni registro: todo se queda en el dispositivo. Flutter con un motor de vídeo propio, para móvil, tablet, ordenador y TV. Llegando a App Store y Google Play.
 
 ### LullCam
 
@@ -83,11 +83,15 @@ Vigilabebés privado para iPhone y iPad: sin cuentas, sin nube y sin grabaciones
 
 ### RunClap (en beta privada)
 
-App para quedar a correr en grupo cerca de ti: mapa de quedadas, crear una salida en cuatro pasos (fecha, distancia, ritmo y punto de encuentro, con GPX opcional), apuntarse con aprobación, seguir a otros corredores y recordatorios. Flutter, Firebase (Auth, Firestore, Cloud Functions en TypeScript, Cloud Messaging) y Google Maps. En beta privada con TestFlight.
+App para quedar a correr en grupo cerca de ti: mapa de quedadas, crear una salida en cuatro pasos (fecha, distancia, ritmo y punto de encuentro, con GPX opcional), apuntarse con aprobación, seguir a otros corredores y recordatorios. Flutter, Firebase (Auth, Firestore, Cloud Functions en TypeScript, Cloud Messaging) y Google Maps. En beta privada; llegando a App Store y Google Play.
 
 ### Abecedario hablado (en desarrollo)
 
 App infantil para aprender el abecedario con voz: cada letra, de la A a la Z con la Ñ, con su dibujo y su sonido, además de colores, formas, números, animales y juegos de preguntas, con control parental. Flutter y Dart, para iOS y Android.
+
+### Mi Filmoteca
+
+Mi primera app en las tiendas (App Store y Google Play desde 2020), rehecha entera en la versión 2. Catálogo personal de películas y series: buscar y descubrir títulos, ver en qué plataforma están, puntuar, escribir reseñas, llevar lo visto y lo pendiente, estadísticas y grupos de familia o amigos para compartir recomendaciones. Flutter, Riverpod, Firebase y la API de TMDB. 4,5 estrellas en App Store y más de 450 instalaciones en Google Play.
 
 ### Webs a medida
 
@@ -153,10 +157,11 @@ Diseño, programo y publico mis propios productos:
 
 - **UrbaPadel**: reservas de pistas y salas para urbanizaciones. En App Store y Google Play, con cuatro urbanizaciones y más de 150 vecinos.
 - **TuMenu**: el bar manda el menú por WhatsApp y la IA genera la imagen y actualiza su web. En producción.
-- **GodaFly**: conecta a personas que viajan solas en aeropuertos y escalas. En App Store.
+- **GodaFly**: conecta a personas que viajan solas en aeropuertos y escalas. En App Store y Google Play.
+- **Mi Filmoteca**: tu catálogo de películas y series. En las tiendas desde 2020, 4,5 estrellas en App Store.
 - **Zapeo**: reproductor de contenidos multimedia, sin cuentas ni registro.
 - **LullCam**: vigilabebés privado para iPhone y iPad, sin nube y cifrado de extremo a extremo. En App Store.
-- **RunClap**: quedadas para correr en grupo. En beta privada.
+- **RunClap**: quedadas para correr en grupo. Llegando a las tiendas.
 - **Abecedario hablado**: app infantil para aprender las letras con voz. En desarrollo.
 
 Además hago webs a medida para bodas, restaurantes y comercios.
@@ -210,10 +215,11 @@ I design, build and ship my own products:
 
 - **UrbaPadel**: court and room booking for residential communities. On the App Store and Google Play, used by four communities and more than 150 residents.
 - **TuMenu**: restaurants send their daily menu over WhatsApp and AI produces the menu image and updates their website. In production.
-- **GodaFly**: connects people travelling alone at airports and layovers. On the App Store.
+- **GodaFly**: connects people travelling alone at airports and layovers. On the App Store and Google Play.
+- **Mi Filmoteca**: your film and series catalogue. On the stores since 2020, 4.5 stars on the App Store.
 - **Zapeo**: a multimedia player with no accounts and no sign-up.
 - **LullCam**: a private baby monitor for iPhone and iPad, no cloud and end-to-end encrypted. On the App Store.
-- **RunClap**: group running meet-ups. In private beta.
+- **RunClap**: group running meet-ups. Coming to the stores.
 - **Abecedario hablado**: a kids' app to learn the alphabet by voice. In development.
 
 I also build custom websites for weddings, restaurants and shops.
