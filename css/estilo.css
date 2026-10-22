@@ -373,7 +373,7 @@ main > .asistente { padding-block: 0 clamp(56px, 8vw, 104px); }
     background: #050506; /* taste-skill-ignore: marco del móvil */
 }
 .app-moviles .movil:nth-child(2) { transform: translateY(-20px); }
-.app-moviles-uno .movil { flex-basis: 250px; }
+.app-moviles-tumenu .movil-pantalla { aspect-ratio: 9 / 16; }
 .movil-pantalla {
     position: relative; overflow: hidden; border-radius: 28px;
     aspect-ratio: 9 / 19.5; max-width: 100%; background: #000; /* taste-skill-ignore */
@@ -389,7 +389,6 @@ main > .asistente { padding-block: 0 clamp(56px, 8vw, 104px); }
     .app-moviles { gap: 8px; }
     .app-moviles .movil { flex: 1 1 0; padding: 4px; border-radius: 20px; }
     .app-moviles .movil-pantalla { border-radius: 16px; }
-    .app-moviles-uno .movil { flex: 0 1 64%; }
     .obra-moviles .movil { padding: 4px; border-radius: 22px; }
     .obra-moviles .movil-pantalla { border-radius: 18px; }
 }
@@ -448,15 +447,12 @@ a.web:hover { background: var(--surface-2); transform: translateY(-4px); }
 
 /* ---------- Taller ---------- */
 .taller-rejilla { display: grid; gap: 16px; grid-template-columns: minmax(0, 1fr); }
-@media (min-width: 960px) { .taller-rejilla { grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); } }
+
 .obra {
     display: grid; gap: 28px; align-content: start; min-width: 0;
     padding: clamp(24px, 3.5vw, 40px); border-radius: calc(var(--radio) + 8px); background: var(--surface);
 }
 .obra[style] { background: color-mix(in srgb, var(--tono) 20%, var(--bg)); }
-@media (min-width: 600px) { .obra-doble { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: center; } }
-.movil-ancho .movil-pantalla { aspect-ratio: 560 / 996; }
-.obra-moviles .movil { flex-basis: 150px; }
 .punto-beta { background: #f5a524; } /* taste-skill-ignore: estado en pruebas */
 
 /* ---------- Contacto ---------- */
