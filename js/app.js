@@ -1,7 +1,6 @@
 /* rodrigodavila.com
-   - Idioma ES/EN
-   - Demos de las apps (capturas que se pasan con un toque)
-   - Trayectoria con el puesto activo
+   - Idioma ES/EN y tema claro/oscuro
+   - Panel de apps con pestañas y demos (capturas que se pasan con un toque)
    - Asistente: preguntas rápidas con respuesta escrita (de perfil.md) y,
      para lo demás, IA en Cloudflare con plan B que busca en perfil.md. */
 
@@ -33,11 +32,48 @@
         document.querySelectorAll('[data-label-' + l + ']').forEach(function (el) {
             el.setAttribute('aria-label', el.getAttribute('data-label-' + l));
         });
-        pintarAnosFijos();
         if (perfil) pintarRapidas();
     }
     document.querySelectorAll('[data-cambiar-idioma]').forEach(function (b) {
         b.addEventListener('click', function () { aplicarIdioma(idioma() === 'es' ? 'en' : 'es'); });
+    });
+
+    /* ---------- Tema ---------- */
+    function temaOscuro() {
+        var t = raiz.getAttribute('data-theme');
+        if (t) return t === 'dark';
+        return !window.matchMedia('(prefers-color-scheme: light)').matches;
+    }
+    function pintarColorBarra() {
+        var m = document.querySelector('meta[name="theme-color"]');
+        if (m) m.setAttribute('content', temaOscuro() ? '#0b0c0e' : '#f7f7f5');
+    }
+    document.querySelectorAll('[data-cambiar-tema]').forEach(function (b) {
+        b.addEventListener('click', function () {
+            var oscuro = !temaOscuro();
+            raiz.setAttribute('data-theme', oscuro ? 'dark' : 'light');
+            try { localStorage.setItem('tema', oscuro ? 'oscuro' : 'claro'); } catch (e) {}
+            pintarColorBarra();
+        });
+    });
+    pintarColorBarra();
+
+    /* ---------- Barra con borde al bajar ---------- */
+    var barra = document.querySelector('.barra');
+    function bordeBarra() { barra.classList.toggle('con-borde', window.scrollY > 8); }
+    window.addEventListener('scroll', bordeBarra, { passive: true });
+    bordeBarra();
+
+    /* ---------- Copiar email ---------- */
+    document.querySelectorAll('[data-copiar]').forEach(function (b) {
+        var original = b.innerHTML;
+        b.addEventListener('click', function () {
+            var hecho = function () {
+                b.innerHTML = '<span lang="es">Copiado</span><span lang="en">Copied</span>';
+                setTimeout(function () { b.innerHTML = original; }, 1800);
+            };
+            if (navigator.clipboard) navigator.clipboard.writeText(b.getAttribute('data-copiar')).then(hecho, function () {});
+        });
     });
 
     /* ---------- Apariciones ---------- */
@@ -58,6 +94,51 @@
         aparecen.forEach(function (el) { obs.observe(el); });
     } else {
         aparecen.forEach(function (el) { el.classList.add('visto'); });
+    }
+
+    /* ---------- Panel de apps (pestañas) ---------- */
+    var tablero = document.querySelector('[data-tablero]');
+    if (tablero) {
+        var pestanas = tablero.querySelectorAll('[data-pestana]');
+        var abrir = function (id, foco) {
+            pestanas.forEach(function (p) {
+                var si = p.getAttribute('data-pestana') === id;
+                p.setAttribute('aria-selected', si ? 'true' : 'false');
+                p.setAttribute('tabindex', si ? '0' : '-1');
+                var ficha = document.getElementById(p.getAttribute('data-pestana'));
+                ficha.hidden = !si;
+                var v = ficha.querySelector('video');
+                if (v && !si) v.pause();
+                if (si) {
+                    var t = ficha.querySelector('.ficha-texto');
+                    t.classList.remove('entra'); void t.offsetWidth; t.classList.add('entra');
+                    if (foco) p.focus();
+                    // Solo desplaza la lista de pestañas (en móvil), nunca la página.
+                    var lista = p.parentNode;
+                    if (lista.scrollWidth > lista.clientWidth) {
+                        lista.scrollTo({ left: p.offsetLeft - lista.offsetLeft - 16, behavior: foco === undefined ? 'auto' : 'smooth' });
+                    }
+                    if (v && enPantalla(v)) v.play().catch(function () {});
+                }
+            });
+        };
+        pestanas.forEach(function (p, i) {
+            p.id = 'pestana-' + p.getAttribute('data-pestana');
+            document.getElementById(p.getAttribute('data-pestana')).setAttribute('aria-labelledby', p.id);
+            p.addEventListener('click', function (e) { e.preventDefault(); abrir(p.getAttribute('data-pestana'), false); });
+            p.addEventListener('keydown', function (e) {
+                var d = { ArrowDown: 1, ArrowRight: 1, ArrowUp: -1, ArrowLeft: -1 }[e.key];
+                if (!d) return;
+                e.preventDefault();
+                abrir(pestanas[(i + d + pestanas.length) % pestanas.length].getAttribute('data-pestana'), true);
+            });
+        });
+        var inicial = location.hash.slice(1);
+        abrir(document.getElementById('pestana-' + inicial) ? inicial : pestanas[0].getAttribute('data-pestana'));
+    }
+    function enPantalla(el) {
+        var r = el.getBoundingClientRect();
+        return r.width > 0 && r.bottom > 0 && r.top < window.innerHeight;
     }
 
     /* ---------- Demos de las apps ---------- */
@@ -108,6 +189,7 @@
 
     // Vídeos: solo se reproducen mientras se ven.
     document.querySelectorAll('video[data-autoplay]').forEach(function (v) {
+        v.closest('.movil-pantalla').addEventListener('click', function () { v.paused ? v.play() : v.pause(); });
         if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
         if (!('IntersectionObserver' in window)) { v.play().catch(function () {}); return; }
         new IntersectionObserver(function (es) {
@@ -115,37 +197,7 @@
                 if (e.isIntersecting) { v.preload = 'auto'; v.play().catch(function () {}); } else { v.pause(); }
             });
         }, { threshold: 0.3 }).observe(v);
-        v.closest('.movil-pantalla').addEventListener('click', function () { v.paused ? v.play() : v.pause(); });
     });
-
-    /* ---------- Trayectoria ---------- */
-    var puestos = document.querySelectorAll('.puesto');
-    var fijo = document.querySelector('.trayectoria-fijo');
-    var activo = document.querySelector('.puesto.activo');
-
-    function pintarAnosFijos() {
-        if (!activo || !fijo) return;
-        var l = idioma();
-        fijo.querySelector('[data-anos]').textContent = activo.getAttribute('data-desde') + ' – ' + activo.getAttribute('data-hasta-' + l);
-    }
-    function activar(p) {
-        if (p === activo) return;
-        puestos.forEach(function (x) {
-            x.classList.toggle('activo', x === p);
-            x.querySelector('.puesto-fila').setAttribute('aria-expanded', x === p ? 'true' : 'false');
-        });
-        activo = p;
-        fijo.classList.add('cambia');
-        setTimeout(function () {
-            fijo.querySelector('[data-empresa]').textContent = p.getAttribute('data-empresa');
-            pintarAnosFijos();
-            fijo.classList.remove('cambia');
-        }, 180);
-    }
-    puestos.forEach(function (p) {
-        p.querySelector('.puesto-fila').addEventListener('click', function () { activar(p); });
-    });
-    pintarAnosFijos();
 
     /* ---------- Asistente ---------- */
     var registro = document.querySelector('[data-chat-registro]');
@@ -270,9 +322,11 @@
         registro.appendChild(d);
         return d;
     }
+    // Desplaza el registro del chat (no la página) hasta el principio del mensaje.
     function verAbajo(el) {
-        var r = el.getBoundingClientRect();
-        if (r.bottom > window.innerHeight - 40 || r.top < 0) el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        var destino = el.offsetTop - 12;
+        var maximo = registro.scrollHeight - registro.clientHeight;
+        registro.scrollTo({ top: Math.min(Math.max(destino, 0), maximo), behavior: 'smooth' });
     }
     function ocupar(si) {
         ocupado = si;
@@ -315,6 +369,7 @@
     function preguntar(texto, respuestaEscrita) {
         if (ocupado || !texto) return;
         var l = idioma();
+        registro.closest('.chat').classList.add('en-marcha');
         añadir('msg-tu', escapar(texto));
 
         // 1. Respuesta escrita por Rodrigo (botón o pregunta casi igual).

@@ -4,13 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Rodrigo Dávila · IA Generativa y producto</title>
-    <meta name="description" content="Rodrigo Dávila, Manager de IA Generativa en Accenture. Diseña sistemas multiagente y publica sus propias apps: UrbaPadel, TuMenu, GodaFly y Zapeo.">
-    <meta name="theme-color" content="#0c0a08">
+    <meta name="description" content="Rodrigo Dávila, Manager de IA Generativa en Accenture. Diseña sistemas multiagente para banca y construye sus propias apps: UrbaPadel, TuMenu, GodaFly y Zapeo.">
+    <meta name="theme-color" content="#0b0c0e">
     <link rel="canonical" href="https://rodrigodavila.com/">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://rodrigodavila.com/">
     <meta property="og:title" content="Rodrigo Dávila · IA Generativa y producto">
-    <meta property="og:description" content="Diseño sistemas de IA que trabajan con personas, y publico mis propias apps.">
+    <meta property="og:description" content="Diseño sistemas de IA multiagente para banca y construyo mis propias apps.">
     <meta property="og:image" content="https://rodrigodavila.com/img/og.jpg">
     <meta name="twitter:card" content="summary_large_image">
     <link rel="icon" href="img/favicon.svg" type="image/svg+xml">
@@ -18,402 +18,399 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=TikTok+Sans:wdth,wght@75..150,300..900&display=swap" rel="stylesheet">
-    <link rel="preload" as="image" href="img/rd-retrato.webp">
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/estilo.css">
     <script>
-        // Idioma antes de pintar: lo guardado, si no el del navegador.
+        // Idioma y tema antes de pintar: lo guardado; si no, lo del sistema.
         (function () {
-            var l = null;
-            try { l = localStorage.getItem('idioma'); } catch (e) {}
+            var r = document.documentElement, l = null, t = null;
+            try { l = localStorage.getItem('idioma'); t = localStorage.getItem('tema'); } catch (e) {}
             if (l !== 'es' && l !== 'en') l = /^es\b/i.test(navigator.language || 'es') ? 'es' : 'en';
-            document.documentElement.setAttribute('data-lang', l);
-            document.documentElement.setAttribute('lang', l);
-            document.documentElement.classList.add('js');
+            r.setAttribute('data-lang', l);
+            r.setAttribute('lang', l);
+            if (t === 'claro' || t === 'oscuro') r.setAttribute('data-theme', t === 'claro' ? 'light' : 'dark');
+            r.classList.add('js');
         })();
     </script>
 </head>
 <body>
     <a class="saltar" href="#principal"><span lang="es">Saltar al contenido</span><span lang="en">Skip to content</span></a>
 
-    <!-- ===== Portada ===== -->
-    <header class="portada" id="inicio">
-        <figure class="portada-foto">
-            <img src="img/rd-retrato.webp" width="1100" height="1375" alt="Rodrigo Dávila, de chaqueta oscura y camisa azul claro, con los brazos cruzados en un pasillo de oficina">
-        </figure>
-
-        <nav class="menu" aria-label="Principal">
-            <a href="#proyectos"><span lang="es">Proyectos</span><span lang="en">Projects</span></a>
-            <a href="#webs"><span lang="es">Webs</span><span lang="en">Websites</span></a>
-            <a href="#trayectoria"><span lang="es">Trayectoria</span><span lang="en">Career</span></a>
-            <button type="button" class="idioma" data-cambiar-idioma aria-label="Cambiar idioma / Change language"><span lang="es">EN</span><span lang="en">ES</span></button>
-            <a class="boton" href="#asistente"><span lang="es">Pregúntame</span><span lang="en">Ask me</span></a>
-        </nav>
-
-        <div class="portada-texto">
-            <p class="portada-frase">
-                <span lang="es">Diseño sistemas de IA que trabajan con personas, y publico mis propias apps.</span>
-                <span lang="en">I design AI systems that work alongside people, and I ship my own apps.</span>
-            </p>
-            <p class="portada-cargo">
-                <span lang="es">Manager de IA Generativa en Accenture. Madrid.</span>
-                <span lang="en">Generative AI Manager at Accenture. Madrid.</span>
-            </p>
+    <!-- ===== Barra superior ===== -->
+    <header class="barra">
+        <div class="barra-dentro">
+            <a class="marca" href="#inicio" aria-label="Rodrigo Dávila, inicio">
+                <span class="marca-sello" aria-hidden="true">RD</span>
+                <span class="marca-nombre">Rodrigo Dávila</span>
+            </a>
+            <nav class="menu" aria-label="Principal">
+                <a href="#proyectos"><span lang="es">Proyectos</span><span lang="en">Projects</span></a>
+                <a href="#experiencia"><span lang="es">Experiencia</span><span lang="en">Experience</span></a>
+                <a href="#contacto"><span lang="es">Contacto</span><span lang="en">Contact</span></a>
+            </nav>
+            <div class="ajustes">
+                <button type="button" class="ajuste" data-cambiar-idioma aria-label="Cambiar idioma / Change language"><span lang="es">EN</span><span lang="en">ES</span></button>
+                <button type="button" class="ajuste" data-cambiar-tema data-label-es="Cambiar tema claro u oscuro" data-label-en="Switch light or dark theme" aria-label="Cambiar tema claro u oscuro">
+                    <svg class="icono-sol" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><circle cx="12" cy="12" r="4.2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+                    <svg class="icono-luna" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+                </button>
+            </div>
         </div>
-
-        <h1 class="portada-nombre" aria-label="Rodrigo Dávila"><span>rodrigo</span> <span>dávila</span></h1>
     </header>
 
     <main id="principal">
 
-        <!-- ===== Resumen y panel de proyectos ===== -->
-        <section class="resumen" id="resumen" aria-labelledby="resumen-titulo">
-            <div class="resumen-cabeza">
-                <h2 id="resumen-titulo" class="aparece">
-                    <span lang="es">Consultoría de día, producto propio siempre</span>
-                    <span lang="en">Consulting by day, my own products always</span>
-                </h2>
-                <p class="declaracion aparece">
-                    <span lang="es"><span data-anios>9</span> años entre código, equipos y dirección. Hoy diseño agentes de IA para la banca y termino productos que usa gente real.</span>
-                    <span lang="en"><span data-anios>9</span> years between code, teams and leadership. Today I design AI agents for banking and finish products real people use.</span>
+        <!-- ===== Portada: quién soy y el asistente ===== -->
+        <section class="portada" id="inicio" aria-labelledby="nombre">
+            <div class="portada-texto">
+                <h1 id="nombre" class="aparece">Rodrigo Dávila</h1>
+                <p class="portada-lead aparece">
+                    <span lang="es">Manager de IA Generativa en Accenture. Diseño sistemas multiagente para la banca y construyo mis propias apps, de la idea a la tienda.</span>
+                    <span lang="en">Generative AI Manager at Accenture. I design multi-agent systems for banking and build my own apps, from idea to store.</span>
                 </p>
+                <ul class="portada-datos aparece">
+                    <li><strong data-anios>9</strong> <span lang="es">años en tecnología</span><span lang="en">years in tech</span></li>
+                    <li><strong>4</strong> <span lang="es">apps publicadas</span><span lang="en">apps shipped</span></li>
+                    <li><span lang="es">Madrid · Español e inglés</span><span lang="en">Madrid · Spanish and English</span></li>
+                </ul>
+                <div class="acciones aparece">
+                    <a class="boton boton-lleno" href="#proyectos"><span lang="es">Ver proyectos</span><span lang="en">See projects</span></a>
+                    <a class="boton" href="https://www.linkedin.com/in/rodrigo-d%C3%A1vila-5b675383/" target="_blank" rel="noopener">LinkedIn</a>
+                    <a class="boton" href="https://github.com/DavilaRodri" target="_blank" rel="noopener">GitHub</a>
+                </div>
             </div>
 
-            <dl class="cifras">
-                <div class="aparece">
-                    <dt><span lang="es">años en el sector</span><span lang="en">years in the industry</span></dt>
-                    <dd data-anios>9</dd>
+            <!-- Asistente -->
+            <div class="chat aparece" id="asistente" role="region" aria-labelledby="chat-titulo">
+                <div class="chat-cabeza">
+                    <span class="chat-sello" aria-hidden="true">RD</span>
+                    <div>
+                        <h2 id="chat-titulo"><span lang="es">Pregúntame</span><span lang="en">Ask me</span></h2>
+                        <p><span class="punto" aria-hidden="true"></span><span lang="es">Responde una IA con mi perfil</span><span lang="en">An AI answers from my profile</span></p>
+                    </div>
                 </div>
-                <div class="aparece">
-                    <dt><span lang="es">productos propios</span><span lang="en">products of my own</span></dt>
-                    <dd>4</dd>
+                <div class="chat-registro" data-chat-registro aria-live="polite" tabindex="0">
+                    <div class="msg-yo">
+                        <p lang="es">Hola, soy Rodrigo. Pregúntame lo que quieras sobre mi experiencia, mis proyectos o cómo trabajo.</p>
+                        <p lang="en">Hi, I'm Rodrigo. Ask me anything about my experience, my projects or how I work.</p>
+                    </div>
                 </div>
-                <div class="aparece">
-                    <dt><span lang="es">vecinos reservan con UrbaPadel</span><span lang="en">residents book with UrbaPadel</span></dt>
-                    <dd>150+</dd>
-                </div>
-            </dl>
+                <div class="chat-rapidas" data-chat-rapidas aria-label="Preguntas frecuentes"></div>
+                <form class="chat-campo" data-chat-form>
+                    <label class="oculto" for="chat-entrada"><span lang="es">Tu pregunta</span><span lang="en">Your question</span></label>
+                    <input id="chat-entrada" name="pregunta" type="text" autocomplete="off" maxlength="600" required
+                           data-placeholder-es="Escribe tu pregunta" data-placeholder-en="Type your question" placeholder="Escribe tu pregunta">
+                    <button type="submit" data-label-es="Enviar pregunta" data-label-en="Send question" aria-label="Enviar pregunta">
+                        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M12 19V5M6 11l6-6 6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </button>
+                </form>
+            </div>
+        </section>
 
-            <ul class="tablero" aria-label="Proyectos">
-                <li class="aparece">
-                    <a href="#urbapadel">
-                        <img src="img/apps/urbapadel-icono.webp" width="96" height="96" alt="" loading="lazy">
-                        <strong>UrbaPadel</strong>
-                        <span class="tablero-que"><span lang="es">Reservas para urbanizaciones</span><span lang="en">Bookings for residential communities</span></span>
-                        <span class="tablero-estado"><span lang="es">App Store y Google Play</span><span lang="en">App Store and Google Play</span></span>
-                    </a>
-                </li>
-                <li class="aparece">
-                    <a href="#tumenu">
-                        <img src="img/apps/tumenu-icono.webp" width="96" height="96" alt="" loading="lazy">
-                        <strong>TuMenu</strong>
-                        <span class="tablero-que"><span lang="es">El menú del día por WhatsApp, con IA</span><span lang="en">The daily menu over WhatsApp, with AI</span></span>
-                        <span class="tablero-estado"><span lang="es">En producción</span><span lang="en">In production</span></span>
-                    </a>
-                </li>
-                <li class="aparece">
-                    <a href="#godafly">
-                        <img src="img/apps/godafly-icono.webp" width="96" height="96" alt="" loading="lazy">
-                        <strong>GodaFly</strong>
-                        <span class="tablero-que"><span lang="es">Viajeros solos que quedan en escalas</span><span lang="en">Solo travellers meeting at layovers</span></span>
-                        <span class="tablero-estado">App Store</span>
-                    </a>
-                </li>
-                <li class="aparece">
-                    <a href="#zapeo">
-                        <img src="img/apps/zapeo-icono.webp" width="96" height="96" alt="" loading="lazy">
-                        <strong>Zapeo</strong>
-                        <span class="tablero-que"><span lang="es">Reproductor multimedia sin cuentas</span><span lang="en">A multimedia player with no accounts</span></span>
-                        <span class="tablero-estado"><span lang="es">Multiplataforma</span><span lang="en">Cross-platform</span></span>
-                    </a>
-                </li>
-                <li class="aparece">
-                    <a href="#webs">
-                        <img src="img/webs/boda-icono.webp" width="96" height="96" alt="" loading="lazy">
-                        <strong><span lang="es">Webs a medida</span><span lang="en">Custom websites</span></strong>
-                        <span class="tablero-que"><span lang="es">Bodas, restaurantes y comercios</span><span lang="en">Weddings, restaurants and shops</span></span>
-                        <span class="tablero-estado"><span lang="es">Por encargo</span><span lang="en">On commission</span></span>
-                    </a>
-                </li>
+        <!-- ===== Clientes ===== -->
+        <section class="clientes" aria-labelledby="clientes-titulo">
+            <h2 id="clientes-titulo" class="aparece"><span lang="es">He trabajado en proyectos para</span><span lang="en">I have worked on projects for</span></h2>
+            <ul class="aparece">
+                <li>BBVA</li>
+                <li>Santander</li>
+                <li><span lang="es">Cruz Roja</span><span lang="en">Red Cross</span></li>
+                <li>Acciona</li>
+                <li>Cepsa</li>
+                <li>BMW</li>
+                <li><span lang="es">Comunidad de Madrid</span><span lang="en">Madrid Regional Government</span></li>
             </ul>
         </section>
 
-        <!-- ===== Proyectos: un panel por app, con demo ===== -->
-        <section class="proyectos" id="proyectos" aria-label="Proyectos">
+        <!-- ===== Proyectos: panel con una demo por app ===== -->
+        <section class="proyectos" id="proyectos" aria-labelledby="proyectos-titulo">
+            <div class="cabecera">
+                <h2 id="proyectos-titulo" class="aparece"><span lang="es">Apps que he construido</span><span lang="en">Apps I have built</span></h2>
+                <p class="aparece">
+                    <span lang="es">Productos propios, diseñados y programados por mí y publicados con usuarios reales. Toca el móvil para pasar pantallas.</span>
+                    <span lang="en">My own products, designed and built by me and live with real users. Tap the phone to move through the screens.</span>
+                </p>
+            </div>
 
-            <article class="panel" id="urbapadel" style="--tono:#0e1a24">
-                <div class="panel-texto">
-                    <div class="panel-fila aparece">
-                        <span>2025</span>
+            <div class="tablero aparece" data-tablero>
+                <div class="tablero-lista" role="tablist" aria-label="Apps">
+                    <a class="pestana" href="#urbapadel" role="tab" data-pestana="urbapadel">
+                        <img src="img/apps/urbapadel-icono.webp" width="96" height="96" alt="">
+                        <span class="pestana-texto">
+                            <strong>UrbaPadel</strong>
+                            <span><span lang="es">Reservas para urbanizaciones</span><span lang="en">Bookings for residential communities</span></span>
+                        </span>
+                    </a>
+                    <a class="pestana" href="#tumenu" role="tab" data-pestana="tumenu">
+                        <img src="img/apps/tumenu-icono.webp" width="96" height="96" alt="">
+                        <span class="pestana-texto">
+                            <strong>TuMenu</strong>
+                            <span><span lang="es">El menú del día por WhatsApp</span><span lang="en">The daily menu over WhatsApp</span></span>
+                        </span>
+                    </a>
+                    <a class="pestana" href="#godafly" role="tab" data-pestana="godafly">
+                        <img src="img/apps/godafly-icono.webp" width="96" height="96" alt="">
+                        <span class="pestana-texto">
+                            <strong>GodaFly</strong>
+                            <span><span lang="es">Viajeros que coinciden en escalas</span><span lang="en">Travellers meeting at layovers</span></span>
+                        </span>
+                    </a>
+                    <a class="pestana" href="#zapeo" role="tab" data-pestana="zapeo">
+                        <img src="img/apps/zapeo-icono.webp" width="96" height="96" alt="">
+                        <span class="pestana-texto">
+                            <strong>Zapeo</strong>
+                            <span><span lang="es">Reproductor multimedia</span><span lang="en">Multimedia player</span></span>
+                        </span>
+                    </a>
+                </div>
+
+                <article class="ficha" id="urbapadel" role="tabpanel" style="--tono:#40597b">
+                    <div class="ficha-texto">
                         <h3>UrbaPadel</h3>
-                        <span><span lang="es">4 urbanizaciones</span><span lang="en">4 communities</span></span>
+                        <p class="ficha-meta"><span class="punto" aria-hidden="true"></span><span lang="es">En App Store y Google Play · 2025</span><span lang="en">On App Store and Google Play · 2025</span></p>
+                        <p class="ficha-lead">
+                            <span lang="es">Las reservas de tu urbanización, sin grupos de WhatsApp ni hojas en el portal.</span>
+                            <span lang="en">Your community's bookings, without WhatsApp groups or paper on the noticeboard.</span>
+                        </p>
+                        <p>
+                            <span lang="es">Pistas de pádel y salas comunes con los turnos y normas de cada comunidad, incidencias con foto y comunicados de la junta. En la versión 2 (junio de 2026) migré los datos en producción y avisé a más de 150 vecinos el mismo día.</span>
+                            <span lang="en">Padel courts and shared rooms with each community's slots and rules, issue reports with photos and announcements from the board. For version 2 (June 2026) I migrated production data and notified more than 150 residents the same day.</span>
+                        </p>
+                        <dl class="ficha-cifras">
+                            <div><dt><span lang="es">urbanizaciones</span><span lang="en">communities</span></dt><dd>4</dd></div>
+                            <div><dt><span lang="es">vecinos</span><span lang="en">residents</span></dt><dd>150+</dd></div>
+                        </dl>
+                        <ul class="pila"><li>Flutter</li><li>Firebase</li><li>Cloud Functions</li></ul>
+                        <p class="enlaces">
+                            <a href="https://urbapadel.com" target="_blank" rel="noopener">urbapadel.com</a>
+                            <a href="https://apps.apple.com/es/app/urbapadel/id6743709716" target="_blank" rel="noopener">App Store</a>
+                            <a href="https://play.google.com/store/apps/details?id=com.rd.urbapadel" target="_blank" rel="noopener">Google Play</a>
+                        </p>
                     </div>
-                    <p class="panel-lead aparece">
-                        <span lang="es">Las reservas de tu urbanización, sin grupos de WhatsApp ni hojas en el portal.</span>
-                        <span lang="en">Your community's bookings, without WhatsApp groups or paper on the noticeboard.</span>
-                    </p>
-                    <p class="aparece">
-                        <span lang="es">Pistas de pádel y salas comunes con turnos y normas de cada comunidad, incidencias con foto y comunicados de la junta. La versión 2 salió en junio de 2026: migré los datos en producción y avisé a más de 150 vecinos el mismo día.</span>
-                        <span lang="en">Padel courts and shared rooms with each community's slots and rules, issue reports with photos and announcements from the board. Version 2 shipped in June 2026: I migrated production data and notified more than 150 residents the same day.</span>
-                    </p>
-                    <p class="panel-pila aparece">Flutter · Firebase · Cloud Functions</p>
-                    <p class="panel-enlaces aparece">
-                        <a href="https://urbapadel.com" target="_blank" rel="noopener">urbapadel.com</a>
-                        <a href="https://apps.apple.com/es/app/urbapadel/id6743709716" target="_blank" rel="noopener">App Store</a>
-                        <a href="https://play.google.com/store/apps/details?id=com.rd.urbapadel" target="_blank" rel="noopener">Google Play</a>
-                    </p>
-                </div>
-                <div class="movil aparece" data-demo data-ui>
-                    <div class="movil-pantalla">
-                        <img src="img/apps/urbapadel-1.webp" width="560" height="1217" loading="lazy" alt="UrbaPadel: inicio con los accesos a la urbanización y al pádel">
-                        <img src="img/apps/urbapadel-2.webp" width="560" height="1217" loading="lazy" alt="UrbaPadel: reserva de la sala de juntas por franjas">
-                        <img src="img/apps/urbapadel-3.webp" width="560" height="1217" loading="lazy" alt="UrbaPadel: incidencias de la comunidad">
-                        <img src="img/apps/urbapadel-4.webp" width="560" height="1217" loading="lazy" alt="UrbaPadel: comunicado de la junta a los vecinos">
+                    <div class="ficha-demo">
+                        <div class="movil" data-demo>
+                            <div class="movil-pantalla">
+                                <img src="img/apps/urbapadel-1.webp" width="560" height="1217" alt="UrbaPadel: inicio con los accesos a la urbanización y al pádel">
+                                <img src="img/apps/urbapadel-2.webp" width="560" height="1217" loading="lazy" alt="UrbaPadel: reserva de la sala de juntas por franjas">
+                                <img src="img/apps/urbapadel-3.webp" width="560" height="1217" loading="lazy" alt="UrbaPadel: incidencias de la comunidad">
+                                <img src="img/apps/urbapadel-4.webp" width="560" height="1217" loading="lazy" alt="UrbaPadel: comunicado de la junta a los vecinos">
+                            </div>
+                        </div>
                     </div>
-                </div>
-            </article>
+                </article>
 
-            <article class="panel" id="tumenu" style="--tono:#121a2c">
-                <div class="panel-texto">
-                    <div class="panel-fila aparece">
-                        <span>2026</span>
+                <article class="ficha" id="tumenu" role="tabpanel" style="--tono:#2b4a73">
+                    <div class="ficha-texto">
                         <h3>TuMenu</h3>
-                        <span><span lang="es">Restaurantes en Madrid</span><span lang="en">Restaurants in Madrid</span></span>
+                        <p class="ficha-meta"><span class="punto" aria-hidden="true"></span><span lang="es">En producción en Madrid · 2026</span><span lang="en">Live in Madrid · 2026</span></p>
+                        <p class="ficha-lead">
+                            <span lang="es">El bar manda el menú por WhatsApp y recibe una imagen profesional al momento.</span>
+                            <span lang="en">The restaurant sends its menu over WhatsApp and gets a professional image back at once.</span>
+                        </p>
+                        <p>
+                            <span lang="es">Por texto, foto de la pizarra o nota de voz. Una IA multimodal entiende el menú, lo maqueta con el diseño del local, lo publica en su web y lo deja listo para estados e Instagram. El dueño no tiene que aprender ninguna app.</span>
+                            <span lang="en">As text, a photo of the chalkboard or a voice note. A multimodal AI reads the menu, lays it out in the restaurant's own design, publishes it on its website and leaves it ready for Stories and Instagram. The owner learns no new app.</span>
+                        </p>
+                        <ul class="pila"><li>TypeScript</li><li>Cloudflare Workers</li><li>WhatsApp Cloud API</li><li>Gemini</li></ul>
+                        <p class="enlaces">
+                            <a href="https://tumenu.bar" target="_blank" rel="noopener">tumenu.bar</a>
+                        </p>
                     </div>
-                    <p class="panel-lead aparece">
-                        <span lang="es">El bar manda el menú por WhatsApp y recibe una imagen profesional al momento.</span>
-                        <span lang="en">The restaurant sends its menu over WhatsApp and gets a professional image back at once.</span>
-                    </p>
-                    <p class="aparece">
-                        <span lang="es">Por texto, foto de la pizarra o nota de voz. Una IA multimodal entiende el menú, lo maqueta con el diseño del local, lo publica en su web y lo deja listo para estados e Instagram. El dueño no aprende ninguna app nueva.</span>
-                        <span lang="en">As text, a photo of the chalkboard or a voice note. A multimodal AI reads the menu, lays it out in the restaurant's own design, publishes it on its website and leaves it ready for Stories and Instagram. The owner learns no new app.</span>
-                    </p>
-                    <p class="panel-pila aparece">TypeScript · Cloudflare Workers · WhatsApp Cloud API · Gemini</p>
-                    <p class="panel-enlaces aparece">
-                        <a href="https://tumenu.bar" target="_blank" rel="noopener">tumenu.bar</a>
-                    </p>
-                </div>
-                <div class="movil aparece" data-ui>
-                    <div class="movil-pantalla">
-                        <video src="img/apps/tumenu-demo.mp4" poster="img/apps/tumenu-poster.webp" width="540" height="960" muted loop playsinline autoplay preload="metadata" data-autoplay aria-label="Vídeo: un menú enviado por WhatsApp se convierte en una imagen profesional"></video>
+                    <div class="ficha-demo">
+                        <div class="movil">
+                            <div class="movil-pantalla">
+                                <video src="img/apps/tumenu-demo.mp4" poster="img/apps/tumenu-poster.webp" width="540" height="960" muted loop playsinline preload="none" data-autoplay aria-label="Vídeo: un menú enviado por WhatsApp se convierte en una imagen profesional"></video>
+                            </div>
+                        </div>
                     </div>
-                </div>
-            </article>
+                </article>
 
-            <article class="panel" id="godafly" style="--tono:#0d1d18">
-                <div class="panel-texto">
-                    <div class="panel-fila aparece">
-                        <span>2026</span>
+                <article class="ficha" id="godafly" role="tabpanel" style="--tono:#22977a">
+                    <div class="ficha-texto">
                         <h3>GodaFly</h3>
-                        <span>App Store</span>
+                        <p class="ficha-meta"><span class="punto" aria-hidden="true"></span><span lang="es">En App Store · 2026</span><span lang="en">On App Store · 2026</span></p>
+                        <p class="ficha-lead">
+                            <span lang="es">Para quien viaja solo: encuentra a otros viajeros en tu misma escala.</span>
+                            <span lang="en">For people travelling alone: find other travellers on your layover.</span>
+                        </p>
+                        <p>
+                            <span lang="es">Guardas tu vuelo o tu escala y la app te enseña quién coincide contigo en el aeropuerto, con perfiles, chat y avisos push. Es un proyecto con amigos; el diseño técnico y el desarrollo son míos de principio a fin.</span>
+                            <span lang="en">Save your flight or layover and the app shows who overlaps with you at the airport, with profiles, chat and push alerts. It is a project with friends; the technical design and development are entirely mine.</span>
+                        </p>
+                        <ul class="pila"><li>Flutter</li><li>Supabase</li><li>Firebase Cloud Messaging</li></ul>
+                        <p class="enlaces">
+                            <a href="https://godafly.com" target="_blank" rel="noopener">godafly.com</a>
+                            <a href="https://apps.apple.com/es/app/godafly/id6758113933" target="_blank" rel="noopener">App Store</a>
+                        </p>
                     </div>
-                    <p class="panel-lead aparece">
-                        <span lang="es">Para quien viaja solo: encuentra a otros viajeros en tu misma escala.</span>
-                        <span lang="en">For people travelling alone: find other travellers on your layover.</span>
-                    </p>
-                    <p class="aparece">
-                        <span lang="es">Guardas tu vuelo o tu escala y la app te muestra quién coincide contigo en el aeropuerto, con perfiles, chat y avisos push. Es un proyecto con amigos; el diseño técnico y el desarrollo son míos de principio a fin.</span>
-                        <span lang="en">Save your flight or layover and the app shows who overlaps with you at the airport, with profiles, chat and push alerts. It is a project with friends; the technical design and development are entirely mine.</span>
-                    </p>
-                    <p class="panel-pila aparece">Flutter · Supabase · Firebase Cloud Messaging</p>
-                    <p class="panel-enlaces aparece">
-                        <a href="https://godafly.com" target="_blank" rel="noopener">godafly.com</a>
-                        <a href="https://apps.apple.com/es/app/godafly/id6758113933" target="_blank" rel="noopener">App Store</a>
-                    </p>
-                </div>
-                <div class="movil aparece" data-demo data-ui>
-                    <div class="movil-pantalla">
-                        <img src="img/apps/godafly-2.webp" width="375" height="812" loading="lazy" alt="GodaFly: escala guardada en A Coruña con horas de llegada y salida">
-                        <img src="img/apps/godafly-3.webp" width="375" height="812" loading="lazy" alt="GodaFly: viajeros que coinciden en el vuelo de Madrid a Londres">
-                        <img src="img/apps/godafly-1.webp" width="375" height="812" loading="lazy" alt="GodaFly: nueva búsqueda por vuelo o escala">
+                    <div class="ficha-demo">
+                        <div class="movil" data-demo>
+                            <div class="movil-pantalla">
+                                <img src="img/apps/godafly-2.webp" width="375" height="812" loading="lazy" alt="GodaFly: escala guardada en A Coruña con horas de llegada y salida">
+                                <img src="img/apps/godafly-3.webp" width="375" height="812" loading="lazy" alt="GodaFly: viajeros que coinciden en el vuelo de Madrid a Londres">
+                                <img src="img/apps/godafly-1.webp" width="375" height="812" loading="lazy" alt="GodaFly: nueva búsqueda por vuelo o escala">
+                            </div>
+                        </div>
                     </div>
-                </div>
-            </article>
+                </article>
 
-            <article class="panel" id="zapeo" style="--tono:#1d130c">
-                <div class="panel-texto">
-                    <div class="panel-fila aparece">
-                        <span>2026</span>
+                <article class="ficha" id="zapeo" role="tabpanel" style="--tono:#8a4a32">
+                    <div class="ficha-texto">
                         <h3>Zapeo</h3>
-                        <span><span lang="es">Móvil, ordenador y TV</span><span lang="en">Phone, desktop and TV</span></span>
+                        <p class="ficha-meta"><span class="punto" aria-hidden="true"></span><span lang="es">Móvil, tablet, ordenador y TV · 2026</span><span lang="en">Phone, tablet, desktop and TV · 2026</span></p>
+                        <p class="ficha-lead">
+                            <span lang="es">Todos tus contenidos multimedia en una app: directo, películas y series, sin cuentas.</span>
+                            <span lang="en">All your multimedia content in one app: live TV, films and series, with no accounts.</span>
+                        </p>
+                        <p>
+                            <span lang="es">Guía de programación, favoritos, seguir viendo, imagen en imagen y audio en segundo plano. Nada sale del dispositivo: sin registro, sin analítica y sin publicidad. Por dentro, un motor de vídeo propio con desentrelazado a 50 fps.</span>
+                            <span lang="en">Programme guide, favourites, continue watching, picture-in-picture and background audio. Nothing leaves the device: no sign-up, no analytics and no ads. Under the hood, its own video engine with 50 fps deinterlacing.</span>
+                        </p>
+                        <ul class="pila"><li>Flutter</li><li>media_kit</li><li>libmpv</li></ul>
                     </div>
-                    <p class="panel-lead aparece">
-                        <span lang="es">Tus contenidos en una sola app: directo, películas y series, sin crear ninguna cuenta.</span>
-                        <span lang="en">Your content in one app: live TV, films and series, without creating any account.</span>
-                    </p>
-                    <p class="aparece">
-                        <span lang="es">Guía de programación, favoritos, seguir viendo, imagen en imagen y audio en segundo plano. Nada sale del dispositivo: sin registro, sin analítica y sin publicidad. Por dentro, un motor de vídeo propio con desentrelazado a 50 fps.</span>
-                        <span lang="en">Programme guide, favourites, continue watching, picture-in-picture and background audio. Nothing leaves the device: no sign-up, no analytics and no ads. Under the hood, its own video engine with 50 fps deinterlacing.</span>
-                    </p>
-                    <p class="panel-pila aparece">Flutter · media_kit · libmpv</p>
-                </div>
-                <div class="movil aparece" data-demo data-ui>
-                    <div class="movil-pantalla">
-                        <img src="img/apps/zapeo-1.webp" width="560" height="996" loading="lazy" alt="Zapeo: inicio con seguir viendo, favoritos y canales">
-                        <img src="img/apps/zapeo-2.webp" width="560" height="996" loading="lazy" alt="Zapeo: catálogo de películas">
-                        <img src="img/apps/zapeo-3.webp" width="560" height="996" loading="lazy" alt="Zapeo: ficha de un título con el botón de continuar">
-                        <img src="img/apps/zapeo-4.webp" width="560" height="996" loading="lazy" alt="Zapeo: guía de programación por horas">
+                    <div class="ficha-demo">
+                        <div class="movil" data-demo>
+                            <div class="movil-pantalla">
+                                <img src="img/apps/zapeo-1.webp" width="560" height="996" loading="lazy" alt="Zapeo: inicio con seguir viendo, favoritos y canales">
+                                <img src="img/apps/zapeo-2.webp" width="560" height="996" loading="lazy" alt="Zapeo: catálogo de películas">
+                                <img src="img/apps/zapeo-3.webp" width="560" height="996" loading="lazy" alt="Zapeo: ficha de un título con el botón de continuar">
+                                <img src="img/apps/zapeo-4.webp" width="560" height="996" loading="lazy" alt="Zapeo: guía de programación por horas">
+                            </div>
+                        </div>
                     </div>
-                </div>
-            </article>
+                </article>
+            </div>
         </section>
 
         <!-- ===== Webs a medida ===== -->
         <section class="webs" id="webs" aria-labelledby="webs-titulo">
-            <h2 id="webs-titulo" class="aparece"><span lang="es">Webs a medida</span><span lang="en">Custom websites</span></h2>
-            <div class="banda aparece">
-                <a class="banda-panel" href="https://davilarodri.github.io/BodaLuisYPilu/" target="_blank" rel="noopener" style="--crece:5">
+            <div class="cabecera">
+                <h2 id="webs-titulo" class="aparece"><span lang="es">Webs a medida</span><span lang="en">Custom websites</span></h2>
+                <p class="aparece">
+                    <span lang="es">Para bodas, restaurantes y comercios: diseño, desarrollo, dominio y formularios, sin plantillas.</span>
+                    <span lang="en">For weddings, restaurants and shops: design, development, domain and forms, no templates.</span>
+                </p>
+            </div>
+            <div class="webs-rejilla">
+                <a class="web aparece" href="https://bodapilaryluis.com" target="_blank" rel="noopener">
+                    <span class="navegador" aria-hidden="true"><span></span><span></span><span></span><em>bodapilaryluis.com</em></span>
                     <img src="img/webs/boda-finca.webp" width="1200" height="800" loading="lazy" alt="Acuarela de la finca de la boda de Pilar y Luis">
-                    <span class="banda-titulo"><span lang="es">Boda de Pilar y Luis</span><span lang="en">Pilar and Luis's wedding</span></span>
+                    <span class="web-pie">
+                        <strong><span lang="es">Boda de Pilar y Luis</span><span lang="en">Pilar and Luis's wedding</span></strong>
+                        <span><span lang="es">Invitación con confirmación de asistencia y lista privada para los novios.</span><span lang="en">Invitation with RSVP and a private guest list for the couple.</span></span>
+                    </span>
                 </a>
-                <a class="banda-panel" href="https://davilarodri.github.io/BodaLuisYPilu/" target="_blank" rel="noopener" style="--crece:2" tabindex="-1" aria-hidden="true">
-                    <img src="img/webs/boda-iglesia.webp" width="1200" height="800" loading="lazy" alt="">
-                </a>
-                <a class="banda-panel" href="#tumenu" style="--crece:3" tabindex="-1" aria-hidden="true">
-                    <img src="img/apps/tumenu-menu-2.webp" width="753" height="1065" loading="lazy" alt="">
-                </a>
-                <a class="banda-panel" href="https://davilarodri.github.io/BodaLuisYPilu/" target="_blank" rel="noopener" style="--crece:2" tabindex="-1" aria-hidden="true">
-                    <img src="img/webs/boda-altar.webp" width="1200" height="800" loading="lazy" alt="">
-                </a>
+                <div class="web aparece">
+                    <span class="navegador" aria-hidden="true"><span></span><span></span><span></span><em>La Rufeta · Las Tablas</em></span>
+                    <img src="img/apps/tumenu-menu-2.webp" width="753" height="1065" loading="lazy" alt="Menú del día del bar-restaurante La Rufeta, generado con TuMenu">
+                    <span class="web-pie">
+                        <strong><span lang="es">Bar-restaurante La Rufeta</span><span lang="en">La Rufeta restaurant</span></strong>
+                        <span><span lang="es">Web del local con el menú del día, que se actualiza solo con TuMenu.</span><span lang="en">The restaurant's site, with a daily menu that updates itself through TuMenu.</span></span>
+                    </span>
+                </div>
             </div>
-            <p class="webs-pie aparece">
-                <span lang="es">Bodas, restaurantes y comercios: diseño, desarrollo, dominio y formularios, sin plantillas. La web de la boda recoge las confirmaciones de los invitados; la del bar-restaurante La Rufeta se actualiza sola con TuMenu.</span>
-                <span lang="en">Weddings, restaurants and shops: design, development, domain and forms, no templates. The wedding site collects guests' RSVPs; the one for La Rufeta restaurant updates itself through TuMenu.</span>
-            </p>
         </section>
 
-        <!-- ===== Sobre mí ===== -->
-        <section class="sobre" id="sobre-mi" aria-label="Sobre mí">
-            <ul class="sobre-datos aparece">
-                <li><span lang="es">Madrid</span><span lang="en">Madrid, Spain</span></li>
-                <li><span lang="es">En el sector desde 2017</span><span lang="en">In the industry since 2017</span></li>
-                <li><span lang="es">Español e inglés</span><span lang="en">Spanish and English</span></li>
-            </ul>
-            <div class="sobre-texto">
-                <p class="sobre-uno aparece">
-                    <img src="img/rd-cara.webp" width="480" height="480" alt="Retrato de Rodrigo Dávila" loading="lazy">
-                    <span lang="es"><strong>Rodrigo Dávila.</strong> Empecé en 2017 programando Java para BBVA y fui subiendo hacia donde se decide: análisis, equipos, arquitectura cloud y, desde hace unos años, IA Generativa. Hablo de arquitectura con un desarrollador y de riesgos con un comité.</span>
-                    <span lang="en"><strong>Rodrigo Dávila.</strong> I started in 2017 writing Java for BBVA and moved towards where decisions are made: analysis, teams, cloud architecture and, lately, Generative AI. I talk architecture with developers and risk with boards.</span>
-                </p>
-                <p class="sobre-dos aparece">
-                    <span lang="es">Fuera de la consultoría diseño y publico mis propios productos, de la idea a la tienda. Es mi manera de seguir con las manos en el código y de probar en real lo que luego recomiendo.</span>
-                    <span lang="en">Outside consulting I design and publish my own products, from idea to store. It is how I keep my hands on the code and test for real what I later recommend.</span>
+        <!-- ===== Experiencia ===== -->
+        <section class="experiencia" id="experiencia" aria-labelledby="experiencia-titulo">
+            <div class="cabecera">
+                <h2 id="experiencia-titulo" class="aparece"><span lang="es">Experiencia</span><span lang="en">Experience</span></h2>
+                <p class="aparece">
+                    <span lang="es">Empecé programando Java para BBVA y fui subiendo hacia donde se decide: análisis, equipos, arquitectura cloud y, hoy, IA Generativa.</span>
+                    <span lang="en">I started writing Java for BBVA and moved towards where decisions are made: analysis, teams, cloud architecture and, today, Generative AI.</span>
                 </p>
             </div>
+            <ol class="puestos">
+                <li class="puesto aparece">
+                    <p class="puesto-anos">2025 – <span lang="es">hoy</span><span lang="en">now</span></p>
+                    <div>
+                        <h3><span lang="es">Manager de IA Generativa</span><span lang="en">Generative AI Manager</span> <span class="empresa">Accenture</span></h3>
+                        <p lang="es">Diseñé desde cero un sistema multiagente para migrar el core bancario de BBVA de COBOL a Java, con orquestador, MCP y validación humana. Impulso la adopción de IA en la compañía y presento avances a la dirección del banco.</p>
+                        <p lang="en">I designed from scratch a multi-agent system to migrate BBVA's core banking from COBOL to Java, with an orchestrator, MCP and human validation. I drive AI adoption across the company and report progress to the bank's leadership.</p>
+                        <ul class="pila"><li>BBVA</li><li><span lang="es">Multiagente</span><span lang="en">Multi-agent</span></li><li>MCP</li><li>Claude</li></ul>
+                    </div>
+                </li>
+                <li class="puesto aparece">
+                    <p class="puesto-anos">2021 – 2025</p>
+                    <div>
+                        <h3>Senior Consultant <span class="empresa">Deloitte</span></h3>
+                        <p lang="es">IA Generativa en AWS para Cruz Roja (pro bono). Migración a AWS de la plataforma global de tarjetas de Santander en Chile y Brasil. Gestión de la medida para Acciona. IVA de eCommerce en Reino Unido con Stripe y Xero.</p>
+                        <p lang="en">Generative AI on AWS for the Red Cross (pro bono). Migration of Santander's global cards platform to AWS in Chile and Brazil. Metering management for Acciona. UK eCommerce VAT with Stripe and Xero.</p>
+                        <ul class="pila"><li>Santander</li><li><span lang="es">Cruz Roja</span><span lang="en">Red Cross</span></li><li>Acciona</li><li>AWS</li></ul>
+                    </div>
+                </li>
+                <li class="puesto aparece">
+                    <p class="puesto-anos">2018 – 2021</p>
+                    <div>
+                        <h3><span lang="es">Analista</span><span lang="en">Analyst</span> <span class="empresa">Altia</span></h3>
+                        <p lang="es">Contratos de estaciones de servicio para Cepsa, sanidad mortuoria para la Comunidad de Madrid y una app de iPad para eventos de BMW. Análisis, desarrollo en Java y liderazgo de tareas del equipo.</p>
+                        <p lang="en">Service-station contracts for Cepsa, a mortuary health system for the Community of Madrid and an iPad events app for BMW. Analysis, Java development and leading the team's tasks.</p>
+                        <ul class="pila"><li>Cepsa</li><li>BMW</li><li><span lang="es">Comunidad de Madrid</span><span lang="en">Community of Madrid</span></li><li>Java</li></ul>
+                    </div>
+                </li>
+                <li class="puesto aparece">
+                    <p class="puesto-anos">2017 – 2018</p>
+                    <div>
+                        <h3><span lang="es">Programador junior</span><span lang="en">Junior developer</span> <span class="empresa">Accenture</span></h3>
+                        <p lang="es">Reporting Engine de BBVA: creación y migración de procesos batch en Java y generación de informes.</p>
+                        <p lang="en">BBVA's Reporting Engine: building and migrating Java batch processes and producing reports.</p>
+                        <ul class="pila"><li>BBVA</li><li>Java</li><li>Batch</li></ul>
+                    </div>
+                </li>
+                <li class="puesto aparece">
+                    <p class="puesto-anos">2012 – 2017</p>
+                    <div>
+                        <h3><span lang="es">Grado en Diseño y Desarrollo de Videojuegos</span><span lang="en">BSc in Game Design and Development</span> <span class="empresa">ESNE</span></h3>
+                        <p lang="es">Proyecto de fin de grado: una app educativa con realidad aumentada para iOS y Android. Certificación Scrum Master.</p>
+                        <p lang="en">Final project: an educational augmented-reality app for iOS and Android. Certified Scrum Master.</p>
+                    </div>
+                </li>
+            </ol>
+
+            <div class="habilidades">
+                <h3 class="aparece"><span lang="es">Con qué trabajo</span><span lang="en">What I work with</span></h3>
+                <dl>
+                    <div class="aparece">
+                        <dt><span lang="es">IA Generativa</span><span lang="en">Generative AI</span></dt>
+                        <dd><span lang="es">Sistemas multiagente, orquestación, MCP, human-in-the-loop, RAG. Modelos de Anthropic, OpenAI y Google.</span><span lang="en">Multi-agent systems, orchestration, MCP, human-in-the-loop, RAG. Models from Anthropic, OpenAI and Google.</span></dd>
+                    </div>
+                    <div class="aparece">
+                        <dt><span lang="es">Desarrollo</span><span lang="en">Engineering</span></dt>
+                        <dd><span lang="es">Java y Spring, Python, TypeScript, Flutter y Dart, Swift. Lectura y análisis de COBOL.</span><span lang="en">Java and Spring, Python, TypeScript, Flutter and Dart, Swift. Reading and analysing COBOL.</span></dd>
+                    </div>
+                    <div class="aparece">
+                        <dt>Cloud</dt>
+                        <dd><span lang="es">AWS (Lambda, Bedrock, DynamoDB), Azure, Google Cloud, Cloudflare, Firebase y Supabase.</span><span lang="en">AWS (Lambda, Bedrock, DynamoDB), Azure, Google Cloud, Cloudflare, Firebase and Supabase.</span></dd>
+                    </div>
+                    <div class="aparece">
+                        <dt><span lang="es">Equipos</span><span lang="en">Teams</span></dt>
+                        <dd><span lang="es">Scrum Master certificado. Hablo de arquitectura con un desarrollador y de riesgos con un comité.</span><span lang="en">Certified Scrum Master. I talk architecture with developers and risk with boards.</span></dd>
+                    </div>
+                </dl>
+            </div>
         </section>
 
-        <!-- ===== Trayectoria ===== -->
-        <section class="trayectoria" id="trayectoria" aria-labelledby="trayectoria-titulo">
-            <div class="trayectoria-fijo" aria-hidden="true">
-                <p class="trayectoria-empresa" data-empresa>Accenture</p>
-                <p class="trayectoria-anos" data-anos>2025 – <span lang="es">hoy</span><span lang="en">now</span></p>
+        <!-- ===== Contacto ===== -->
+        <section class="contacto" id="contacto" aria-labelledby="contacto-titulo">
+            <div class="contacto-caja aparece">
+                <div>
+                    <h2 id="contacto-titulo"><span lang="es">¿Hablamos?</span><span lang="en">Let's talk</span></h2>
+                    <p>
+                        <span lang="es">Me interesan los proyectos que llevan la IA al centro de una organización, y los productos bien hechos. Respondo en uno o dos días.</span>
+                        <span lang="en">I'm interested in projects that put AI at the heart of an organisation, and in well-made products. I reply within a day or two.</span>
+                    </p>
+                </div>
+                <div class="contacto-acciones">
+                    <a class="boton boton-lleno" href="mailto:rdavila92@gmail.com">rdavila92@gmail.com</a>
+                    <button type="button" class="boton" data-copiar="rdavila92@gmail.com"><span lang="es">Copiar email</span><span lang="en">Copy email</span></button>
+                    <a class="boton" href="https://www.linkedin.com/in/rodrigo-d%C3%A1vila-5b675383/" target="_blank" rel="noopener">LinkedIn</a>
+                </div>
             </div>
-            <div class="trayectoria-lista">
-                <h2 id="trayectoria-titulo" class="aparece"><span lang="es">Trayectoria</span><span lang="en">Career</span></h2>
-                <ol>
-                    <li class="puesto activo" data-empresa="Accenture" data-desde="2025" data-hasta-es="hoy" data-hasta-en="now">
-                        <button type="button" class="puesto-fila" aria-expanded="true">
-                            <span><span lang="es">Manager de IA Generativa</span><span lang="en">Generative AI Manager</span>, Accenture</span>
-                            <span class="puesto-anos">2025 – <span lang="es">hoy</span><span lang="en">now</span></span>
-                        </button>
-                        <div class="puesto-detalle">
-                            <p lang="es">Diseñé desde cero un sistema multiagente para migrar el core bancario de BBVA de COBOL a Java, con orquestador, MCP y validación humana. Impulso la adopción de IA en la compañía y presento avances a la dirección del banco.</p>
-                            <p lang="en">I designed from scratch a multi-agent system to migrate BBVA's core banking from COBOL to Java, with an orchestrator, MCP and human validation. I drive AI adoption across the company and report progress to the bank's leadership.</p>
-                        </div>
-                    </li>
-                    <li class="puesto" data-empresa="Deloitte" data-desde="2021" data-hasta-es="2025" data-hasta-en="2025">
-                        <button type="button" class="puesto-fila" aria-expanded="false">
-                            <span>Senior Consultant, Deloitte</span>
-                            <span class="puesto-anos">2021 – 2025</span>
-                        </button>
-                        <div class="puesto-detalle">
-                            <p lang="es">IA Generativa en AWS para Cruz Roja (pro bono). Migración a AWS de la plataforma global de tarjetas de Santander en Chile y Brasil. Gestión de la medida para Acciona. IVA de eCommerce en Reino Unido con Stripe y Xero.</p>
-                            <p lang="en">Generative AI on AWS for the Red Cross (pro bono). Migration of Santander's global cards platform to AWS in Chile and Brazil. Metering management for Acciona. UK eCommerce VAT with Stripe and Xero.</p>
-                        </div>
-                    </li>
-                    <li class="puesto" data-empresa="Altia" data-desde="2018" data-hasta-es="2021" data-hasta-en="2021">
-                        <button type="button" class="puesto-fila" aria-expanded="false">
-                            <span><span lang="es">Analista</span><span lang="en">Analyst</span>, Altia</span>
-                            <span class="puesto-anos">2018 – 2021</span>
-                        </button>
-                        <div class="puesto-detalle">
-                            <p lang="es">Contratos de estaciones de servicio para Cepsa, sanidad mortuoria para la Comunidad de Madrid y una app de iPad para eventos de BMW. Análisis, desarrollo en Java y liderazgo de tareas del equipo.</p>
-                            <p lang="en">Service-station contracts for Cepsa, a mortuary health system for the Community of Madrid and an iPad events app for BMW. Analysis, Java development and leading the team's tasks.</p>
-                        </div>
-                    </li>
-                    <li class="puesto" data-empresa="Accenture" data-desde="2017" data-hasta-es="2018" data-hasta-en="2018">
-                        <button type="button" class="puesto-fila" aria-expanded="false">
-                            <span><span lang="es">Programador junior</span><span lang="en">Junior developer</span>, Accenture</span>
-                            <span class="puesto-anos">2017 – 2018</span>
-                        </button>
-                        <div class="puesto-detalle">
-                            <p lang="es">Reporting Engine de BBVA: creación y migración de procesos batch en Java y generación de informes.</p>
-                            <p lang="en">BBVA's Reporting Engine: building and migrating Java batch processes and producing reports.</p>
-                        </div>
-                    </li>
-                    <li class="puesto" data-empresa="ESNE" data-desde="2012" data-hasta-es="2017" data-hasta-en="2017">
-                        <button type="button" class="puesto-fila" aria-expanded="false">
-                            <span><span lang="es">Grado en Diseño y Desarrollo de Videojuegos</span><span lang="en">BSc in Game Design and Development</span>, ESNE</span>
-                            <span class="puesto-anos">2012 – 2017</span>
-                        </button>
-                        <div class="puesto-detalle">
-                            <p lang="es">Proyecto de fin de grado: una app educativa con realidad aumentada para iOS y Android. Certificación Scrum Master.</p>
-                            <p lang="en">Final project: an educational augmented-reality app for iOS and Android. Certified Scrum Master.</p>
-                        </div>
-                    </li>
-                </ol>
-            </div>
-        </section>
-
-        <!-- ===== Asistente y contacto ===== -->
-        <section class="asistente" id="asistente" aria-labelledby="asistente-titulo">
-            <h2 id="asistente-titulo" class="oculto"><span lang="es">Asistente</span><span lang="en">Assistant</span></h2>
-            <p class="asistente-pregunta aparece">
-                <span class="tenue"><span lang="es">¿Quieres saber algo de mi carrera?</span><span lang="en">Want to know about my career?</span></span>
-                <span><span lang="es">Pregúntamelo.</span><span lang="en">Just ask.</span></span>
-            </p>
-
-            <div class="chat-registro" data-chat-registro aria-live="polite"></div>
-
-            <div class="chat-rapidas aparece" data-chat-rapidas aria-label="Preguntas frecuentes"></div>
-
-            <form class="chat-campo aparece" data-chat-form>
-                <label class="oculto" for="chat-entrada"><span lang="es">Tu pregunta</span><span lang="en">Your question</span></label>
-                <input id="chat-entrada" name="pregunta" type="text" autocomplete="off" maxlength="600" required
-                       data-placeholder-es="Escribe tu pregunta" data-placeholder-en="Type your question" placeholder="Escribe tu pregunta">
-                <button type="submit" data-label-es="Enviar pregunta" data-label-en="Send question" aria-label="Enviar pregunta">
-                    <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M5 12h13M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                </button>
-            </form>
-            <p class="chat-nota aparece">
-                <span lang="es">Responde un asistente de IA a partir de mi perfil. Las preguntas frecuentes llevan mi respuesta escrita; para algo importante, escríbeme.</span>
-                <span lang="en">An AI assistant answers from my profile. The common questions carry my own written answer; for anything important, email me.</span>
-            </p>
-
-            <dl class="contacto aparece" id="contacto">
-                <div><dt>Email</dt><dd><a href="mailto:rdavila92@gmail.com">rdavila92@gmail.com</a></dd></div>
-                <div><dt>LinkedIn</dt><dd><a href="https://www.linkedin.com/in/rodrigo-d%C3%A1vila-5b675383/" target="_blank" rel="noopener">Rodrigo Dávila</a></dd></div>
-                <div><dt>GitHub</dt><dd><a href="https://github.com/DavilaRodri" target="_blank" rel="noopener">DavilaRodri</a></dd></div>
-            </dl>
         </section>
     </main>
 
-    <!-- ===== Pie ===== -->
     <footer class="pie">
-        <img class="pie-foto" src="img/pasillo.webp" width="1600" height="2000" alt="" loading="lazy">
-        <div class="pie-arriba">
-            <nav aria-label="Pie">
-                <a href="#proyectos"><span lang="es">Proyectos</span><span lang="en">Projects</span></a>
-                <a href="#trayectoria"><span lang="es">Trayectoria</span><span lang="en">Career</span></a>
-                <a href="#asistente"><span lang="es">Asistente</span><span lang="en">Assistant</span></a>
-            </nav>
-            <p>
-                <a href="mailto:rdavila92@gmail.com">rdavila92@gmail.com</a><br>
-                <span lang="es">Madrid, España</span><span lang="en">Madrid, Spain</span>
-            </p>
-        </div>
-        <p class="pie-nombre" aria-hidden="true"><span>rodrigo</span> <span>dávila</span></p>
-        <p class="pie-legal">© <span data-ano>2026</span> Rodrigo Dávila. <span lang="es">Hecha a mano, sin plantillas.</span><span lang="en">Handmade, no templates.</span></p>
+        <p>© <span data-ano>2026</span> Rodrigo Dávila · Madrid</p>
+        <p><span lang="es">Hecha a mano, sin frameworks. El asistente usa un modelo abierto en Cloudflare.</span><span lang="en">Handmade, no frameworks. The assistant runs an open model on Cloudflare.</span></p>
     </footer>
 
     <script src="js/app.js" defer></script>
