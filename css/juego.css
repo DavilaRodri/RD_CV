@@ -223,8 +223,7 @@ html.en-juego .barra, html.en-juego main, html.en-juego .pie, html.en-juego .sal
 .juego.movil .hud-clasica [lang="en"]::after { content: "Classic"; }
 .juego.movil .hud-entrar { width: auto; min-width: 200px; max-width: calc(100vw - 340px); }
 .juego.movil .hud-botones.abierto .hud-menu { background: var(--marco); color: #05040a; } /* taste-skill-ignore */
-.juego.movil .hud-niveles { display: none; top: auto; bottom: max(14px, env(safe-area-inset-bottom, 0px)); }
-.juego.movil.cerca .hud-niveles { display: flex; }
+.juego.movil .hud-niveles { display: flex; top: auto; bottom: max(14px, env(safe-area-inset-bottom, 0px)); }
 .juego.movil .hud-entrar { width: min(320px, calc(100vw - 340px)); height: 48px; grid-template-rows: auto; }
 .juego.movil .hud-entrar strong { font-size: var(--t-s); }
 .juego.movil .hud-accion { grid-row: 1; height: 34px; }
@@ -329,19 +328,44 @@ html.en-juego .barra, html.en-juego main, html.en-juego .pie, html.en-juego .sal
     .sig-nombre { display: none; }
 }
 
-/* Panel en el móvil: pantalla completa, cabecera fina y el pie al final del contenido */
+/* Panel en el móvil (horizontal): una columna fija a la izquierda con el título y la
+   navegación, y el contenido a la derecha con toda la altura de la pantalla para leer. */
 .juego.movil .juego-panel { place-items: stretch; padding: 0; }
-.juego.movil .panel-caja { max-width: none; max-height: none; height: 100%; border: 0; border-radius: 0; }
-.juego.movil .panel-cabeza {
-    padding: max(8px, env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) 8px max(16px, env(safe-area-inset-left, 0px));
-    border-bottom: 2px solid var(--marco);
+.juego.movil .panel-caja {
+    display: grid; grid-template-columns: minmax(180px, 26%) minmax(0, 1fr); grid-template-rows: minmax(0, 1fr) auto;
+    max-width: none; max-height: none; height: 100%; overflow: hidden; border: 0; border-radius: 0;
 }
-.juego.movil .panel-num { font-size: 10px; } /* taste-skill-ignore */
-.juego.movil .panel-cabeza h2 { font-size: 1.15rem; line-height: 1.2; }
-.juego.movil .panel-cerrar { height: 40px; }
-.juego.movil .panel-cuerpo { padding: 16px max(16px, env(safe-area-inset-right, 0px)) 20px max(16px, env(safe-area-inset-left, 0px)); }
-.juego.movil .panel-cuerpo > .portada-texto h1 { font-size: 2.4rem; }
-.juego.movil .panel-pie { position: static; padding: 12px max(16px, env(safe-area-inset-right, 0px)) max(12px, env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px)); }
+.juego.movil .panel-cabeza {
+    grid-column: 1; grid-row: 1; position: static; flex-direction: column; align-items: stretch; justify-content: flex-start; gap: 14px;
+    padding: max(14px, env(safe-area-inset-top, 0px)) 14px 10px max(16px, env(safe-area-inset-left, 0px));
+    border-right: 2px solid var(--marco);
+}
+.juego.movil .panel-num { font-size: 10px; line-height: 1.5; } /* taste-skill-ignore */
+.juego.movil .panel-cabeza h2 { font-size: 1.35rem; line-height: 1.15; }
+.panel-ruta { display: none; }
+/* Los 15 niveles como gemas: dónde estás y salto directo a cualquiera */
+.juego.movil .panel-ruta { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; list-style: none; padding: 0; margin: 0; order: 2; }
+.juego.movil .panel-ruta button {
+    display: block; width: 100%; height: 16px; padding: 0; border: 0; cursor: pointer; appearance: none;
+    background: var(--line-strong); clip-path: polygon(50% 0, 100% 30%, 100% 70%, 50% 100%, 0 70%, 0 30%);
+}
+.juego.movil .panel-ruta button.visto { background: var(--gema); }
+.juego.movil .panel-ruta button.actual { background: var(--acento); }
+.juego.movil .panel-cerrar { order: 3; height: 40px; width: 100%; justify-content: center; padding: 0 10px; }
+.juego.movil .panel-cerrar > span { display: inline; }
+.juego.movil .panel-cuerpo {
+    grid-column: 2; grid-row: 1 / span 2; overflow-y: auto; overscroll-behavior: contain; align-content: start;
+    padding: 14px max(16px, env(safe-area-inset-right, 0px)) max(16px, env(safe-area-inset-bottom, 0px)) 16px;
+    zoom: .86;
+}
+.juego.movil .panel-cuerpo > .portada-texto h1 { font-size: 2.6rem; }
+.juego.movil .panel-pie {
+    grid-column: 1; grid-row: 2; position: static; flex-direction: column; gap: 8px;
+    padding: 10px 14px max(12px, env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px));
+    border-right: 2px solid var(--marco);
+}
+.juego.movil .panel-pie .boton { width: 100%; justify-content: center; margin-left: 0; min-height: 42px; padding: 0 10px; font-size: var(--t-s); }
+.juego.movil .panel-pie .sig-nombre { display: inline; }
 
 /* Empresas: todos los proyectos */
 .mision-cabeza { display: grid; gap: 6px; max-width: 70ch; }

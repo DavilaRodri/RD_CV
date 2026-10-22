@@ -856,6 +856,7 @@
                 '<div class="panel-caja">' +
                     '<div class="panel-cabeza">' +
                         '<div><p class="panel-num" data-j-panel-num></p><h2 id="j-panel-titulo" tabindex="-1" data-j-panel-titulo></h2></div>' +
+                        '<ol class="panel-ruta" data-j-ruta aria-label="Niveles">' + PANTALLAS.map(function (p, i) { return '<li><button type="button" data-j-saltar="' + i + '" aria-label="' + p.es + '"></button></li>'; }).join('') + '</ol>' +
                         '<button type="button" class="panel-cerrar" data-j-cerrar><span lang="es">Volver a la ciudad</span><span lang="en">Back to the city</span><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg></button>' +
                     '</div>' +
                     '<div class="panel-cuerpo" data-j-cuerpo></div>' +
@@ -959,6 +960,10 @@
             });
         });
         juego.querySelector('[data-j-cerrar]').addEventListener('click', cerrar);
+        juego.querySelector('[data-j-ruta]').addEventListener('click', function (e) {
+            var b = e.target.closest('[data-j-saltar]');
+            if (b) saltarA(Number(b.getAttribute('data-j-saltar')));
+        });
         juego.querySelector('[data-j-mapa]').addEventListener('click', function () { if (vistaMapa) cerrarMapa(); else abrirMapa(); });
         var botones = juego.querySelector('[data-j-botones]'), botonMenu = juego.querySelector('[data-j-menu]');
         botonMenu.addEventListener('click', function () {
@@ -1001,7 +1006,11 @@
         document.addEventListener('keydown', tecla);
         document.addEventListener('keyup', function (e) { teclas[e.key.toLowerCase()] = false; });
         window.addEventListener('blur', function () { teclas = {}; });
-        window.addEventListener('resize', medir);
+        // Al girar el móvil, el navegador da medidas intermedias: se vuelve a medir cuando se asientan
+        var reMedir = function () { medir(); setTimeout(medir, 250); setTimeout(medir, 700); };
+        window.addEventListener('resize', reMedir);
+        window.addEventListener('orientationchange', reMedir);
+        if (window.visualViewport) window.visualViewport.addEventListener('resize', reMedir);
         new MutationObserver(function () { pintarHud(); }).observe(raiz, { attributes: true, attributeFilter: ['data-lang'] });
         var mb = lienzo(MW * 3, MH * 3);
         mb.x.imageSmoothingEnabled = true;
@@ -1191,7 +1200,9 @@
     function medir() {
         if (!juego) return;
         dpr = Math.min(window.devicePixelRatio || 1, 2);
+        if (tactil && window.scrollY) window.scrollTo(0, 0);
         cw = Math.round(lienzoEl.clientWidth * dpr); ch = Math.round(lienzoEl.clientHeight * dpr);
+        if (!cw || !ch) return;
         lienzoEl.width = cw; lienzoEl.height = ch;
         var vw = lienzoEl.clientWidth, vh = lienzoEl.clientHeight;
         // Unas 44 casillas de ancho en escritorio y unas 22 en un móvil vertical
@@ -1243,10 +1254,19 @@
     }
 
     /* ---------- HUD ---------- */
+    function siguientePendiente() {
+        for (var k = 1; k <= PANTALLAS.length; k++) {
+            var j = (sel + k) % PANTALLAS.length;
+            if (!vistos[PANTALLAS[j].id]) return j;
+        }
+        return (sel + 1) % PANTALLAS.length;
+    }
     function pintarHud() {
         if (!juego) return;
         var l = idioma();
         var accion = cerca ? (l === 'es' ? 'Entrar' : 'Enter') : (l === 'es' ? 'Ir' : 'Go');
+        // En el móvil, el botón A lleva al siguiente edificio que te falta por ver
+        if (movil && !cerca && vistos[PANTALLAS[sel].id]) sel = siguientePendiente();
         var p = cerca || PANTALLAS[sel];
         juego.querySelector('[data-j-num]').textContent = (l === 'es' ? 'Nivel ' : 'Level ') + (pantalla(p.id) + 1) + ' / ' + PANTALLAS.length;
         juego.querySelector('[data-j-nombre]').textContent = p[l];
@@ -1795,13 +1815,17 @@
         });
         juego.querySelector('[data-j-panel-num]').innerHTML = '<span lang="es">Nivel ' + (i + 1) + ' de ' + PANTALLAS.length + '</span><span lang="en">Level ' + (i + 1) + ' of ' + PANTALLAS.length + '</span> · ' + bi(sub(n));
         juego.querySelector('[data-j-panel-titulo]').innerHTML = bi(n);
+        juego.querySelectorAll('[data-j-saltar]').forEach(function (b, k) {
+            b.classList.toggle('actual', k === i);
+            b.classList.toggle('visto', !!vistos[PANTALLAS[k].id] || k === i);
+        });
         juego.querySelector('[data-j-panel-paso="-1"]').hidden = i === 0;
         var sig = juego.querySelector('[data-j-panel-paso="1"]');
         sig.innerHTML = i === PANTALLAS.length - 1
             ? '<span lang="es">Volver a la ciudad</span><span lang="en">Back to the city</span>'
             : '<span lang="es">Siguiente<span class="sig-nombre">: ' + PANTALLAS[i + 1].es + '</span></span><span lang="en">Next<span class="sig-nombre">: ' + PANTALLAS[i + 1].en + '</span></span><span aria-hidden="true"> ▶</span>';
         panel.hidden = false;
-        juego.querySelector('.panel-caja').scrollTop = 0;
+        juego.querySelector('.panel-caja').scrollTop = 0; cuerpoPanel.scrollTop = 0;
         requestAnimationFrame(function () { panel.classList.add('abierto'); });
         juego.querySelector('[data-j-panel-titulo]').focus({ preventScroll: true });
         cuerpoPanel.querySelectorAll('video').forEach(function (v) { v.preload = 'auto'; if (!reducido) v.play().catch(function () {}); });
