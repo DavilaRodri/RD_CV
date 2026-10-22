@@ -624,7 +624,7 @@
 
     /* ---------- Estado ---------- */
     var juego, lienzoEl, ctx, mini, miniCtx, miniBase, sueloImg, iconos = {}, websImgs = [];
-    var objetos = [], coches = [], voladores = [], peatones = [], lluvia = [], farolas = [];
+    var objetos = [], coches = [], voladores = [], peatones = [], lluvia = [], farolas = [], vapor = [];
     var heroe = { x: 0, y: 0, dir: 'abajo', dist: 0, moviendo: false, arriba: 0 };
     var hada = { x: 0, y: 0, vx: 0, vy: 0, estela: [] };
     var cam = { x: 0, y: 0 }, camLibre = false, esc = 3, escObj = 3, escBase = 3, dpr = 1, mapaCam = { x: 0, y: 0 };
@@ -635,7 +635,7 @@
     var vistos = {};
     try { vistos = JSON.parse(guardado('gemas') || '{}') || {}; } catch (e) { vistos = {}; }
     var tactil = window.matchMedia('(pointer: coarse)').matches;
-    var movil = false, libreT = 0;   // movil: teléfono en horizontal, con HUD mínimo y cámara cerca
+    var movil = false, libreT = 0, rotulos = [], guia = { puntos: [], t: 0, destino: -1 };   // movil: teléfono en horizontal, con HUD mínimo y cámara cerca
     function total() { return PANTALLAS.filter(function (p) { return vistos[p.id]; }).length; }
 
     function libreCasilla(tx, ty) { return dentro(tx, ty) && !solido[ix(tx, ty)]; }
@@ -741,7 +741,8 @@
     }
     function siguienteFrase() {
         var t = cola.shift();
-        if (!t) { frase = null; globo.classList.remove('visible'); return; }
+        if (!t) { frase = null; globo.classList.remove('visible'); juego.classList.remove('hablando'); return; }
+        juego.classList.add('hablando');
         frase = { t: t, n: reducido ? 1e9 : 0, vida: 0 };
         globo.classList.add('visible');
         globoTexto.textContent = reducido ? texto(t) : '';
@@ -812,6 +813,7 @@
             '<p class="barrio-cartel" data-j-barrio aria-hidden="true"></p>' +
             '<div class="hud hud-arriba">' +
                 '<p class="hud-marca"><span class="marca-sello" aria-hidden="true">RD</span><span>Rodrigo Dávila</span></p>' +
+                '<p class="hud-sitio" data-j-sitio aria-live="polite"></p>' +
                 '<div class="hud-gemas-caja"><button type="button" class="hud-gemas" data-j-gemas aria-expanded="false"><i class="gema-icono" aria-hidden="true"></i><span class="gemas-cuenta" data-j-cuenta></span><span class="gemas-txt"><span lang="es">gemas</span><span lang="en">gems</span></span></button>' +
                     '<div class="inventario" data-j-inventario hidden><p class="inventario-titulo"><span lang="es">Tus gemas</span><span lang="en">Your gems</span></p><ol>' + inventario + '</ol>' +
                     '<button type="button" class="inventario-reinicio" data-j-reinicio><span lang="es">Empezar de cero</span><span lang="en">Start over</span></button></div></div>' +
@@ -832,7 +834,7 @@
             '<div class="mando" data-j-mando aria-hidden="true"><span class="mando-bola"></span></div>' +
             '<button type="button" class="boton-a" data-j-a><span>A</span><small data-j-a-texto></small></button>' +
             '<p class="mapa-aviso">' + (tactil
-                ? '<span lang="es">Toca un edificio para ir · arrastra para mirar</span><span lang="en">Tap a building to go · drag to look around</span>'
+                ? '<span lang="es">Toca un nombre para ir allí</span><span lang="en">Tap a name to go there</span>'
                 : '<span lang="es">Haz clic en un edificio para ir · M o Esc para volver</span><span lang="en">Click a building to go there · M or Esc to go back</span>') + '</p>' +
             '<div class="girar" aria-live="polite">' +
                 '<svg viewBox="0 0 64 64" width="72" height="72" aria-hidden="true"><rect x="20" y="8" width="24" height="42" rx="4" fill="none" stroke="currentColor" stroke-width="3"/><path d="M50 40c4 6 2 14-6 17M44 57l1-6 5 3" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>' +
@@ -856,7 +858,6 @@
                 '<div class="panel-caja">' +
                     '<div class="panel-cabeza">' +
                         '<div><p class="panel-num" data-j-panel-num></p><h2 id="j-panel-titulo" tabindex="-1" data-j-panel-titulo></h2></div>' +
-                        '<ol class="panel-ruta" data-j-ruta aria-label="Niveles">' + PANTALLAS.map(function (p, i) { return '<li><button type="button" data-j-saltar="' + i + '" aria-label="' + p.es + '"></button></li>'; }).join('') + '</ol>' +
                         '<button type="button" class="panel-cerrar" data-j-cerrar><span lang="es">Volver a la ciudad</span><span lang="en">Back to the city</span><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg></button>' +
                     '</div>' +
                     '<div class="panel-cuerpo" data-j-cuerpo></div>' +
@@ -914,7 +915,9 @@
             if (movido || abierta >= 0) return;
             var r = lienzoEl.getBoundingClientRect();
             var w = aMundo((e.clientX - r.left) * dpr, (e.clientY - r.top) * dpr);
-            var n = cosaEn(w.x, w.y);
+            var n = null, qx = (e.clientX - r.left) * dpr, qy = (e.clientY - r.top) * dpr;
+            if (vistaMapa) rotulos.some(function (rr) { if (qx > rr.x - 6 * dpr && qx < rr.x + rr.w + 6 * dpr && qy > rr.y - 6 * dpr && qy < rr.y + rr.h + 6 * dpr) { n = rr.n; return true; } return false; });
+            if (!n) n = cosaEn(w.x, w.y);
             if (!n) return;
             if (vistaMapa) cerrarMapa();
             irA(pantalla(n.id), true);
@@ -960,10 +963,6 @@
             });
         });
         juego.querySelector('[data-j-cerrar]').addEventListener('click', cerrar);
-        juego.querySelector('[data-j-ruta]').addEventListener('click', function (e) {
-            var b = e.target.closest('[data-j-saltar]');
-            if (b) saltarA(Number(b.getAttribute('data-j-saltar')));
-        });
         juego.querySelector('[data-j-mapa]').addEventListener('click', function () { if (vistaMapa) cerrarMapa(); else abrirMapa(); });
         var botones = juego.querySelector('[data-j-botones]'), botonMenu = juego.querySelector('[data-j-menu]');
         botonMenu.addEventListener('click', function () {
@@ -1053,7 +1052,10 @@
                         if (h[1] - x - w < 24) w = h[1] - x;
                         var alto = Math.round(f.h[0] + r() * (f.h[1] - f.h[0]));
                         var s = spriteRelleno(w, alto, semilla++);
-                        objetos.push({ img: s.c, halo: s.halo, x: x, y: f.base - alto, base: f.base, w: w, h: alto });
+                        // El relleno va más apagado: lo que importa son los 15 edificios con nivel
+                        var sx2 = s.c.getContext('2d');
+                        sx2.globalCompositeOperation = 'source-atop'; sx2.fillStyle = 'rgba(5,4,10,.42)'; sx2.fillRect(0, 0, w, alto);
+                        objetos.push({ img: s.c, halo: s.halo, x: x, y: f.base - alto, base: f.base, w: w, h: alto, relleno: true });
                         x += w;
                     }
                 });
@@ -1084,7 +1086,7 @@
         var r = azar(77), colores = ['#c9d1dc', '#ff2fb3', '#22e4ff', '#ffd23f', '#9b5cff', '#c9d1dc'];
         AVENIDAS_H.forEach(function (fila) {
             [[fila * T + 14, -1], [fila * T + 36, 1]].forEach(function (c) {
-                for (var k = 0; k < 2; k++) coches.push({ eje: 'h', fijo: c[0], dir: c[1], pos: r() * PW, vel: 60 + r() * 50, color: colores[Math.floor(r() * colores.length)], salto: 0, cyber: r() < 0.5 });
+                for (var k = 0; k < 2; k++) coches.push({ eje: 'h', fijo: c[0], dir: c[1], pos: r() * PW, vel: 60 + r() * 50, color: colores[Math.floor(r() * colores.length)], salto: 0, cyber: k === 1 && r() < 0.6, roadster: k === 0, prox: 3 + r() * 10 });
             });
         });
         AVENIDAS_V.forEach(function (col) {
@@ -1103,20 +1105,32 @@
     }
     function moverTrafico(dt) {
         coches.forEach(function (c) {
-            c.pos += c.vel * c.dir * dt;
+            // ¿Está el personaje en su carril, delante?
+            var lateral = c.eje === 'h' ? Math.abs(heroe.y - 4 - c.fijo) : Math.abs(heroe.x - c.fijo);
+            var delante = ((c.eje === 'h' ? heroe.x : heroe.y) - c.pos) * c.dir;
+            var enCarril = lateral < 13 && delante > 0 && delante < 52;
+            // Los coches normales frenan; los descapotables saltan con sus propulsores
+            c.freno = !c.roadster && enCarril ? Math.max(0, (c.freno || 1) - dt * 4) : Math.min(1, (c.freno === undefined ? 1 : c.freno) + dt * 1.5);
+            c.pos += c.vel * c.dir * dt * c.freno;
             if (c.eje === 'h') { if (c.pos < -60) c.pos = PW + 60; if (c.pos > PW + 60) c.pos = -60; }
             else {
                 var a = AVENIDAS_H[0] * T - 40, b = (AVENIDAS_H[2] + 3) * T + 40;
                 if (c.pos < a) c.pos = b; if (c.pos > b) c.pos = a;
             }
-            // Si el personaje está en su carril, el coche salta por encima
-            if (c.salto) { c.salto += dt / 0.75; if (c.salto >= 1) c.salto = 0; }
-            else if (!reducido) {
-                var lateral = c.eje === 'h' ? Math.abs(heroe.y - 4 - c.fijo) : Math.abs(heroe.x - c.fijo);
-                var delante = ((c.eje === 'h' ? heroe.x : heroe.y) - c.pos) * c.dir;
-                if (lateral < 13 && delante > 0 && delante < 52) {
-                    c.salto = 0.001;
-                    if (!dicho.salto) { dicho.salto = 1; decir({ es: '¡Cuidado! Aquí los coches saltan. Mejor ve por la acera.', en: 'Careful! Cars jump around here. Better stick to the pavement.' }); }
+            if (!c.roadster) return;
+            // El descapotable salta por encima del personaje y, de vez en cuando, por gusto
+            if (c.salto) {
+                c.salto += dt / 0.95;
+                if (c.salto < 0.3 || c.salto > 0.85) for (var q = 0; q < 2; q++) vapor.push({
+                    x: c.pos - c.dir * (6 + Math.random() * 10), y: c.fijo + 3 - Math.sin(Math.min(1, c.salto) * Math.PI) * 34,
+                    vx: -c.dir * (10 + Math.random() * 25), vy: 8 + Math.random() * 14, r: 2 + Math.random() * 2, v: 1
+                });
+                if (c.salto >= 1) c.salto = 0;
+            } else if (!reducido) {
+                c.prox -= dt;
+                if (enCarril || (c.prox <= 0 && c.pos > 0 && c.pos < PW)) {
+                    c.salto = 0.001; c.prox = 6 + Math.random() * 9;
+                    if (enCarril && !dicho.salto) { dicho.salto = 1; decir({ es: '¡Cuidado! Los descapotables de esta ciudad saltan con propulsores.', en: 'Careful! The roadsters in this city jump on thrusters.' }); }
                 }
             }
         });
@@ -1130,12 +1144,26 @@
         });
     }
     function dibujaCoche(x, c) {
-        var alto = c.salto ? Math.sin(c.salto * Math.PI) * 26 : 0;
+        var alto = c.salto ? Math.sin(c.salto * Math.PI) * (c.roadster ? 34 : 26) : 0;
         if (c.eje === 'h') {
             var X = Math.round(c.pos), Y = Math.round(c.fijo);
             x.fillStyle = 'rgba(0,0,0,.4)'; x.fillRect(X - 15, Y + 3, 30, 4);
             x.save(); x.translate(X, Y - Math.round(alto)); if (c.dir < 0) x.scale(-1, 1);
-            if (c.cyber) {
+            if (c.roadster) {
+                // Descapotable deportivo, rojo, con propulsores de vapor
+                if (c.salto && c.salto < 0.55) {
+                    x.fillStyle = '#7ff3ff'; x.fillRect(-13, 3, 3, 2 + Math.round(Math.random() * 3)); x.fillRect(8, 3, 3, 2 + Math.round(Math.random() * 3));
+                    x.fillStyle = '#ffffff'; x.fillRect(-12, 3, 1, 2); x.fillRect(9, 3, 1, 2);
+                }
+                x.fillStyle = C.linea;
+                x.beginPath(); x.moveTo(-17, 3); x.lineTo(-17, -3); x.lineTo(-10, -5); x.lineTo(-3, -9); x.lineTo(5, -9); x.lineTo(11, -5); x.lineTo(17, -4); x.lineTo(17, 3); x.closePath(); x.fill();
+                x.fillStyle = '#e3263b';
+                x.beginPath(); x.moveTo(-16, 2); x.lineTo(-16, -2); x.lineTo(-10, -4); x.lineTo(-3, -8); x.lineTo(5, -8); x.lineTo(11, -4); x.lineTo(16, -3); x.lineTo(16, 2); x.closePath(); x.fill();
+                x.fillStyle = '#141a2e';
+                x.beginPath(); x.moveTo(-6, -4); x.lineTo(-2, -7); x.lineTo(4, -7); x.lineTo(8, -4); x.closePath(); x.fill();
+                x.fillStyle = 'rgba(255,255,255,.35)'; x.fillRect(-13, -2, 26, 1);
+                x.fillStyle = 'rgba(0,0,0,.3)'; x.fillRect(-16, 0, 32, 2);
+            } else if (c.cyber) {
                 // Furgoneta de líneas rectas
                 x.fillStyle = C.linea;
                 x.beginPath(); x.moveTo(-16, 3); x.lineTo(-16, -6); x.lineTo(2, -11); x.lineTo(16, -5); x.lineTo(16, 3); x.closePath(); x.fill();
@@ -1213,6 +1241,7 @@
         escBase = Math.max(1, Math.round(zoom * dpr));
         escObj = escalaActual();
         esc = escObj;
+        if (!camLibre && !vistaMapa) { cam.x = heroe.x; cam.y = heroe.y - 16; limitarCam(cam); camObj.x = cam.x; camObj.y = cam.y; }
         var mw = Math.round(mini.clientWidth * dpr), mh = Math.round(mini.clientHeight * dpr);
         if (mw && (mini.width !== mw || mini.height !== mh)) { mini.width = mw; mini.height = mh; }
         arrancar();
@@ -1244,12 +1273,14 @@
         mapaCam.x = ch > cw ? heroe.x : PW / 2; mapaCam.y = PH / 2;
         vistaMapa = true; escObj = escalaActual(); ruta = [];
         juego.classList.add('en-mapa');
+        pintarHud();
         arrancar();
     }
     function cerrarMapa() {
         vistaMapa = false; escObj = escalaActual();
         camLibre = false;
         juego.classList.remove('en-mapa');
+        pintarHud();
         arrancar();
     }
 
@@ -1286,6 +1317,7 @@
             b.disabled = sel + d < 0 || sel + d >= PANTALLAS.length;
         });
         if (barrio) juego.querySelector('[data-j-barrio]').textContent = barrio[l];
+        juego.querySelector('[data-j-sitio]').textContent = vistaMapa ? (l === 'es' ? 'Toca un nombre para ir' : 'Tap a name to go') : barrio ? barrio[l] : '';
     }
     function accion() {
         if (vistaMapa) { cerrarMapa(); return; }
@@ -1380,6 +1412,7 @@
                 var cartel = juego.querySelector('[data-j-barrio]');
                 cartel.textContent = b[idioma()];
                 cartel.classList.remove('visible'); void cartel.offsetWidth; cartel.classList.add('visible');
+                pintarHud();
                 if (!dicho['barrio-' + b.id]) { dicho['barrio-' + b.id] = 1; decir(b.hada); }
             }
             NIVELES.forEach(function (n) {
@@ -1406,7 +1439,17 @@
         tocarLluvia(dt);
         particulas.forEach(function (p) { if (p.salpicon) { p.v -= dt; return; } p.x += p.vx * dt; p.y += p.vy * dt; p.vy += 40 * dt; p.v -= dt; });
         particulas = particulas.filter(function (p) { return p.v > 0; });
+        vapor.forEach(function (p) { p.x += p.vx * dt; p.y += p.vy * dt; p.vy *= 0.94; p.r += dt * 9; p.v -= dt * 1.5; });
+        vapor = vapor.filter(function (p) { return p.v > 0; });
+        if (vapor.length > 160) vapor.splice(0, vapor.length - 160);
         if (marca) marca.t += dt;
+        guia.t -= dt;
+        if (guia.t <= 0) {
+            guia.t = 0.35;
+            var dest = cerca || abierta >= 0 || vistaMapa ? null : PANTALLAS[sel];
+            var r2 = dest ? buscarRuta(heroe.x, heroe.y, dest.entrada.x, dest.entrada.y) : null;
+            guia.puntos = r2 ? [{ x: heroe.x, y: heroe.y }].concat(r2) : [];
+        }
 
         var kz = reducido ? 1 : 1 - Math.exp(-dt * 7);
         esc += (escObj - esc) * kz;
@@ -1448,6 +1491,21 @@
         x.globalCompositeOperation = 'lighter';
         farolas.forEach(function (f) { if (f.x > v.l - 40 && f.x < v.l + v.w + 40 && f.y > v.t - 40 && f.y < v.t + v.h + 40) brillo(x, f.x, f.y + 2, 26, f.color === C.cian ? 'rgba(34,228,255,.13)' : 'rgba(255,47,179,.13)'); });
         x.globalCompositeOperation = 'source-over';
+        // Rastro de luz hasta el siguiente edificio
+        if (!vistaMapa && guia.puntos.length > 1) {
+            var paso = 10, fase = reducido ? 0 : (reloj * 22) % paso, acum = 0;
+            x.fillStyle = C.cian;
+            for (var g = 1; g < guia.puntos.length; g++) {
+                var a = guia.puntos[g - 1], b2 = guia.puntos[g], seg = Math.hypot(b2.x - a.x, b2.y - a.y);
+                for (var dd = (paso - acum + fase) % paso; dd < seg; dd += paso) {
+                    var px2 = a.x + (b2.x - a.x) * dd / seg, py2 = a.y + (b2.y - a.y) * dd / seg;
+                    if (Math.hypot(px2 - heroe.x, py2 - heroe.y) < 14) continue;
+                    x.globalAlpha = 0.75; x.fillRect(Math.round(px2) - 1, Math.round(py2) - 1, 2, 2);
+                }
+                acum = (acum + seg) % paso;
+            }
+            x.globalAlpha = 1;
+        }
         if (marca && !vistaMapa) {
             var rr = 4 + (marca.t * 10) % 5;
             x.fillStyle = C.cian;
@@ -1487,15 +1545,21 @@
             x.drawImage(o.img, Math.round(o.x), Math.round(o.y));
             if (o.nivel) extras(x, o.nivel);
         });
+        // Vapor de los propulsores
+        vapor.forEach(function (p) {
+            x.globalAlpha = Math.max(0, p.v) * 0.45; x.fillStyle = '#dfe8ff';
+            x.beginPath(); x.arc(p.x, p.y, p.r, 0, Math.PI * 2); x.fill();
+        });
+        x.globalAlpha = 1;
         // Halos de neón, faros y luces
         x.globalCompositeOperation = 'lighter';
         lista.forEach(function (o) {
-            if (o.halo) { x.globalAlpha = 0.9 + (reducido ? 0 : Math.sin(reloj * 2 + o.x) * 0.1); x.drawImage(o.halo, Math.round(o.x) - HALO, Math.round(o.y) - HALO); }
+            if (o.halo) { x.globalAlpha = (o.relleno ? 0.4 : 0.9) + (reducido ? 0 : Math.sin(reloj * 2 + o.x) * 0.1); x.drawImage(o.halo, Math.round(o.x) - HALO, Math.round(o.y) - HALO); }
             else if (o.farola) { x.globalAlpha = 1; brillo(x, o.fx, o.fy - 36, 16, o.color === C.cian ? 'rgba(34,228,255,.5)' : 'rgba(255,47,179,.5)'); }
             else if (o.coche) {
                 var c = o.coche; x.globalAlpha = 1;
                 if (c.eje === 'h') {
-                    var fx = c.pos + c.dir * 18, fy = c.fijo - 2 - (c.salto ? Math.sin(c.salto * Math.PI) * 26 : 0);
+                    var fx = c.pos + c.dir * 18, fy = c.fijo - 2 - (c.salto ? Math.sin(c.salto * Math.PI) * (c.roadster ? 34 : 26) : 0);
                     x.fillStyle = 'rgba(255,240,180,.16)';
                     x.beginPath(); x.moveTo(fx, fy); x.lineTo(fx + c.dir * 46, fy - 9); x.lineTo(fx + c.dir * 46, fy + 9); x.fill();
                     brillo(x, c.pos - c.dir * 17, fy, 8, 'rgba(255,47,90,.45)');
@@ -1720,6 +1784,7 @@
         var l = idioma(), fs = Math.round((movil && vistaMapa ? 9 : 12) * dpr), puestos = [];
         x.font = fs + 'px Silkscreen, Geist, sans-serif';
         x.textAlign = 'center'; x.textBaseline = 'middle';
+        rotulos = puestos;
         // Primero los barrios, para que los rótulos de los edificios queden encima
         if (vistaMapa) {
             x.font = Math.round((movil ? 10 : 13) * dpr) + 'px Silkscreen, Geist, sans-serif';
@@ -1728,6 +1793,17 @@
                 x.fillStyle = 'rgba(5,4,10,.7)'; var w = x.measureText(b[0][l]).width + 24 * dpr; x.fillRect(sx - w / 2, sy - 13 * dpr, w, 26 * dpr);
                 x.fillStyle = C.rosa; x.fillText(b[0][l].toUpperCase(), sx, sy + dpr);
             });
+        }
+        // En el mapa, un marcador grande con "Tú" donde está el personaje
+        if (vistaMapa) {
+            var hx = (heroe.x - v.l) * esc, hy = (heroe.y - v.t) * esc, pr = (reducido ? 0 : (reloj * 1.4) % 1);
+            x.strokeStyle = C.rosa; x.lineWidth = 2 * dpr;
+            x.globalAlpha = 1 - pr; x.beginPath(); x.arc(hx, hy, (6 + pr * 16) * dpr, 0, Math.PI * 2); x.stroke();
+            x.globalAlpha = 1; x.fillStyle = C.rosa; x.beginPath(); x.arc(hx, hy, 4 * dpr, 0, Math.PI * 2); x.fill();
+            x.font = Math.round(10 * dpr) + 'px Silkscreen, Geist, sans-serif';
+            var tu = idioma() === 'es' ? 'TÚ' : 'YOU', tw = x.measureText(tu).width + 10 * dpr;
+            x.fillStyle = C.rosa; x.fillRect(hx - tw / 2, hy - 26 * dpr, tw, 15 * dpr);
+            x.fillStyle = '#fff'; x.fillText(tu, hx, hy - 18 * dpr);
         }
         x.font = fs + 'px Silkscreen, Geist, sans-serif';
         NIVELES.forEach(function (n) {
@@ -1743,9 +1819,11 @@
             var X = Math.round(sx - w / 2), Y = Math.round(sy - h / 2);
             // En el mapa, si choca con el rótulo de al lado, baja un renglón
             if (vistaMapa) {
-                var choca = function () { return puestos.some(function (r) { return X < r.x + r.w + 4 * dpr && X + w + 4 * dpr > r.x && Y < r.y + r.h + 2 * dpr && Y + h + 2 * dpr > r.y; }); };
-                for (var k = 0; k < 3 && choca(); k++) { Y += h + 6 * dpr; sy += h + 6 * dpr; }
-                puestos.push({ x: X, y: Y, w: w, h: h });
+                var choca = function (yy) { return yy < 4 * dpr || yy + h > ch - 4 * dpr || puestos.some(function (r) { return X < r.x + r.w + 4 * dpr && X + w + 4 * dpr > r.x && yy < r.y + r.h + 2 * dpr && yy + h + 2 * dpr > r.y; }); };
+                var salto = h + 6 * dpr, y0 = Y;
+                [0, -1, 1, -2, 2].some(function (k) { if (!choca(y0 + k * salto)) { Y = y0 + k * salto; return true; } return false; });
+                sy += Y - y0;
+                puestos.push({ x: X, y: Y, w: w, h: h, n: n });
             }
             x.fillStyle = '#05040a'; x.fillRect(X - 2 * dpr, Y - 2 * dpr, w + 4 * dpr, h + 4 * dpr);
             x.fillStyle = activo ? C.cian : '#3a3560'; x.fillRect(X - dpr, Y - dpr, w + 2 * dpr, h + 2 * dpr);
@@ -1815,10 +1893,6 @@
         });
         juego.querySelector('[data-j-panel-num]').innerHTML = '<span lang="es">Nivel ' + (i + 1) + ' de ' + PANTALLAS.length + '</span><span lang="en">Level ' + (i + 1) + ' of ' + PANTALLAS.length + '</span> · ' + bi(sub(n));
         juego.querySelector('[data-j-panel-titulo]').innerHTML = bi(n);
-        juego.querySelectorAll('[data-j-saltar]').forEach(function (b, k) {
-            b.classList.toggle('actual', k === i);
-            b.classList.toggle('visto', !!vistos[PANTALLAS[k].id] || k === i);
-        });
         juego.querySelector('[data-j-panel-paso="-1"]').hidden = i === 0;
         var sig = juego.querySelector('[data-j-panel-paso="1"]');
         sig.innerHTML = i === PANTALLAS.length - 1
@@ -1905,6 +1979,10 @@
         var ya = false;
         try { ya = sessionStorage.getItem('juego-empezado') === '1'; sessionStorage.setItem('juego-empezado', '1'); } catch (e) {}
         if (!ya) frasesIntro().forEach(function (f) { decir(f); });
+        // En el móvil se juega en horizontal: donde el navegador lo permite, se bloquea el giro
+        if (tactil && document.documentElement.requestFullscreen && screen.orientation && screen.orientation.lock) {
+            document.documentElement.requestFullscreen().then(function () { return screen.orientation.lock('landscape'); }).catch(function () {});
+        }
         arrancar();
     }
     // preguntar: true al cargar la página (elige entre juego y clásica);
@@ -1922,6 +2000,7 @@
     }
     function salir() {
         cerrar();
+        if (document.fullscreenElement && document.exitFullscreen) document.exitFullscreen().catch(function () {});
         raiz.classList.remove('en-juego');
         juego.hidden = true;
         enMarcha = false;

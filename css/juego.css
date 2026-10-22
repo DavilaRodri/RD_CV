@@ -13,14 +13,14 @@
     --pixel: "Silkscreen", var(--font);
     position: fixed; inset: 0; z-index: 60;
     background: #05040a; color: var(--texto-j); /* taste-skill-ignore: noche del juego */
-    overflow: hidden; touch-action: none; user-select: none;
+    overflow: hidden; touch-action: manipulation; user-select: none;
     -webkit-tap-highlight-color: transparent;
 }
 .juego[hidden] { display: none; }
 html.en-juego, html.en-juego body { overflow: hidden; }
 html.en-juego .barra, html.en-juego main, html.en-juego .pie, html.en-juego .saltar, html.en-juego .subir { visibility: hidden; }
 
-.juego-lienzo { position: absolute; inset: 0; width: 100%; height: 100%; display: block; image-rendering: pixelated; cursor: grab; }
+.juego-lienzo { position: absolute; inset: 0; width: 100%; height: 100%; display: block; image-rendering: pixelated; cursor: grab; touch-action: none; }
 .juego.arrastrando .juego-lienzo { cursor: grabbing; }
 
 /* Paneles con filo de neón */
@@ -209,6 +209,14 @@ html.en-juego .barra, html.en-juego main, html.en-juego .pie, html.en-juego .sal
 /* Móvil en horizontal: HUD mínimo. Arriba, gemas a la izquierda y Mapa + menú a la
    derecha; abajo, el mando y el botón A. El nombre del edificio solo aparece junto a su puerta. */
 .hud-menu { display: none; }
+.hud-sitio { display: none; }
+.juego.movil .hud-sitio {
+    display: block; order: 2; margin-right: auto; align-self: center; pointer-events: none;
+    font-family: var(--pixel); font-size: 11px; color: #ffd6f1; text-transform: uppercase; letter-spacing: .06em; /* taste-skill-ignore */
+    text-shadow: 0 0 8px #ff2fb3; white-space: nowrap; /* taste-skill-ignore: rótulo de neón */
+}
+.juego.movil .hud-gemas-caja { order: 1; margin-right: 0; }
+.juego.movil .hud-botones { order: 3; }
 .juego.movil .hud-arriba { padding-top: max(10px, env(safe-area-inset-top, 0px)); gap: 8px; }
 .juego.movil .hud-marca, .juego.movil .minimapa, .juego.movil .barrio-cartel, .juego.movil .gemas-txt, .juego.movil .hud-paso, .juego.movil .hud-nivel { display: none; }
 .juego.movil .hud-gemas, .juego.movil .hud-boton { height: 40px; }
@@ -239,7 +247,10 @@ html.en-juego .barra, html.en-juego main, html.en-juego .pie, html.en-juego .sal
 .juego.movil .hada-globo::after { display: none; }
 .juego.movil .hada-texto { font-size: 13px; line-height: 1.35; } /* taste-skill-ignore */
 .juego.movil .hada-nombre { font-size: 10px; } /* taste-skill-ignore */
-.juego.movil .mapa-aviso { top: max(10px, env(safe-area-inset-top, 0px)); bottom: auto; padding: 8px 12px; font-size: 13px; } /* taste-skill-ignore */
+.juego.movil .mapa-aviso { top: calc(max(10px, env(safe-area-inset-top, 0px)) + 48px); bottom: auto; padding: 6px 12px; font-size: 13px; } /* taste-skill-ignore */
+.juego.movil .mapa-aviso, .juego.movil.en-mapa .mapa-aviso { display: none; }
+.juego.movil.hablando:not(.en-mapa) .hud-sitio { visibility: hidden; }
+.juego.movil .hud { z-index: 3; }
 .juego.movil.en-mapa .hud-niveles { display: none; }
 @media (max-height: 500px) and (orientation: landscape) {
     .titulo-caja { gap: 10px; }
@@ -328,44 +339,39 @@ html.en-juego .barra, html.en-juego main, html.en-juego .pie, html.en-juego .sal
     .sig-nombre { display: none; }
 }
 
-/* Panel en el móvil (horizontal): una columna fija a la izquierda con el título y la
-   navegación, y el contenido a la derecha con toda la altura de la pantalla para leer. */
+/* Panel en el móvil (horizontal): una barra fina arriba (cerrar, nivel y título, anterior
+   y siguiente) y el contenido a todo lo ancho, con su propio scroll. */
 .juego.movil .juego-panel { place-items: stretch; padding: 0; }
 .juego.movil .panel-caja {
-    display: grid; grid-template-columns: minmax(180px, 26%) minmax(0, 1fr); grid-template-rows: minmax(0, 1fr) auto;
+    display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-rows: auto minmax(0, 1fr);
     max-width: none; max-height: none; height: 100%; overflow: hidden; border: 0; border-radius: 0;
 }
 .juego.movil .panel-cabeza {
-    grid-column: 1; grid-row: 1; position: static; flex-direction: column; align-items: stretch; justify-content: flex-start; gap: 14px;
-    padding: max(14px, env(safe-area-inset-top, 0px)) 14px 10px max(16px, env(safe-area-inset-left, 0px));
-    border-right: 2px solid var(--marco);
+    grid-column: 1; grid-row: 1; position: static; justify-content: flex-start; gap: 12px;
+    padding: max(6px, env(safe-area-inset-top, 0px)) 8px 6px max(12px, env(safe-area-inset-left, 0px));
+    border-bottom: 2px solid var(--marco);
 }
-.juego.movil .panel-num { font-size: 10px; line-height: 1.5; } /* taste-skill-ignore */
-.juego.movil .panel-cabeza h2 { font-size: 1.35rem; line-height: 1.15; }
-.panel-ruta { display: none; }
-/* Los 15 niveles como gemas: dónde estás y salto directo a cualquiera */
-.juego.movil .panel-ruta { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; list-style: none; padding: 0; margin: 0; order: 2; }
-.juego.movil .panel-ruta button {
-    display: block; width: 100%; height: 16px; padding: 0; border: 0; cursor: pointer; appearance: none;
-    background: var(--line-strong); clip-path: polygon(50% 0, 100% 30%, 100% 70%, 50% 100%, 0 70%, 0 30%);
+.juego.movil .panel-cabeza > div { display: flex; align-items: baseline; gap: 10px; min-width: 0; }
+.juego.movil .panel-num { font-size: 10px; white-space: nowrap; } /* taste-skill-ignore */
+.juego.movil .panel-cabeza h2 { font-size: 1.05rem; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.juego.movil .panel-cerrar { order: -1; width: 40px; height: 40px; padding: 0; justify-content: center; }
+.juego.movil .panel-cerrar > span { display: none; }
+.juego.movil .panel-pie {
+    grid-column: 2; grid-row: 1; position: static; align-items: center; gap: 6px;
+    padding: max(6px, env(safe-area-inset-top, 0px)) max(12px, env(safe-area-inset-right, 0px)) 6px 0;
+    border-bottom: 2px solid var(--marco);
 }
-.juego.movil .panel-ruta button.visto { background: var(--gema); }
-.juego.movil .panel-ruta button.actual { background: var(--acento); }
-.juego.movil .panel-cerrar { order: 3; height: 40px; width: 100%; justify-content: center; padding: 0 10px; }
-.juego.movil .panel-cerrar > span { display: inline; }
+.juego.movil .panel-pie .boton { min-height: 40px; height: 40px; padding: 0 14px; margin-left: 0; font-size: var(--t-s); flex: none; }
+.juego.movil .panel-pie [data-j-panel-paso="-1"] > span[lang] { display: none; }
+.juego.movil .panel-pie .sig-nombre { display: inline; }
 .juego.movil .panel-cuerpo {
-    grid-column: 2; grid-row: 1 / span 2; overflow-y: auto; overscroll-behavior: contain; align-content: start;
-    padding: 14px max(16px, env(safe-area-inset-right, 0px)) max(16px, env(safe-area-inset-bottom, 0px)) 16px;
-    zoom: .86;
+    grid-column: 1 / -1; grid-row: 2; display: block; overflow-y: auto; overscroll-behavior: contain; touch-action: pan-y; -webkit-overflow-scrolling: touch;
+    padding: 14px max(16px, env(safe-area-inset-right, 0px)) max(20px, env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px));
+    zoom: .9;
 }
 .juego.movil .panel-cuerpo > .portada-texto h1 { font-size: 2.6rem; }
-.juego.movil .panel-pie {
-    grid-column: 1; grid-row: 2; position: static; flex-direction: column; gap: 8px;
-    padding: 10px 14px max(12px, env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px));
-    border-right: 2px solid var(--marco);
-}
-.juego.movil .panel-pie .boton { width: 100%; justify-content: center; margin-left: 0; min-height: 42px; padding: 0 10px; font-size: var(--t-s); }
-.juego.movil .panel-pie .sig-nombre { display: inline; }
+.juego.movil .panel-cuerpo > * + * { margin-top: 16px; }
+.juego.movil .panel-cuerpo [class*="carrusel"], .juego.movil .panel-cuerpo [class*="capturas"] { touch-action: pan-x pan-y; }
 
 /* Empresas: todos los proyectos */
 .mision-cabeza { display: grid; gap: 6px; max-width: 70ch; }
