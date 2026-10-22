@@ -8,7 +8,7 @@
     'use strict';
 
     // URL del Worker de Cloudflare (ver cloudflare-worker/).
-    var ASISTENTE_URL = 'https://steep-shadow-ce98.tronquitomagdaleno13.workers.dev';
+    var ASISTENTE_URL = 'https://steep-shadow-ce98.rdavila92.workers.dev';
     var PERFIL_URL = 'perfil.md';
     var INICIO_CARRERA = new Date(2017, 8, 1);
 
