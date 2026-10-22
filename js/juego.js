@@ -1229,9 +1229,11 @@
     var camObj = { x: 0, y: 0 };
 
     function medir() {
-        if (!juego) return;
+        // Con el juego oculto (versión clásica) no se toca nada: en el móvil la barra del
+        // navegador lanza resize al hacer scroll, y antes esto subía la página arriba.
+        if (!juego || juego.hidden) return;
         dpr = Math.min(window.devicePixelRatio || 1, 2);
-        if (tactil && window.scrollY) window.scrollTo(0, 0);
+        if (tactil && abierta < 0 && window.scrollY) window.scrollTo(0, 0);
         cw = Math.round(lienzoEl.clientWidth * dpr); ch = Math.round(lienzoEl.clientHeight * dpr);
         if (!cw || !ch) return;
         lienzoEl.width = cw; lienzoEl.height = ch;
