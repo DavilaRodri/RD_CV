@@ -1,0 +1,465 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#f5f1e9">
+  <title>Bodas · Superadmin</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='12' cy='16' r='8' fill='none' stroke='%234f5d3f' stroke-width='2.4'/%3E%3Ccircle cx='20' cy='16' r='8' fill='none' stroke='%23b4746a' stroke-width='2.4'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f5f1e9; --card: #fffdf9; --ink: #26241f; --muted: #6b665c; --line: #e6dece; --line2: #f0ebe1;
+      --olive: #6f7c4a; --olive-dark: #4f5d3f; --soft: #e5e8d8; --red: #9b2c1f; --redsoft: #f5e5e0; --rose: #b4746a;
+      --r: 18px; --shadow: 0 1px 2px rgba(40, 34, 20, .06), 0 10px 30px -20px rgba(40, 34, 20, .35);
+      --ease: cubic-bezier(.22, .8, .24, 1);
+      color-scheme: light;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); color: var(--ink); font: 400 16px/1.5 "Jost", system-ui, sans-serif; -webkit-tap-highlight-color: transparent; }
+    [hidden] { display: none !important; }
+    button, input, select, textarea { font: inherit; color: inherit; }
+    button { cursor: pointer; }
+    svg { width: 20px; height: 20px; flex: none; }
+    h1, h2, h3, p { margin: 0; }
+    h1 { font-size: clamp(1.875rem, 3vw, 2.375rem); font-weight: 300; line-height: 1.1; }
+    h2 { font-size: 1.25rem; font-weight: 400; }
+    .muted { color: var(--muted); }
+    .small { font-size: .875rem; }
+    .kicker { font-size: .75rem; letter-spacing: .26em; color: var(--muted); text-transform: uppercase; }
+    .wrap { width: min(100% - 32px, 1120px); margin-inline: auto; }
+    input:not([type=checkbox]), select, textarea { width: 100%; min-height: 48px; padding: 10px 14px; border: 1px solid var(--line); border-radius: 12px; background: #fff; }
+    textarea { min-height: 80px; resize: vertical; }
+    input:focus-visible, button:focus-visible, select:focus-visible, textarea:focus-visible, a:focus-visible { outline: 2px solid var(--olive); outline-offset: 2px; }
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 46px; padding: 8px 20px; border: 0; border-radius: 999px; background: var(--olive-dark); color: #fff; text-decoration: none; white-space: nowrap; transition: background .2s, transform .12s; }
+    .btn:hover { background: #3d4831; }
+    .btn:active { transform: scale(.97); }
+    .btn:disabled { opacity: .5; pointer-events: none; }
+    .btn svg { width: 18px; height: 18px; margin-left: -4px; }
+    .btn--soft { background: var(--soft); color: var(--ink); }
+    .btn--soft:hover { background: #d7dcc4; }
+    .btn--ghost { background: transparent; color: var(--muted); }
+    .btn--ghost:hover { background: var(--soft); color: var(--ink); }
+    .btn--danger:hover { background: var(--redsoft); color: var(--red); }
+    .btn--sm { min-height: 40px; padding: 6px 16px; font-size: .9375rem; }
+    .btn--full { width: 100%; }
+    .ibtn { display: inline-grid; place-items: center; width: 40px; height: 40px; border: 0; border-radius: 12px; background: transparent; }
+    .ibtn:hover { background: var(--soft); }
+    .error { min-height: 1.4em; margin-top: 10px; color: var(--red); font-size: .9375rem; }
+
+    /* Entrar */
+    .login { min-height: 100dvh; display: grid; place-items: center; padding: 24px 16px; }
+    .login__card { width: min(100%, 400px); padding: 36px 28px; background: var(--card); border-radius: 22px; box-shadow: var(--shadow); }
+    .login h1 { margin: 10px 0 22px; }
+    .login label { display: block; margin: 14px 0 6px; font-size: .9375rem; }
+    .login .btn { margin-top: 22px; }
+    .rings { display: inline-flex; }
+    .rings i { width: 26px; height: 26px; border-radius: 50%; border: 2px solid var(--olive-dark); }
+    .rings i + i { margin-left: -9px; border-color: var(--rose); }
+
+    /* Cabecera */
+    .top { position: sticky; top: 0; z-index: 10; background: rgba(245, 241, 233, .94); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid var(--line); }
+    .top .wrap { display: flex; align-items: center; gap: 12px; height: 64px; }
+    .top__brand { display: flex; align-items: center; gap: 12px; margin-right: auto; }
+    .top__brand b { font-weight: 400; }
+    main { padding: 28px 0 80px; }
+    .head { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-bottom: 20px; }
+    .head h1 { margin-right: auto; }
+
+    .tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 12px; margin-bottom: 24px; }
+    .tile { padding: 16px 18px; border-radius: 16px; background: var(--card); box-shadow: var(--shadow); }
+    .tile strong { display: block; font-size: 2rem; font-weight: 300; line-height: 1.1; font-variant-numeric: tabular-nums; }
+    .tile span { display: block; margin-top: 2px; color: var(--muted); font-size: .9375rem; }
+    .tile--main { background: var(--olive-dark); color: #fff; }
+    .tile--main span { color: rgba(255, 255, 255, .8); }
+
+    .pills { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+    .pills button { min-height: 36px; padding: 4px 14px; border: 1px solid var(--line); border-radius: 999px; background: var(--card); font-size: .9375rem; }
+    .pills button b { font-weight: 400; color: var(--muted); }
+    .pills button.is-on { background: var(--olive-dark); border-color: var(--olive-dark); color: #fff; }
+    .pills button.is-on b { color: rgba(255, 255, 255, .75); }
+
+    .list { display: grid; gap: 14px; }
+    .boda { display: grid; grid-template-columns: 92px minmax(0, 1fr) auto; gap: 18px 22px; align-items: center; padding: 20px 22px; border-radius: var(--r); background: var(--card); box-shadow: var(--shadow); }
+    .boda.is-off { opacity: .7; }
+    .cal { display: grid; place-items: center; align-content: center; height: 92px; border-radius: 16px; background: var(--line2); text-align: center; line-height: 1.1; }
+    .cal b { display: block; font-size: 2rem; font-weight: 300; }
+    .cal span { font-size: .75rem; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+    .cal small { margin-top: 2px; font-size: .75rem; color: var(--muted); }
+    .boda h3 { font-size: 1.375rem; font-weight: 400; }
+    .boda__meta { display: flex; flex-wrap: wrap; gap: 4px 14px; margin-top: 4px; font-size: .9375rem; color: var(--muted); }
+    .boda__meta a { color: var(--olive-dark); text-underline-offset: 3px; }
+    .boda__stats { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+    .tag { display: inline-flex; align-items: center; gap: 6px; min-height: 26px; padding: 2px 10px; border-radius: 999px; background: var(--line2); font-size: .8125rem; }
+    .tag--ok { background: var(--soft); color: var(--olive-dark); }
+    .tag--warn { background: #fbeee3; color: #8a4b16; }
+    .tag--off { background: var(--redsoft); color: var(--red); }
+    .boda__notes { margin-top: 8px; font-size: .9375rem; color: var(--muted); font-style: italic; }
+    .boda__acts { display: flex; flex-direction: column; gap: 8px; align-items: stretch; }
+    .empty { padding: 40px 16px; border-radius: var(--r); background: var(--card); box-shadow: var(--shadow); text-align: center; color: var(--muted); }
+
+    /* Diálogos */
+    .dlg { width: min(100% - 24px, 600px); max-height: min(92dvh, 900px); padding: 0; border: 0; border-radius: 22px; background: var(--card); color: var(--ink); box-shadow: 0 30px 80px -30px rgba(0, 0, 0, .45); }
+    .dlg--sm { width: min(100% - 24px, 440px); }
+    .dlg[open] { display: flex; flex-direction: column; animation: pop .25s var(--ease); }
+    .dlg > form { display: flex; flex-direction: column; min-height: 0; max-height: inherit; }
+    .dlg::backdrop { background: rgba(38, 36, 31, .35); }
+    @keyframes pop { from { opacity: 0; transform: translateY(10px) scale(.98); } }
+    .dlg__head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 18px 18px 8px 24px; }
+    .dlg__body { display: grid; gap: 14px; padding: 8px 24px 16px; overflow: auto; }
+    .dlg__foot { display: flex; align-items: center; gap: 8px; padding: 14px 18px 18px 24px; border-top: 1px solid var(--line2); }
+    .sp { flex: 1; }
+    .f { display: grid; gap: 6px; min-width: 0; }
+    .f > span { font-size: .875rem; color: var(--muted); }
+    .frow { display: flex; flex-wrap: wrap; gap: 12px; }
+    .frow > .f { flex: 1 1 180px; }
+    .sec { margin-top: 6px; padding-top: 14px; border-top: 1px solid var(--line2); font-size: .8125rem; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+    .pw { display: flex; gap: 8px; }
+    .switch { display: flex; align-items: center; gap: 12px; cursor: pointer; }
+    .switch input { position: absolute; opacity: 0; }
+    .switch span { position: relative; flex: none; width: 44px; height: 26px; border-radius: 999px; background: #d6cfbf; transition: background .2s; }
+    .switch span::after { content: ""; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%; background: #fff; transition: transform .2s var(--ease); }
+    .switch input:checked + span { background: var(--olive-dark); }
+    .switch input:checked + span::after { transform: translateX(18px); }
+    .switch input:focus-visible + span { outline: 2px solid var(--olive); outline-offset: 2px; }
+    .creds { padding: 16px 18px; border-radius: 14px; background: var(--line2); font-size: .9375rem; line-height: 1.7; white-space: pre-line; word-break: break-all; }
+    .toast { position: fixed; left: 50%; bottom: 24px; z-index: 60; padding: 12px 20px; border-radius: 999px; background: var(--ink); color: #fff; font-size: .9375rem; transform: translate(-50%, 20px); opacity: 0; pointer-events: none; transition: opacity .25s, transform .25s var(--ease); }
+    .toast.is-on { opacity: 1; transform: translate(-50%, 0); }
+    .toast.is-err { background: var(--red); }
+
+    @media (max-width: 760px) {
+      .boda { grid-template-columns: 72px minmax(0, 1fr); align-items: start; padding: 18px; gap: 14px 16px; }
+      .cal { height: 72px; }
+      .cal b { font-size: 1.5rem; }
+      .boda__acts { grid-column: 1 / -1; flex-direction: row; flex-wrap: wrap; }
+      .boda__acts .btn { flex: 1 1 auto; }
+      .top__brand .muted { display: none; }
+    }
+    @media (prefers-reduced-motion: reduce) { .dlg[open] { animation: none; } }
+  </style>
+</head>
+<body>
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+    <symbol id="i-out" viewBox="0 0 24 24"><path d="M14 5h4a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1h-4M10 8l-4 4 4 4M6 12h9" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-dice" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.6"><rect x="4" y="4" width="16" height="16" rx="3"/><circle cx="9" cy="9" r="1" fill="currentColor"/><circle cx="15" cy="15" r="1" fill="currentColor"/><circle cx="15" cy="9" r="1" fill="currentColor"/><circle cx="9" cy="15" r="1" fill="currentColor"/></g></symbol>
+  </svg>
+
+  <section class="login" id="login" hidden>
+    <form id="loginForm" class="login__card">
+      <span class="rings" aria-hidden="true"><i></i><i></i></span>
+      <h1>Bodas</h1>
+      <p class="muted">Acceso de administración</p>
+      <label for="u">Email</label>
+      <input id="u" type="email" autocomplete="username" autocapitalize="none" spellcheck="false" required>
+      <label for="p">Contraseña</label>
+      <input id="p" type="password" autocomplete="current-password" required>
+      <button class="btn btn--full" type="submit" id="entrar">Entrar</button>
+      <p class="error" id="loginError" role="alert"></p>
+    </form>
+  </section>
+
+  <div id="app" hidden>
+    <header class="top">
+      <div class="wrap">
+        <div class="top__brand"><span class="rings" aria-hidden="true"><i></i><i></i></span><b>Bodas</b><span class="muted small">· superadmin</span></div>
+        <button class="btn btn--ghost btn--sm" type="button" id="miPass">Mi contraseña</button>
+        <button class="ibtn" type="button" id="salir" title="Salir" aria-label="Salir"><svg><use href="#i-out"/></svg></button>
+      </div>
+    </header>
+    <main>
+      <div class="wrap">
+        <div class="head">
+          <h1>Todas las bodas</h1>
+          <button class="btn" type="button" id="nueva"><svg><use href="#i-plus"/></svg>Nueva boda</button>
+        </div>
+        <div class="tiles" id="tiles"></div>
+        <div class="pills" id="filtros" role="group" aria-label="Filtrar"></div>
+        <div class="list" id="list"></div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Nueva boda -->
+  <dialog id="nDlg" class="dlg">
+    <form id="nForm" method="dialog">
+      <div class="dlg__head"><h2>Nueva boda</h2><button class="ibtn" type="button" data-close aria-label="Cerrar"><svg><use href="#i-x"/></svg></button></div>
+      <div class="dlg__body" id="nBody">
+        <div class="frow">
+          <label class="f"><span>Nombre de uno</span><input type="text" id="nA" maxlength="40" required placeholder="Ana"></label>
+          <label class="f"><span>Nombre del otro</span><input type="text" id="nB" maxlength="40" required placeholder="Juan"></label>
+        </div>
+        <div class="frow">
+          <label class="f"><span>Cómo se muestra</span><input type="text" id="nNombre" maxlength="80" required placeholder="Ana y Juan"></label>
+          <label class="f"><span>Fecha de la boda</span><input type="date" id="nFecha" required></label>
+        </div>
+        <div class="frow">
+          <label class="f"><span>Identificador (único)</span><input type="text" id="nSlug" maxlength="60" required pattern="[a-z0-9]+(-[a-z0-9]+)*" placeholder="ana-y-juan-2028"></label>
+          <label class="f"><span>Dominio de su web</span><input type="text" id="nDominio" maxlength="120" placeholder="anayjuan.com"></label>
+        </div>
+        <p class="sec">Cuenta de los novios</p>
+        <label class="f"><span>Usuario (email)</span><input type="email" id="nEmail" maxlength="160" required placeholder="novios@anayjuan.com"></label>
+        <div class="f"><span>Contraseña</span>
+          <div class="pw"><input type="text" id="nPass" minlength="8" maxlength="72" required autocomplete="off" spellcheck="false"><button class="btn btn--soft btn--sm" type="button" id="nGen" title="Generar otra"><svg><use href="#i-dice"/></svg>Otra</button></div>
+        </div>
+        <p class="sec">Cobro</p>
+        <div class="frow">
+          <label class="f"><span>Precio (€)</span><input type="number" id="nPrecio" min="0" step="1" value="400" inputmode="numeric"></label>
+          <label class="f"><span>Contacto de los novios</span><input type="text" id="nContacto" maxlength="160" placeholder="Teléfono o email"></label>
+        </div>
+        <p class="error" id="nErr" role="alert"></p>
+      </div>
+      <div class="dlg__body" id="nDone" hidden>
+        <p>Boda creada. Estos son los datos para los novios:</p>
+        <div class="creds" id="nCreds"></div>
+        <button class="btn btn--soft btn--sm" type="button" id="nCopy">Copiar</button>
+      </div>
+      <div class="dlg__foot"><span class="sp"></span><button class="btn btn--ghost" type="button" data-close id="nCancel">Cancelar</button><button class="btn" type="submit" id="nSave">Crear boda</button></div>
+    </form>
+  </dialog>
+
+  <!-- Editar boda -->
+  <dialog id="eDlg" class="dlg">
+    <form id="eForm" method="dialog">
+      <div class="dlg__head"><h2 id="eTitle">Boda</h2><button class="ibtn" type="button" data-close aria-label="Cerrar"><svg><use href="#i-x"/></svg></button></div>
+      <div class="dlg__body">
+        <div class="frow">
+          <label class="f"><span>Cómo se muestra</span><input type="text" id="eNombre" maxlength="80" required></label>
+          <label class="f"><span>Fecha</span><input type="date" id="eFecha"></label>
+        </div>
+        <label class="f"><span>Dominio</span><input type="text" id="eDominio" maxlength="120"></label>
+        <p class="sec">Cobro</p>
+        <div class="frow">
+          <label class="f"><span>Precio (€)</span><input type="number" id="ePrecio" min="0" step="1" inputmode="numeric"></label>
+          <label class="f"><span>Contacto</span><input type="text" id="eContacto" maxlength="160"></label>
+        </div>
+        <label class="switch"><input type="checkbox" id="eCobrado"><span></span>Cobrado</label>
+        <label class="f"><span>Notas (solo las ves tú)</span><textarea id="eNotas" maxlength="2000"></textarea></label>
+        <p class="sec">Acceso</p>
+        <label class="switch"><input type="checkbox" id="eBloq"><span></span>Bloquear el panel de los novios</label>
+        <p class="muted small">Si la bloqueas, los novios no pueden entrar en su panel. Tú sí. Sus invitados pueden seguir confirmando en la web.</p>
+        <div class="f"><span>Nueva contraseña para los novios</span>
+          <div class="pw"><input type="text" id="ePass" minlength="8" maxlength="72" autocomplete="off" spellcheck="false" placeholder="Déjalo vacío para no cambiarla"><button class="btn btn--soft btn--sm" type="button" id="eGen"><svg><use href="#i-dice"/></svg>Generar</button></div>
+        </div>
+        <p class="error" id="eErr" role="alert"></p>
+      </div>
+      <div class="dlg__foot"><span class="sp"></span><button class="btn btn--ghost" type="button" data-close>Cancelar</button><button class="btn" type="submit" id="eSave">Guardar</button></div>
+    </form>
+  </dialog>
+
+  <!-- Mi contraseña -->
+  <dialog id="passDlg" class="dlg dlg--sm">
+    <form id="passForm" method="dialog">
+      <div class="dlg__head"><h2>Mi contraseña</h2><button class="ibtn" type="button" data-close aria-label="Cerrar"><svg><use href="#i-x"/></svg></button></div>
+      <div class="dlg__body">
+        <label class="f"><span>Nueva contraseña (mínimo 8)</span><input id="np" type="password" autocomplete="new-password" minlength="8" required></label>
+        <p class="error" id="passMsg" role="status"></p>
+      </div>
+      <div class="dlg__foot"><span class="sp"></span><button class="btn btn--ghost" type="button" data-close>Cancelar</button><button class="btn" type="submit">Guardar</button></div>
+    </form>
+  </dialog>
+
+  <p class="toast" id="toast" role="status"></p>
+
+  <script>
+  (function () {
+    const API = 'https://acpcbnidfunrivrdkwlf.supabase.co', KEY = 'sb_publishable_XLnys24am80Ih8pZnnCrRw_IVWl0dsm';
+    const $ = id => document.getElementById(id);
+    const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    const euros = n => (+n || 0).toLocaleString('es-ES', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 });
+    let sesion = null, bodas = [], filtro = 'proximas';
+
+    // ---------- Sesión ----------
+    function guardar(s) {
+      sesion = s ? { access_token: s.access_token, refresh_token: s.refresh_token, expires_at: s.expires_at || (Date.now() / 1000 + s.expires_in) } : null;
+      try { s ? localStorage.setItem('bodas-superadmin', JSON.stringify(sesion)) : localStorage.removeItem('bodas-superadmin'); } catch (e) {}
+    }
+    async function auth(path, body) {
+      const r = await fetch(API + '/auth/v1/' + path, { method: 'POST', headers: { apikey: KEY, 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+      const j = await r.json().catch(() => ({}));
+      if (!r.ok) throw Object.assign(new Error(j.error_description || j.msg || 'error'), { status: r.status });
+      return j;
+    }
+    async function token() {
+      if (!sesion) throw new Error('sin sesión');
+      if (sesion.expires_at - 60 < Date.now() / 1000) guardar(await auth('token?grant_type=refresh_token', { refresh_token: sesion.refresh_token }));
+      return sesion.access_token;
+    }
+    async function api(path, opts = {}) {
+      const r = await fetch(API + '/rest/v1/' + path, { ...opts, headers: { apikey: KEY, Authorization: 'Bearer ' + await token(), 'Content-Type': 'application/json', ...(opts.headers || {}) } });
+      if (r.status === 401) { salir(); throw new Error('Sesión caducada'); }
+      if (!r.ok) { const j = await r.json().catch(() => ({})); throw new Error(j.message || ('Error ' + r.status)); }
+      return r.status === 204 ? null : r.json();
+    }
+    const rpc = (fn, args) => api('rpc/' + fn, { method: 'POST', body: JSON.stringify(args || {}) });
+
+    $('loginForm').addEventListener('submit', async e => {
+      e.preventDefault();
+      $('entrar').disabled = true; $('loginError').textContent = '';
+      try { guardar(await auth('token?grant_type=password', { email: $('u').value.trim().toLowerCase(), password: $('p').value })); $('p').value = ''; abrir(); }
+      catch (err) { $('loginError').textContent = err.status === 400 ? 'Email o contraseña incorrectos.' : 'No se ha podido entrar. Revisa la conexión.'; }
+      finally { $('entrar').disabled = false; }
+    });
+    function salir() {
+      if (sesion) fetch(API + '/auth/v1/logout', { method: 'POST', headers: { apikey: KEY, Authorization: 'Bearer ' + sesion.access_token } }).catch(() => {});
+      guardar(null); $('app').hidden = true; $('login').hidden = false;
+    }
+    $('salir').addEventListener('click', salir);
+
+    async function abrir() {
+      try {
+        if (!(await rpc('es_superadmin'))) { guardar(null); $('loginError').textContent = 'Esta cuenta no es de superadmin.'; $('login').hidden = false; return; }
+        $('login').hidden = true; $('app').hidden = false;
+        await cargar();
+      } catch (err) { $('app').hidden = true; $('login').hidden = false; $('loginError').textContent = err.message; }
+    }
+    async function cargar() { bodas = await rpc('superadmin_bodas'); pintar(); }
+
+    // ---------- Lista ----------
+    const hoy = () => new Date().toISOString().slice(0, 10);
+    const F = {
+      proximas: ['Próximas', b => !b.fecha || b.fecha >= hoy()],
+      pasadas: ['Pasadas', b => b.fecha && b.fecha < hoy()],
+      cobro: ['Sin cobrar', b => !b.cobrado],
+      todas: ['Todas', () => true]
+    };
+    function pintar() {
+      const prox = bodas.filter(F.proximas[1]);
+      const cobrado = bodas.filter(b => b.cobrado).reduce((a, b) => a + (+b.precio || 0), 0);
+      const pendiente = bodas.filter(b => !b.cobrado).reduce((a, b) => a + (+b.precio || 0), 0);
+      const sig = prox.filter(b => b.fecha).sort((a, b) => a.fecha.localeCompare(b.fecha))[0];
+      const dias = sig ? Math.round((new Date(sig.fecha + 'T12:00') - new Date()) / 864e5) : null;
+      $('tiles').innerHTML =
+        `<div class="tile tile--main"><strong>${prox.length}</strong><span>${prox.length === 1 ? 'boda por delante' : 'bodas por delante'}</span></div>` +
+        `<div class="tile"><strong>${euros(cobrado)}</strong><span>cobrado</span></div>` +
+        `<div class="tile"><strong>${euros(pendiente)}</strong><span>por cobrar</span></div>` +
+        (sig ? `<div class="tile"><strong>${dias}</strong><span>días para ${esc(sig.nombre)}</span></div>` : '');
+      $('filtros').innerHTML = Object.keys(F).map(k => `<button type="button" data-f="${k}" class="${k === filtro ? 'is-on' : ''}">${F[k][0]} <b>${bodas.filter(F[k][1]).length}</b></button>`).join('');
+      const l = bodas.filter(F[filtro][1]);
+      $('list').innerHTML = l.map(b => {
+        const d = b.fecha ? new Date(b.fecha + 'T12:00') : null;
+        const url = b.dominio ? 'https://' + b.dominio.replace(/^https?:\/\//, '').replace(/\/$/, '') : '';
+        return `<article class="boda${b.estado === 'bloqueada' ? ' is-off' : ''}" data-id="${b.id}">
+          <div class="cal">${d ? `<span>${d.toLocaleDateString('es-ES', { month: 'short' }).replace('.', '')}</span><b>${d.getDate()}</b><small>${d.getFullYear()}</small>` : '<span>Sin fecha</span>'}</div>
+          <div>
+            <h3>${esc(b.nombre)}</h3>
+            <div class="boda__meta">
+              ${url ? `<a href="${esc(url)}" target="_blank" rel="noopener">${esc(b.dominio)}</a>` : '<span>Sin dominio</span>'}
+              <span>${esc((b.cuentas || []).join(', ') || 'Sin cuenta de novios')}</span>
+              ${b.contacto ? `<span>${esc(b.contacto)}</span>` : ''}
+            </div>
+            <div class="boda__stats">
+              <span class="tag">${b.vienen} confirmados${b.invitados > b.vienen ? ` · ${b.invitados} en lista` : ''}</span>
+              <span class="tag">${b.mesas} ${b.mesas === 1 ? 'mesa' : 'mesas'}</span>
+              ${b.ultima ? `<span class="tag">última respuesta ${new Date(b.ultima).toLocaleDateString('es-ES', { day: 'numeric', month: 'short' })}</span>` : ''}
+              <span class="tag ${b.cobrado ? 'tag--ok' : 'tag--warn'}">${b.precio != null ? euros(b.precio) + ' · ' : ''}${b.cobrado ? 'cobrado' : 'sin cobrar'}</span>
+              ${b.estado === 'bloqueada' ? '<span class="tag tag--off">panel bloqueado</span>' : ''}
+            </div>
+            ${b.notas ? `<p class="boda__notes">${esc(b.notas)}</p>` : ''}
+          </div>
+          <div class="boda__acts">
+            ${url ? `<a class="btn btn--sm" href="${esc(url)}/admin/" target="_blank" rel="noopener">Abrir su panel</a>` : ''}
+            <button class="btn btn--soft btn--sm" type="button" data-edit>Editar</button>
+          </div>
+        </article>`;
+      }).join('') || `<p class="empty">${bodas.length ? 'Ninguna boda con este filtro.' : 'Todavía no hay bodas. Crea la primera.'}</p>`;
+    }
+    $('filtros').addEventListener('click', e => { const b = e.target.closest('[data-f]'); if (b) { filtro = b.dataset.f; pintar(); } });
+    $('list').addEventListener('click', e => { if (e.target.closest('[data-edit]')) editar(bodas.find(b => b.id === e.target.closest('.boda').dataset.id)); });
+
+    // ---------- Nueva boda ----------
+    const clave = () => { const a = 'abcdefghjkmnpqrstuvwxyzABCDEFGHJKMNPQRSTUVWXYZ23456789', v = new Uint32Array(12); crypto.getRandomValues(v); return [...v].map(x => a[x % a.length]).join(''); };
+    const slug = s => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    let tocado = {};
+    function autoN() {
+      const a = $('nA').value.trim(), b = $('nB').value.trim(), y = ($('nFecha').value || '').slice(0, 4);
+      if (!tocado.nNombre) $('nNombre').value = a && b ? a + ' y ' + b : a || b;
+      if (!tocado.nSlug) $('nSlug').value = slug([a, 'y', b, y].filter(Boolean).join(' '));
+      if (!tocado.nDominio) $('nDominio').value = a && b ? slug(a + 'y' + b).replace(/-/g, '') + '.com' : '';
+      if (!tocado.nEmail && $('nDominio').value) $('nEmail').value = 'novios@' + $('nDominio').value.replace(/^https?:\/\//, '').replace(/\/.*$/, '');
+    }
+    ['nA', 'nB', 'nFecha'].forEach(id => $(id).addEventListener('input', autoN));
+    ['nNombre', 'nSlug', 'nDominio', 'nEmail'].forEach(id => $(id).addEventListener('input', () => { tocado[id] = true; if (id === 'nDominio') autoN(); }));
+    $('nueva').addEventListener('click', () => {
+      tocado = {}; $('nForm').reset(); $('nPrecio').value = 400; $('nPass').value = clave(); $('nErr').textContent = '';
+      $('nBody').hidden = false; $('nDone').hidden = true; $('nSave').hidden = false; $('nCancel').textContent = 'Cancelar';
+      $('nDlg').showModal(); $('nA').focus();
+    });
+    $('nGen').addEventListener('click', () => { $('nPass').value = clave(); });
+    $('nForm').addEventListener('submit', async e => {
+      e.preventDefault();
+      if (!$('nForm').reportValidity()) return;
+      $('nSave').disabled = true; $('nErr').textContent = '';
+      const dom = $('nDominio').value.trim().replace(/^https?:\/\//, '').replace(/\/.*$/, '');
+      try {
+        await rpc('crear_boda', {
+          p_nombre: $('nNombre').value.trim(), p_slug: $('nSlug').value.trim(), p_fecha: $('nFecha').value,
+          p_pareja_a: $('nA').value.trim(), p_pareja_b: $('nB').value.trim(), p_dominio: dom,
+          p_email: $('nEmail').value.trim(), p_password: $('nPass').value, p_precio: $('nPrecio').value === '' ? null : +$('nPrecio').value, p_contacto: $('nContacto').value.trim() || null
+        });
+        $('nCreds').textContent = `Panel: ${dom ? 'https://' + dom + '/admin/' : '(falta el dominio)'}\nUsuario: ${$('nEmail').value.trim()}\nContraseña: ${$('nPass').value}`;
+        $('nBody').hidden = true; $('nDone').hidden = false; $('nSave').hidden = true; $('nCancel').textContent = 'Cerrar';
+        await cargar();
+      } catch (err) { $('nErr').textContent = err.message; }
+      finally { $('nSave').disabled = false; }
+    });
+    $('nCopy').addEventListener('click', async () => {
+      try { await navigator.clipboard.writeText($('nCreds').textContent); toast('Copiado'); } catch (e) { toast('No se ha podido copiar', true); }
+    });
+
+    // ---------- Editar ----------
+    let act = null;
+    function editar(b) {
+      act = b;
+      $('eTitle').textContent = b.nombre;
+      $('eNombre').value = b.nombre; $('eFecha').value = b.fecha || ''; $('eDominio').value = b.dominio || '';
+      $('ePrecio').value = b.precio ?? ''; $('eContacto').value = b.contacto || ''; $('eCobrado').checked = b.cobrado;
+      $('eNotas').value = b.notas || ''; $('eBloq').checked = b.estado === 'bloqueada'; $('ePass').value = ''; $('eErr').textContent = '';
+      $('eDlg').showModal();
+    }
+    $('eGen').addEventListener('click', () => { $('ePass').value = clave(); });
+    $('eForm').addEventListener('submit', async e => {
+      e.preventDefault();
+      const pw = $('ePass').value.trim();
+      if (pw && pw.length < 8) { $('eErr').textContent = 'La contraseña tiene que tener al menos 8 caracteres.'; return; }
+      $('eSave').disabled = true; $('eErr').textContent = '';
+      try {
+        await api('bodas?id=eq.' + act.id, { method: 'PATCH', body: JSON.stringify({ nombre: $('eNombre').value.trim(), fecha: $('eFecha').value || null, dominio: $('eDominio').value.trim().replace(/^https?:\/\//, '').replace(/\/.*$/, '') || null }) });
+        const cuenta = { precio: $('ePrecio').value === '' ? null : +$('ePrecio').value, contacto: $('eContacto').value.trim() || null, cobrado: $('eCobrado').checked, notas: $('eNotas').value.trim() || null, estado: $('eBloq').checked ? 'bloqueada' : 'activa', actualizado: new Date().toISOString() };
+        await api('boda_cuentas', { method: 'POST', headers: { Prefer: 'resolution=merge-duplicates' }, body: JSON.stringify({ boda_id: act.id, ...cuenta }) });
+        if (pw) {
+          const n = await rpc('cambiar_clave_novios', { p_boda: act.id, p_password: pw });
+          if (!n) throw new Error('Esta boda no tiene cuenta de novios.');
+          try { await navigator.clipboard.writeText(pw); } catch (err) {}
+          toast('Guardado. Contraseña nueva copiada');
+        } else toast('Guardado');
+        $('eDlg').close(); await cargar();
+      } catch (err) { $('eErr').textContent = err.message; }
+      finally { $('eSave').disabled = false; }
+    });
+
+    // ---------- Mi contraseña ----------
+    $('miPass').addEventListener('click', () => { $('np').value = ''; $('passMsg').textContent = ''; $('passDlg').showModal(); });
+    $('passForm').addEventListener('submit', async e => {
+      e.preventDefault();
+      try {
+        const r = await fetch(API + '/auth/v1/user', { method: 'PUT', headers: { apikey: KEY, Authorization: 'Bearer ' + await token(), 'Content-Type': 'application/json' }, body: JSON.stringify({ password: $('np').value }) });
+        if (!r.ok) throw new Error();
+        $('passMsg').textContent = 'Contraseña cambiada.'; setTimeout(() => $('passDlg').close(), 1200);
+      } catch (err) { $('passMsg').textContent = 'No se ha podido cambiar. Prueba otra.'; }
+    });
+
+    document.addEventListener('click', e => { const c = e.target.closest('[data-close]'); if (c) c.closest('dialog').close(); });
+    let tt = 0;
+    function toast(t, err) { const el = $('toast'); el.textContent = t; el.classList.toggle('is-err', !!err); el.classList.add('is-on'); clearTimeout(tt); tt = setTimeout(() => el.classList.remove('is-on'), 2600); }
+
+    try { sesion = JSON.parse(localStorage.getItem('bodas-superadmin')); } catch (e) {}
+    if (sesion) abrir(); else $('login').hidden = false;
+  })();
+  </script>
+</body>
+</html>
